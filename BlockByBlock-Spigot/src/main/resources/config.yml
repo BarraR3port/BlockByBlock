@@ -1,0 +1,64 @@
+#TODO Crear sistema de permisos:
+# Para manejar las parcelas los usuarios deben tener ciertos permisos. Por ejemplo para entrar a las parcelas 101x101 en la
+# 1.12:
+# 1.12 y 101x101 -> bbb.parcelas.101x101.1.12
+# 1.12 y 501x501 -> bbb.parcelas.501x501.1.12
+# 1.12 y 1000x1000 -> bbb.parcelas.1000x1000.1.12
+#
+# 1.16:
+# 1.16 y 101x101 -> bbb.parcelas.101x101.1.16
+# 1.16 y 501x501 -> bbb.parcelas.501x501.1.16
+# 1.16 y 1000x1000 -> bbb.parcelas.1000x1000.1.16
+#
+# 1.18:
+# 1.18 y 101x101 -> bbb.parcelas.101x101.1.18
+# 1.18 y 501x501 -> bbb.parcelas.501x501.1.18
+# 1.18 y 1000x1000 -> bbb.parcelas.1000x1000.1.18
+
+
+global:
+  prefix: "&aBlock By Block"
+  server-type: "CORE" #LOBBY, CORE
+  proxy-server-name: ""
+  debug: true
+actions:
+  break-blocks: false
+  place-blocks: false
+  player-interact-at-entity: false
+  player-interact-entity: false
+  player-bed-events: false
+  player-drop-items: false
+  player-pickup-items: false
+  consume-items: false
+spawn:
+  location:
+db:
+  #MongoDB
+  host: localhost
+  port: 27017
+  user: root
+  password: root
+  database: blockbyblock
+
+
+perms:
+  when-creating-world:
+    - fawe.bypass
+    - arceon.*
+    - voxelsniper.*
+    - worldedit.*
+    - gopaint.use
+    - gobrush.use
+    - astools.use
+    - models.use
+    - builders.util.*
+  when-joining-world:
+    - fawe.bypass
+    - arceon.*
+    - voxelsniper.*
+    - worldedit.*
+    - gopaint.use
+    - gobrush.use
+    - astools.use
+    - models.use
+    - builders.util.*

@@ -1,0 +1,39 @@
+lobby-book-details:
+  title: "&aBlock By Block Info"
+  author: "&aBlock By Block"
+  pages:
+    1:
+      paragraphs:
+        - "Bienvenido a Block By Block"
+        - "En este servidor podrás construir, aprender y compartir con más builders sin importar tu nivel de construcción."
+    2:
+      paragraphs:
+        - "Puedes utilizar la brújula para abrir el menú de servidores o usar el comando /ym"
+        - "Puedes unirte a nuestra comunidad y recibir clases en directo uniéndote a nuestro discord: &bhttps://discord.gg/blockbyblock"
+error:
+  wrong-command: "&cComando incorrecto. Intenta usando: &e%command%&c."
+  world:
+    failed-to-unload: "&cError al cargar el mundo &e%world%&c."
+    not-loaded: "&cEl mundo &e%world%&c no está cargado."
+    not-allowed-to-break: "&cNo tienes permiso para romper bloques en este mundo."
+    not-allowed-to-place: "&cNo tienes permiso para colocar bloques en este mundo."
+    not-allowed-to-join-world: "&cNo tienes permiso para unirte a este mundo."
+    not-allowed-to-use-commands-in-this-world: "&cNo tienes permiso para usar comandos en este mundo."
+    not-found: "&cEl mundo &e%world%&c no existe."
+    delete-failed: "&cError al eliminar el mundo &e%world%&c en el server &e%server%&c."
+    cant-kick-own: "&cNo puedes expulsar a ti mismo."
+  player:
+    not-found: "&cNo se encontró al jugador &e%player%&c."
+  server:
+    not-online: "&cEl servidor &e%server%&c no está online."
+  no-permission: "&cNo tienes permiso para usar este comando."
+  plot:
+    create:
+      failed: "&cYa tienes el máximo de plots &e%plot-type% &cen esta versión."
+world:
+  unloaded: "&cEl mundo &e%world%&c ha sido eliminado."
+  set-name: "&aEl nombre del mundo ha sido cambiado a &e%name%&a."
+  set-owner: "&aEl dueño del mundo &e%world% &aha sido cambiado a &e%owner%&a."
+  kick-success: "&aHas expulsado a &e%player% &adel mundo &e%world%&a."
+  deleted-and-kicked: "&cEl mundo &e%world% &cha sido eliminado y has sido expulsado de este"
+  join: "&aHas entrado al mundo &e%world%&a."

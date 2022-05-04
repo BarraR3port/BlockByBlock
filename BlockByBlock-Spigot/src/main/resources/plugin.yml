@@ -1,0 +1,8 @@
+name: BlockByBlock
+version: '${project.version}'
+main: net.lymarket.comissionss.youmind.bbb.Main
+depend:
+  - SlimeWorldManager
+  - LuckPerms
+softdepend:
+  - PlotSquared
