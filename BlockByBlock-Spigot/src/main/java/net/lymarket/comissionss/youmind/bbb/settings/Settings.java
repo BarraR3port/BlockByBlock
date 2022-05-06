@@ -32,6 +32,8 @@ public class Settings {
     
     public static ArrayList < String > PERMS_WHEN_JOINING_WORLD = new ArrayList <>( );
     
+    public static ServerType SERVER_TYPE;
+    
     
     public Settings( ){
     
@@ -54,6 +56,7 @@ public class Settings {
         DEBUG = config.getBoolean( "global.debug" );
         PERMS_WHEN_CREATING_WORLD = new ArrayList <>( config.getStringList( "perms.when-creating-world" ) );
         PERMS_WHEN_JOINING_WORLD = new ArrayList <>( config.getStringList( "perms.when-joining-world" ) );
+        SERVER_TYPE = ServerType.valueOf( config.getString( "global.server-type" ) );
     }
     
     

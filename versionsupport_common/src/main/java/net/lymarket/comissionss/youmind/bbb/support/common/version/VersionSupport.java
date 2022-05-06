@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.support.common.version;
 
 import net.lymarket.comissionss.youmind.bbb.common.BBBApi;
+import net.lymarket.comissionss.youmind.bbb.support.common.plot.IPlotManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,4 +24,6 @@ public abstract class VersionSupport {
     }
     
     public abstract void registerPlotEvents( );
+    
+    public abstract IPlotManager getPlotManager( );
 }

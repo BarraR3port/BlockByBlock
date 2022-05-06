@@ -1,37 +1,51 @@
-package net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1;
+package net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.plot;
 
 import com.intellectualcrafters.plot.api.PlotAPI;
 import com.intellectualcrafters.plot.object.Plot;
 import com.plotsquared.bukkit.events.PlayerClaimPlotEvent;
-import net.lymarket.comissionss.youmind.bbb.common.BBBApi;
+import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.support.common.events.PlotCreateFailed;
+import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+
+import java.util.UUID;
 
 public class P2Listener implements Listener {
     
-    // if you like the dependency-injection-like approach:
+    private final VersionSupport vs;
     
     
-    private final BBBApi bbbApi;
+    public P2Listener( VersionSupport vs ){
+        this.vs = vs;
+    }
     
-    
-    public P2Listener( BBBApi bbbApi ){
-        
-        this.bbbApi = bbbApi;
+    @EventHandler
+    public void onPlayerJoinEvent( PlayerJoinEvent e ){
+        final UUID uuid = e.getPlayer( ).getUniqueId( );
+        final boolean tp = vs.getPlotManager( ).hasPlot( uuid );
+        if ( tp ) {
+            final Plot plot = ( Plot ) vs.getPlotManager( ).getPlot( uuid );
+            if ( plot.teleportPlayer( new PlotAPI( ).wrapPlayer( uuid ) ) ) {
+                vs.getPlotManager( ).removePlot( uuid );
+            }
+        }
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerEnterPlot( PlayerClaimPlotEvent e ){
         final Player p = e.getPlayer( );
         final Plot plot = e.getPlot( );
-        final User user = bbbApi.getPlayers( ).getPlayer( p.getUniqueId( ) );
+        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
         if ( user == null ) {
             e.setCancelled( true );
             return;
@@ -42,21 +56,21 @@ public class P2Listener implements Listener {
             case DEV:
                 break;
             case BUILDER: {
-                if ( plot.getWorldName( ).equals( "bbb-plot-101" ) ) {
+                if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
                     if ( user.getPlots101( ).size( ) >= 10 ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P101 ) );
                         canCreate = false;
                         break;
                     }
-                } else if ( plot.getWorldName( ).equals( "bbb-plot-501" ) ) {
+                } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
                     if ( user.getPlots501( ).size( ) >= 3 ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P501 ) );
                         canCreate = false;
                         break;
                     }
-                } else if ( plot.getWorldName( ).equals( "bbb-plot-1001" ) ) {
+                } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
                     if ( user.getPlots1001( ).size( ) >= 1 ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P1001 ) );
@@ -67,21 +81,21 @@ public class P2Listener implements Listener {
                 break;
             }
             case VISITOR: {
-                if ( plot.getWorldName( ).equals( "bbb-plot-101" ) ) {
+                if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
                     if ( user.getPlots101( ).size( ) >= 5 ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P101 ) );
                         canCreate = false;
                         break;
                     }
-                } else if ( plot.getWorldName( ).equals( "bbb-plot-501" ) ) {
+                } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
                     if ( user.getPlots501( ).size( ) >= 2 ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P501 ) );
                         canCreate = false;
                         break;
                     }
-                } else if ( plot.getWorldName( ).equals( "bbb-plot-1001" ) ) {
+                } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
                     e.setCancelled( true );
                     Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P1001 ) );
                     canCreate = false;
@@ -91,17 +105,17 @@ public class P2Listener implements Listener {
         }
         
         if ( canCreate ) {
-            if ( plot.getWorldName( ).equals( "bbb-plot-101" ) ) {
+            if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
                 user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P101 , plot.getId( ).toString( ) )) );
-            } else if ( plot.getWorldName( ).equals( "bbb-plot-501" ) ) {
+            } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
                 user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P501 , plot.getId( ).toString( ) ) );
-            } else if ( plot.getWorldName( ).equals( "bbb-plot-1001" ) ) {
+            } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
                 user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P1001 , plot.getId( ).toString( ) ) );
             } else {
                 e.setCancelled( true );
                 return;
             }
-            bbbApi.getPlayers( ).savePlayer( user );
+            vs.getBbbApi( ).getPlayers( ).savePlayer( user );
         } else {
             e.setCancelled( true );
         }
@@ -109,9 +123,9 @@ public class P2Listener implements Listener {
         
     }
     
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onInteract( PlayerInteractEvent event ){
-        final Player player = event.getPlayer( );
+    /*@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onInteract( PlayerInteractEvent e ){
+        final Player player = e.getPlayer( );
         final Plot plot = new PlotAPI( ).getPlot( player.getLocation( ) );
         
         if ( plot == null ) {
@@ -119,6 +133,19 @@ public class P2Listener implements Listener {
         }
         
         
+    }*/
+    
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerTeleport( PlayerTeleportEvent e ){
+        final World world = e.getTo( ).getWorld( );
+        final UUID playerUUID = e.getPlayer( ).getUniqueId( );
+        
+        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
+        final Location loc = e.getTo( );
+        final Plot plot = new PlotAPI( ).getPlot( loc );
+        final Loc location = new Loc( vs.getBbbApi( ).getProxyServerName( ) , world.getName( ) , loc.getX( ) , loc.getY( ) , loc.getZ( ) , plot == null ? null : plot.getId( ).toString( ) );
+        user.setLastLocation( location );
+        vs.getBbbApi( ).getPlayers( ).savePlayer( user );
     }
     
 }

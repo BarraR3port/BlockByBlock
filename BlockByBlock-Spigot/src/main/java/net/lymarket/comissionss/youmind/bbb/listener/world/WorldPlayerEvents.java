@@ -2,10 +2,12 @@ package net.lymarket.comissionss.youmind.bbb.listener.world;
 
 
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
+import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.listener.MainEvents;
-import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
+import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,18 +20,19 @@ import org.bukkit.event.player.*;
 
 import java.util.UUID;
 
-public class WorldPlayerEvents extends MainEvents {
+public final class WorldPlayerEvents extends MainEvents {
     
     
     public void subPlayerQuitEvent( PlayerQuitEvent e ){
         final UUID uuid = e.getPlayer( ).getUniqueId( );
-        User user = Main.getInstance( ).getPlayers( ).getPlayer( uuid );
-        Main.getInstance( ).getWorlds( ).getWorlds( ).forEach( world -> {
-            world.removeOnlineMember( user.getUUID( ) );
-            Main.getInstance( ).getWorlds( ).saveWorld( world );
+        final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) ) );
+        Main.getInstance( ).getWorlds( ).getWorlds( ).forEach( worlds -> {
+            worlds.removeOnlineMember( uuid );
+            Main.getInstance( ).getWorlds( ).saveWorld( worlds );
         } );
+        Main.getInstance( ).managePermissions( uuid , world.getUUID( ) , true ).thenAccept( a -> Main.getInstance( ).getPlayers( ).unloadPlayer( uuid ) );
         
-        Main.getInstance( ).getPlayers( ).unloadPlayer( user );
+        
     }
     
     @Override
@@ -49,26 +52,31 @@ public class WorldPlayerEvents extends MainEvents {
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerBreaksBlock( BlockBreakEvent e ){
+        final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
+            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            e.setCancelled( true );
             return;
         }
         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( worldUUID );
         final Player player = e.getPlayer( );
-        final UUID playerUUID = player.getUniqueId( );
         if ( world == null ) {
+            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             e.setCancelled( true );
             return;
         }
         
-        if ( !world.getOnlineMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID ) && !player.hasPermission( "blockbyblock.admin.block.break.other" ) ) {
+        if ( !world.getMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID ) && !player.hasPermission( "blockbyblock.admin.block.place.other" ) ) {
             e.setCancelled( true );
             world.removeOnlineMember( playerUUID );
             Main.getInstance( ).getWorlds( ).saveWorld( world );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatKickFromWorld( playerUUID , world , world.getOwner( ) ) );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" ) );
+            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( world.getOwner( ) , world , playerUUID );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
         }
         
         
@@ -76,142 +84,146 @@ public class WorldPlayerEvents extends MainEvents {
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerPlaceBlocks( BlockPlaceEvent e ){
+        final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
+            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            e.setCancelled( true );
             return;
         }
         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( worldUUID );
         final Player player = e.getPlayer( );
-        final UUID playerUUID = player.getUniqueId( );
         if ( world == null ) {
+            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             e.setCancelled( true );
             return;
         }
-        if ( !world.getOnlineMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID ) && !player.hasPermission( "blockbyblock.admin.block.place.other" ) ) {
+        
+        if ( !world.getMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID ) && !player.hasPermission( "blockbyblock.admin.block.place.other" ) ) {
             e.setCancelled( true );
             world.removeOnlineMember( playerUUID );
             Main.getInstance( ).getWorlds( ).saveWorld( world );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatKickFromWorld( playerUUID , world , world.getOwner( ) ) );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" ) );
+            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( world.getOwner( ) , world , playerUUID );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
         }
     }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerJoinWorld( PlayerTeleportEvent e ){
-        Main.debug( "PlayerTeleportEvent " + e.getPlayer( ).getName( ) + " " + e.getPlayer( ).getWorld( ).getName( ) );
-        
+    public void onPlayerTeleport( PlayerTeleportEvent e ){
+        final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
+            if ( e.getFrom( ).getWorld( ).equals( e.getTo( ).getWorld( ) ) ) {
+                Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
+                Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+                e.setCancelled( true );
+            }
             return;
         }
-        final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( worldUUID );
-        final Player player = e.getPlayer( );
-        final UUID playerUUID = player.getUniqueId( );
-        
-        if ( world == null ) {
-            e.setCancelled( true );
-            return;
-        }
-        Main.debug( "Player is in world " + world.getName( ) );
-        Main.debug( "Player is in world " + world.getName( ) + " and has permission " + player.hasPermission( "blockbyblock.admin.commands.other" ) );
-        Main.debug( "World online members: " + world.getOnlineMembers( ) );
-        Main.debug( "World members: " + world.getMembers( ) );
-        
-        
-        if ( !world.getOnlineMembers( ).contains( playerUUID ) ) {
-            if ( !world.getOwner( ).equals( playerUUID ) ) {
-                if ( !player.hasPermission( "blockbyblock.admin.commands.other" ) ) {
-                    world.removeOnlineMember( playerUUID );
-                    Main.getInstance( ).getWorlds( ).saveWorld( world );
-                    Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatKickFromWorld( playerUUID , world , world.getOwner( ) ) );
-                    Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" ) );
-                    
-                }
+        if ( !e.getFrom( ).getWorld( ).equals( e.getTo( ).getWorld( ) ) ) {
+            final BWorld prevWorld = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getFrom( ).getWorld( ).getName( ) ) );
+            final BWorld postWorld = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getTo( ).getWorld( ).getName( ) ) );
+            
+            if ( prevWorld == null || postWorld == null ) {
+                e.setCancelled( true );
+                Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
+                Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+                return;
+            }
+            if ( postWorld.getMembers( ).contains( playerUUID ) || postWorld.getOwner( ).equals( playerUUID ) ) {
+                Main.getInstance( ).managePermissions( playerUUID , worldUUID , false );
+            } else {
+                e.setCancelled( true );
+                postWorld.removeOnlineMember( playerUUID );
+                Main.getInstance( ).getWorlds( ).saveWorld( postWorld );
+                Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , postWorld , postWorld.getOwner( ) );
+                Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             }
         }
+        final User user = Main.getInstance( ).getPlayers( ).getPlayer( playerUUID );
+        final Location loc = e.getTo( );
+        user.setLastLocation( new Loc( Settings.PROXY_SERVER_NAME , worldUUID.toString( ) , loc.getX( ) , loc.getY( ) , loc.getZ( ) , worldUUID ) );
+        Main.getInstance( ).getPlayers( ).savePlayer( user );
         
     }
     
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoinWorld( PlayerChangedWorldEvent e ){
-        Main.debug( "PlayerChangedWorldEvent " + e.getPlayer( ).getName( ) + " " + e.getPlayer( ).getWorld( ).getName( ) );
+    @EventHandler
+    public void onPlayerChangeWorld( PlayerChangedWorldEvent e ){
+        final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
-            return;
-        }
-        final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( worldUUID );
-        final Player player = e.getPlayer( );
-        final UUID playerUUID = player.getUniqueId( );
-        
-        if ( world == null ) {
-            // kick the player with the bukkit api
-            e.getPlayer( ).kickPlayer( Main.getLang( ).getMSG( "error.world.not-allowed-to-join-world" ) );
+            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             return;
         }
         
-        Main.debug( "Player is in world " + world.getName( ) );
-        Main.debug( "Player is in world " + world.getName( ) + " and has permission " + player.hasPermission( "blockbyblock.admin.commands.other" ) );
-        Main.debug( "World online members: " + world.getOnlineMembers( ) );
-        Main.debug( "World members: " + world.getMembers( ) );
+        final BWorld postWorld = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) ) );
         
-        
-        if ( !world.getOnlineMembers( ).contains( playerUUID ) ) {
-            if ( !world.getOwner( ).equals( playerUUID ) ) {
-                if ( !player.hasPermission( "blockbyblock.admin.commands.other" ) ) {
-                    world.removeOnlineMember( playerUUID );
-                    Main.getInstance( ).getWorlds( ).saveWorld( world );
-                    Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatKickFromWorld( playerUUID , world , world.getOwner( ) ) );
-                    Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" ) );
-                }
-            }
+        if ( postWorld == null ) {
+            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            return;
         }
+        if ( postWorld.getMembers( ).contains( playerUUID ) || postWorld.getOwner( ).equals( playerUUID ) ) {
+            Main.getInstance( ).managePermissions( playerUUID , worldUUID , false );
+            Main.getInstance( ).getWorlds( ).addPlayerToWorldOnlineMembers( playerUUID , postWorld );
+        } else {
+            postWorld.removeOnlineMember( playerUUID );
+            Main.getInstance( ).getWorlds( ).saveWorld( postWorld );
+            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , postWorld , postWorld.getOwner( ) );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+        }
+        
     }
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocessEvent( PlayerCommandPreprocessEvent e ){
+        final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
+            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            e.setCancelled( true );
             return;
         }
         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( worldUUID );
         final Player player = e.getPlayer( );
-        final UUID playerUUID = player.getUniqueId( );
         
         if ( world == null ) {
             // kick the player with the bukkit api
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatJoinServer( playerUUID , "lobby" , "&cMundo no encontrado" ) );
+            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" , "&cMundo no encontrado" );
+            e.setCancelled( true );
             return;
         }
         
-        if ( !world.getOnlineMembers( ).contains( playerUUID ) ) {
-            if ( !world.getOwner( ).equals( playerUUID ) ) {
-                if ( !player.hasPermission( "blockbyblock.admin.commands.other" ) ) {
-                    e.setCancelled( true );
-                    world.removeOnlineMember( playerUUID );
-                    Main.getInstance( ).getWorlds( ).saveWorld( world );
-                    Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatKickFromWorld( playerUUID , world , world.getOwner( ) ) );
-                    Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-use-commands-in-this-world" ) );
-                    return;
-                }
-            }
-        }
+        Main.getInstance( ).debug( "Player " + player.getName( ) + " is in world " + world.getName( ) );
+        Main.getInstance( ).debug( "Player " + player.getName( ) + " is member: " + world.getMembers( ).contains( playerUUID ) );
+        Main.getInstance( ).debug( "Player " + player.getName( ) + " is owner: " + world.getOwner( ).equals( playerUUID ) );
+        Main.getInstance( ).debug( "Player " + player.getName( ) + " can Join: " + (!world.getMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID )) );
         
         String command = e.getMessage( );
-        if ( command.startsWith( "//calc" ) || command.startsWith( "//eval" ) || command.startsWith( "//solve" ) || command.startsWith( "//evaluate " ) ) {
+        if ( (command.startsWith( "//calc" ) || command.startsWith( "//eval" ) || command.startsWith( "//solve" ) || command.startsWith( "//evaluate " ) && !(Main.getInstance( ).getPlayers( ).getPlayer( playerUUID ).getRank( ).equals( Rank.ADMIN ))) ) {
+            e.setCancelled( true );
+            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( world.getOwner( ) , world , playerUUID );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-use-commands-in-this-world" );
+        }
+        
+        if ( !world.getMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID ) ) {
             e.setCancelled( true );
             world.removeOnlineMember( playerUUID );
             Main.getInstance( ).getWorlds( ).saveWorld( world );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatKickFromWorld( playerUUID , world , world.getOwner( ) ) );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-use-commands-in-this-world" ) );
-            return;
+            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( world.getOwner( ) , world , playerUUID );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
         }
         
         

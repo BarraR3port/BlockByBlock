@@ -6,9 +6,9 @@ import java.util.UUID;
 public class BWorld {
     
     private final UUID uuid;
-    private final ArrayList < UUID > members = new ArrayList <>( );
-    private final ArrayList < UUID > online_members = new ArrayList <>( );
-    private final ArrayList < String > description = new ArrayList <>( );
+    private ArrayList < UUID > members = new ArrayList <>( );
+    private ArrayList < UUID > online_members = new ArrayList <>( );
+    private ArrayList < String > description = new ArrayList <>( );
     private String name;
     private UUID owner;
     private String server;
@@ -90,6 +90,11 @@ public class BWorld {
         return members;
     }
     
+    public void setMembers( ArrayList < UUID > members ){
+        this.members.clear( );
+        this.members = members;
+    }
+    
     public void addMember( UUID member ){
         if ( !members.contains( member ) ) {
             members.add( member );
@@ -108,6 +113,11 @@ public class BWorld {
         return description;
     }
     
+    public void setDescription( ArrayList < String > description ){
+        this.description.clear( );
+        this.description = description;
+    }
+    
     public void addDescription( String description ){
         this.description.add( description );
     }
@@ -118,6 +128,11 @@ public class BWorld {
     
     public ArrayList < UUID > getOnlineMembers( ){
         return online_members;
+    }
+    
+    public void setOnlineMembers( ArrayList < UUID > online_members ){
+        this.online_members.clear( );
+        this.online_members = online_members;
     }
     
     public void addOnlineMember( UUID member ){

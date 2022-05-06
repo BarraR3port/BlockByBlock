@@ -2,14 +2,17 @@ package net.lymarket.comissionss.youmind.bbb.velocity.listener;
 
 
 import com.google.gson.JsonObject;
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
+import net.lymarket.comissionss.youmind.bbb.velocity.utils.Utils;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -37,7 +40,16 @@ public class PlayerEvents {
     
     @Subscribe
     public void onPostLoginEvent( PostLoginEvent e ){
+        VMain.getInstance( ).getPlayers( ).getOrCreatePlayer( e.getPlayer( ).getUsername( ) , e.getPlayer( ).getUniqueId( ) , String.valueOf( e.getPlayer( ).getRemoteAddress( ).getAddress( ) ).replace( "/" , "" ) );
+        
         timeOnline.put( e.getPlayer( ).getUniqueId( ) , System.currentTimeMillis( ) );
+    }
+    
+    @Subscribe
+    public void onPlayerPreLogin( PreLoginEvent e ){
+        if ( e.getUsername( ).contains( "McDown_pw_" ) || e.getUsername( ).contains( "McDown" ) ) {
+            e.setResult( PreLoginEvent.PreLoginComponentResult.denied( Utils.format( "PENDEJO" ) ) );
+        }
     }
     
     @Subscribe
@@ -54,7 +66,7 @@ public class PlayerEvents {
         } );
     }
     
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
     public void onKickedFromServerEvent( KickedFromServerEvent e ){
         if ( e.getServer( ).ping( ).isDone( ) ) {
             VMain.getInstance( ).getWorldManager( ).getAllWorlds( ).forEach( world -> {
@@ -65,7 +77,7 @@ public class PlayerEvents {
             } );
         }
         
-        VMain.debug( "DisconnectEvent  " + e.getPlayer( ).getUsername( ) + "  " + e.getPlayer( ).getUniqueId( ) );
+        VMain.debug( "KickedFromServerEvent  " + e.getPlayer( ).getUsername( ) + "  " + e.getPlayer( ).getUniqueId( ) );
         for ( RegisteredServer server : VMain.getInstance( ).getProxy( ).getAllServers( ) ) {
             ServerSocketManager.getSocketByServer( server.getServerInfo( ).getName( ) ).ifPresent( socket -> {
                 try {
@@ -77,6 +89,12 @@ public class PlayerEvents {
                 } catch ( Exception ignored ) {
                 }
             } );
+        }
+        
+        if ( VMain.getInstance( ).getProxy( ).getServer( "lobby" ).isPresent( ) ) {
+            e.setResult( KickedFromServerEvent.RedirectPlayer.create( VMain.getInstance( ).getProxy( ).getServer( "lobby" ).get( ) ) );
+        } else {
+            e.setResult( KickedFromServerEvent.DisconnectPlayer.create( Utils.format( "&cNo hay lobbys disponibles!" ) ) );
         }
     }
     

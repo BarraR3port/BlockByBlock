@@ -9,9 +9,8 @@ import net.lymarket.comissionss.youmind.bbb.menu.main.plot.PlotMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.create.WorldCreatorMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.edit.WorldEditorMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.PlayersInWorldMenu;
-import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
-import net.lymarket.lyapi.spigot.menu.Menu;
+import net.lymarket.lyapi.spigot.menu.UpdatableMenu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
 import net.lymarket.lyapi.spigot.utils.NBTItem;
 import org.bukkit.Bukkit;
@@ -23,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class WorldManagerMenu extends Menu {
+public class WorldManagerMenu extends UpdatableMenu {
     
     private final String serverVersion;
     
@@ -60,16 +59,12 @@ public class WorldManagerMenu extends Menu {
             final UUID world_uuid = UUID.fromString( NBTItem.getTag( item , "world-uuid" ) );
             final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
             if ( e.getClick( ).equals( ClickType.LEFT ) ) {
-                if ( world.getOwner( ).equals( ownerUUID ) || Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID ).getRank( ) == Rank.ADMIN ) {
-                    Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatJoinWorldRequest( ownerUUID , server_target , world_uuid , e.getSlot( ) ) );
-                } else if ( world.isPublicWorld( ) || world.getMembers( ).contains( ownerUUID ) ) {
-                
-                }
+                Main.getInstance( ).getSocket( ).sendFormattedJoinWorldRequest( ownerUUID , server_target , world_uuid , e.getSlot( ) );
             } else if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
                 if ( world.getOwner( ).equals( ownerUUID ) || Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID ).getRank( ) == Rank.ADMIN ) {
                     new WorldEditorMenu( playerMenuUtility , targetUserUUID , world_uuid ).open( );
                 } else if ( world.isPublicWorld( ) || world.getMembers( ).contains( ownerUUID ) ) {
-                    new PlayersInWorldMenu( playerMenuUtility , world_uuid , targetUserUUID , false ).open( );
+                    new PlayersInWorldMenu( playerMenuUtility , world_uuid , targetUserUUID , false , this ).open( );
                 }
             }
         } else if ( NBTItem.hasTag( item , "world-available" ) && p.getUniqueId( ).equals( targetUserUUID ) ) {

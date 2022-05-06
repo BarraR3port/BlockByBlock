@@ -1,5 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.velocity;
 
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -62,7 +63,7 @@ public final class VMain extends LyApiVelocity {
     @Internal
     public static void debug( String msg ){
         if ( config.isDebug( ) ) {
-            VMain.getInstance( ).getLogger( ).info( "[DEBUG] " + msg );
+            instance.getLogger( ).info( "[DEBUG] " + msg );
         }
     }
     
@@ -90,7 +91,7 @@ public final class VMain extends LyApiVelocity {
         final MongoDBClient mongo = new MongoDBClient( url , config.getDb_database( ) );
         playersRepository = new PlayersRepository( mongo , "players" );
         worldManager = new WorldManager( mongo , "worlds" );
-        proxy.getScheduler( ).buildTask( this , this::sendInfoToServers ).repeat( 5 , TimeUnit.SECONDS ).schedule( );
+        proxy.getScheduler( ).buildTask( this , this::sendInfoToServers ).repeat( 10 , TimeUnit.SECONDS ).schedule( );
         
     }
     
@@ -101,7 +102,14 @@ public final class VMain extends LyApiVelocity {
     }
     
     private void sendInfoToServers( ){
-    
+        getServerSocketManager( ).getSocketByServer( ).forEach( ( server , socket ) -> {
+            if ( server.startsWith( "PW-" ) ) {
+                final JsonObject js = new JsonObject( );
+                js.addProperty( "type" , "UPDATE_ONLINE_PLAYERS_IN_WORLDS" );
+                socket.sendMessage( js );
+            }
+        } );
+        
     }
     
     @Internal

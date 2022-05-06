@@ -11,7 +11,6 @@ import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.db.IBWorldManager;
 import net.lymarket.comissionss.youmind.bbb.common.error.WorldNotFoundError;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
-import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
 import net.lymarket.common.Api;
 import net.lymarket.common.db.MongoDBClient;
 import org.apache.commons.io.FileUtils;
@@ -57,16 +56,18 @@ public class WorldManager extends IBWorldManager {
     
     @Override
     public ArrayList < BWorld > getWorldsByUser( UUID uuid ){
-        final ArrayList < BWorld > worlds = database.findMany( TABLE_NAME , BWorld.class );
-        ArrayList < BWorld > worldsByUser = new ArrayList <>( );
-        for ( BWorld world : worlds ) {
-            if ( world.getOwner( ).equals( uuid ) ) {
-                worldsByUser.add( world );
-            }
-        }
-        return worldsByUser;
+        return database.findMany( TABLE_NAME , world -> world.getOwner( ).equals( uuid ) , BWorld.class );
     }
     
+    @Override
+    public ArrayList < BWorld > getWorldsByServer( String serverName ){
+        return database.findMany( TABLE_NAME , world -> world.getServer( ).equalsIgnoreCase( serverName ) , BWorld.class );
+    }
+    
+    @Override
+    public ArrayList < BWorld > getWorldsByServer( ){
+        return database.findMany( TABLE_NAME , world -> world.getServer( ).equalsIgnoreCase( Settings.PROXY_SERVER_NAME ) , BWorld.class );
+    }
     
     @Override
     public SlimeWorld createWorldSlimeWorld( BWorld world ){
@@ -136,11 +137,11 @@ public class WorldManager extends IBWorldManager {
         final World world = Bukkit.getWorld( bworld.getUUID( ).toString( ) );
         final long time = System.currentTimeMillis( );
         boolean isDone = true;
-        Main.debug( "Initializing the WorldDestroyer:" );
-        Main.debug( "[WorldDestroyer] Deleting the world: " + worldName );
+        Main.getInstance( ).debug( "Initializing the WorldDestroyer:" );
+        Main.getInstance( ).debug( "[WorldDestroyer] Deleting the world: " + worldName );
         if ( world == null ) {
-            Main.debug( "[WorldDestroyer] &4ERROR AT: world == null" );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatSendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.not-loaded" , "world" , worldName ) ) );
+            Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: world == null" );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.not-loaded" , "world" , worldName ) );
             
             isDone = false;
         }
@@ -151,24 +152,24 @@ public class WorldManager extends IBWorldManager {
         
         if ( !players.isEmpty( ) ) {
             players.forEach( player -> player.kickPlayer( "El mundo ha sido borrado" ) );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatJoinServer( owner_uuid , "lobby" ) );
+            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( owner_uuid , "lobby" );
         }
         
         if ( !Bukkit.unloadWorld( world , true ) ) {
-            Main.debug( "[WorldDestroyer] &4ERROR AT: &e!Bukkit.unloadWorld( world , true )" );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatSendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) ) );
+            Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: &e!Bukkit.unloadWorld( world , true )" );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) );
             isDone = false;
         }
         
-        Main.debug( "[WorldDestroyer] Attempting to unlock world.. " + worldName + "." );
+        Main.getInstance( ).debug( "[WorldDestroyer] Attempting to unlock world.. " + worldName + "." );
         try {
             if ( loader != null && loader.isWorldLocked( worldName ) ) {
-                Main.debug( "[WorldDestroyer] World.. " + worldName + " is locked." );
+                Main.getInstance( ).debug( "[WorldDestroyer] World.. " + worldName + " is locked." );
                 loader.unlockWorld( worldName );
                 loader.deleteWorld( worldName );
-                Main.debug( "[WorldDestroyer] Attempted to unlock world.. " + worldName + "." );
+                Main.getInstance( ).debug( "[WorldDestroyer] Attempted to unlock world.. " + worldName + "." );
             } else {
-                Main.debug( "[WorldDestroyer] " + worldName + " was not unlocked. This could be because the world is either unlocked or not in the config. This is not an error" );
+                Main.getInstance( ).debug( "[WorldDestroyer] " + worldName + " was not unlocked. This could be because the world is either unlocked or not in the config. This is not an error" );
             }
         } catch ( UnknownWorldException | IOException e ) {
             e.printStackTrace( );
@@ -177,18 +178,18 @@ public class WorldManager extends IBWorldManager {
         database.deleteOne( TABLE_NAME , Filters.eq( "uuid" , bworld.getUUID( ).toString( ) ) );
         
         try {
-            Main.debug( "[WorldDestroyer] Deleting the World Folder of: " + worldName + "..." );
-            File file = new File( Main.getInstance( ).getDataFolder( ) , "/" + worldName );
-            FileUtils.forceDeleteOnExit( file );
-            Main.debug( "[WorldDestroyer] Deleted the World Folder of: " + worldName + "." );
+            Main.getInstance( ).debug( "[WorldDestroyer] Deleting the World Folder of: " + worldName + "..." );
+            FileUtils.deleteDirectory( new File( worldName ) );
+            FileUtils.forceDelete( new File( Main.getInstance( ).getServer( ).getWorldContainer( ) , "\\slime_worlds\\" + worldName + ".slime" ) );
+            Main.getInstance( ).debug( "[WorldDestroyer] Deleted the World Folder of: " + worldName + "." );
         } catch ( Exception e ) {
             e.printStackTrace( );
-            Main.debug( "[WorldDestroyer] &4ERROR AT: File file = new File( Main.getInstance( ).getDataFolder( ) , \"/\" + worldName )" );
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatSendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) ) );
+            Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: File file = new File( Main.getInstance( ).getDataFolder( ) , \"/\" + worldName )" );
+            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) );
             isDone = false;
         }
         
-        Main.debug( "[WorldDestroyer] Removing all perms of the world members, owner and online members..." );
+        Main.getInstance( ).debug( "[WorldDestroyer] Removing all perms of the world members, owner and online members..." );
         
         final ArrayList < UUID > playersToRemovePerms = new ArrayList <>( bworld.getOnlineMembers( ) );
         playersToRemovePerms.add( bworld.getOwner( ) );
@@ -197,16 +198,12 @@ public class WorldManager extends IBWorldManager {
         
         for ( UUID uuid : playersToRemovePerms ) {
             try {
-                
-                final String user = Main.getInstance( ).getPlayers( ).getPlayer( uuid ).getName( );
-                for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
-                    Bukkit.dispatchCommand( Bukkit.getConsoleSender( ) , "lp user " + user + " permission unset " + perm + " world=" + bworld.getUUID( ).toString( ) + " server=" + bworld.getServer( ) );
-                }
+                Main.getInstance( ).removePermissionsInOneWorld( uuid , bworld.getUUID( ) );
             } catch ( NullPointerException ignored ) {
             }
         }
         
-        Main.debug( "[WorldDestroyer] World: " + worldName + " was unloaded and destroyed in " + (System.currentTimeMillis( ) - time) + "ms." );
+        Main.getInstance( ).debug( "[WorldDestroyer] World: " + worldName + " was unloaded and destroyed in " + (System.currentTimeMillis( ) - time) + "ms." );
         
         
         if ( isDone ) {
@@ -236,7 +233,7 @@ public class WorldManager extends IBWorldManager {
     
     @Override
     public void saveWorld( Object world ){
-        SlimeWorld slimeWorld = ( SlimeWorld ) world;
+        /*SlimeWorld slimeWorld = ( SlimeWorld ) world;*/
     }
     
     @Override

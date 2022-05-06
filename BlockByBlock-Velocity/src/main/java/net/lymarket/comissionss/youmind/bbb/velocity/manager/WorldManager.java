@@ -22,6 +22,16 @@ public class WorldManager extends IBWorldManager {
         return null;
     }
     
+    @Override
+    public ArrayList < BWorld > getWorldsByServer( String serverName ){
+        return null;
+    }
+    
+    @Override
+    public ArrayList < BWorld > getWorldsByServer( ){
+        return null;
+    }
+    
     public Object createWorldSlimeWorld( BWorld world ){
         return null;
     }

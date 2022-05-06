@@ -2,6 +2,7 @@ package net.lymarket.comissionss.youmind.bbb.menu.main.plot;
 
 import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
@@ -47,7 +48,6 @@ public class PlotMenu extends Menu {
         
         inventory.setItem( 40 , new ItemBuilder( Items.WORLDS.clone( ) )
                 .addLoreLine( "&7Mundos: &a" + Main.getInstance( ).getWorlds( ).getWorldsByUser( targetUserUUID ).size( ) )
-                .addLoreLine( "" )
                 .build( ) );
         
         inventory.setItem( 45 , super.CLOSE_ITEM );
@@ -61,8 +61,10 @@ public class PlotMenu extends Menu {
     public void handleMenu( InventoryClickEvent e ){
         final ItemStack item = e.getCurrentItem( );
         
-        
-        if ( NBTItem.hasTag( item , "world" ) ) {
+        if ( NBTItem.hasTag( item , "plot-type" ) ) {
+            final PlotType plotType = PlotType.valueOf( NBTItem.getTag( item , "plot-type" ) );
+            Main.getInstance( ).getSocket( ).sendFormattedJoinPlotRequest( getOwner( ).getUniqueId( ) , serverVersion , null , plotType , e.getSlot( ) );
+        } else if ( NBTItem.hasTag( item , "world" ) ) {
             new WorldManagerMenu( playerMenuUtility , serverVersion , targetUserUUID ).open( );
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
             new MainMenu( playerMenuUtility ).open( );

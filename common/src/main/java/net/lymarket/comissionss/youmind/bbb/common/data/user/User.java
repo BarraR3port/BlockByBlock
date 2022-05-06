@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.common.data.user;
 
 import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
+import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
@@ -27,6 +28,8 @@ public class User {
     private String address;
     private String skin;
     
+    private Loc lastLocation;
+    
     
     public User( String name , UUID uuid ){
         this.name = name;
@@ -34,6 +37,7 @@ public class User {
         this.createDate = new Date( );
         stats = new Stats( );
         skin = SkinManager.getSkin( name );
+        System.out.println( skin );
         rank = Rank.VISITOR;
     }
     
@@ -198,6 +202,14 @@ public class User {
     
     public void setRank( Rank rank ){
         this.rank = rank;
+    }
+    
+    public Loc getLastLocation( ){
+        return this.lastLocation;
+    }
+    
+    public void setLastLocation( Loc loc ){
+        this.lastLocation = loc;
     }
     
 }

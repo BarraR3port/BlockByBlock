@@ -79,6 +79,7 @@ public class ProxySocketServer implements Runnable {
                         } );
                         
                     }
+                    
                     case "UPDATE": {
                         if ( !json.has( "server_name" ) ) continue;
                         if ( json.get( "server_name" ).getAsString( ) == null ) continue;
@@ -88,6 +89,7 @@ public class ProxySocketServer implements Runnable {
                         ).schedule( ) );
                         
                     }
+                    
                     case "WORLD_DELETE_PREV": {
                         if ( !json.has( "current_server" ) ) continue;
                         if ( !json.has( "server_target" ) ) continue;
@@ -113,8 +115,6 @@ public class ProxySocketServer implements Runnable {
                             this.sendMessage( json );
                             
                         }
-                        
-                        
                     }
                     case "INIT_CREATE_WORLD_SUCCESS": {
                         if ( !json.has( "server_name" ) ) continue;
@@ -126,30 +126,26 @@ public class ProxySocketServer implements Runnable {
                         if ( !json.has( "world_is_public" ) ) continue;
                         if ( !json.has( "world_layer_material" ) ) continue;
                         if ( !json.has( "teleport" ) ) continue;
-                        final String serverName = json.get( "world_server" ).getAsString( );
                         final String server_name = json.get( "server_name" ).getAsString( );
-                        final String owner_uuid = json.get( "owner_uuid" ).getAsString( );
-                        //final boolean teleport = json.get( "teleport" ).getAsBoolean( );
-                        VMain.debug( "Received INIT_CREATE_WORLD_SUCCESS from: " + serverName + " for " + owner_uuid );
                         
                         ServerSocketManager.getSocketByServer( server_name ).ifPresent( socket -> {
-                            VMain.debug( "Received INIT_CREATE_WORLD_SUCCESS from: " + server_name );
                             json.remove( "type" );
                             json.addProperty( "type" , "UPDATE_INV_POST_INIT_CREATE_WORLD_SUCCESS" );
                             socket.sendMessage( json );
                         } );
                     }
+                    
                     case "WORLD_DELETE_SUCCESS": {
                         if ( !json.has( "current_server" ) ) continue;
                         final String current_server = json.get( "current_server" ).getAsString( );
                         ServerSocketManager.getSocketByServer( current_server ).ifPresent( socket -> {
-                            VMain.debug( "Received WORLD_DELETE_SUCCESS from: " + current_server );
                             json.remove( "type" );
                             json.addProperty( "type" , "UPDATE_INV_WORLD_DELETE_SUCCESS" );
                             socket.sendMessage( json );
                         } );
                         
                     }
+                    
                     case "SEND_MSG_TO_PLAYER": {
                         if ( !json.has( "target_uuid" ) ) continue;
                         if ( !json.has( "current_server" ) ) continue;
@@ -160,13 +156,12 @@ public class ProxySocketServer implements Runnable {
                         json.addProperty( "type" , "SEND_MSG_TO_PLAYER_POST" );
                         VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).flatMap( p -> p.getCurrentServer( ).flatMap( server -> ServerSocketManager.getSocketByServer( server.getServerInfo( ).getName( ) ) ) ).ifPresent( socket -> socket.sendMessage( json ) );
                         
-                        
                         /*ServerSocketManager.getSocketByServer( current_server ).ifPresent( socket -> {
                             socket.sendMessage( json );
                         } );*/
                         
-                        
                     }
+                    
                     case "JOIN_WORLD_REQUEST": {
                         if ( !json.has( "server_target" ) ) continue;
                         if ( !json.has( "current_server" ) ) continue;
@@ -178,6 +173,7 @@ public class ProxySocketServer implements Runnable {
                         json.addProperty( "type" , "JOIN_WORLD_REQUEST_PREV" );
                         ServerSocketManager.getSocketByServer( server_target ).ifPresent( socket -> socket.sendMessage( json ) );
                     }
+                    
                     case "JOIN_WORLD_REQUEST_POST": {
                         if ( !json.has( "server_target" ) ) continue;
                         if ( !json.has( "current_server" ) ) continue;
@@ -190,7 +186,6 @@ public class ProxySocketServer implements Runnable {
                         final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                         final boolean response = json.get( "response" ).getAsBoolean( );
                         final UUID world_uuid = UUID.fromString( json.get( "world_uuid" ).getAsString( ) );
-                        VMain.debug( json.toString( ) );
                         
                         if ( response && VMain.getInstance( ).getWorldManager( ).addPlayerToWorldOnlineMembers( owner_uuid , world_uuid ) ) {
                             VMain.getInstance( ).getProxy( ).getPlayer( owner_uuid ).ifPresent( player -> VMain.getInstance( ).getProxy( ).getServer( server_target ).ifPresent( server -> player.createConnectionRequest( server ).fireAndForget( ) ) );
@@ -201,9 +196,46 @@ public class ProxySocketServer implements Runnable {
                                 socket.sendMessage( json );
                             } );
                         }
+                    }
+                    
+                    case "JOIN_PLOT_REQUEST": {
+                        if ( !json.has( "current_server" ) ) continue;
+                        if ( !json.has( "server_version" ) ) continue;
+                        if ( !json.has( "owner_uuid" ) ) continue;
+                        if ( !json.has( "plot_id" ) ) continue;
+                        if ( !json.has( "item_slot" ) ) continue;
+                        if ( !json.has( "plot_type" ) ) continue;
+                        final String server_version = json.get( "server_version" ).getAsString( );
+                        json.remove( "type" );
+                        json.addProperty( "type" , "JOIN_PLOT_REQUEST_PREV" );
+                        String server_target = "PP-" + server_version.replace( "." , "" ) + "-1";
+                        json.addProperty( "server_target" , server_target );
+                        ServerSocketManager.getSocketByServer( server_target ).ifPresent( socket -> socket.sendMessage( json ) );
+                    }
+                    
+                    case "JOIN_PLOT_REQUEST_POST": {
+                        if ( !json.has( "current_server" ) ) continue;
+                        if ( !json.has( "server_target" ) ) continue;
+                        if ( !json.has( "server_version" ) ) continue;
+                        if ( !json.has( "owner_uuid" ) ) continue;
+                        if ( !json.has( "plot_id" ) ) continue;
+                        if ( !json.has( "item_slot" ) ) continue;
+                        if ( !json.has( "plot_type" ) ) continue;
+                        final String server_target = json.get( "server_target" ).getAsString( );
+                        final String current_server = json.get( "current_server" ).getAsString( );
+                        final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
+                        if ( !current_server.equals( server_target ) )
+                            VMain.getInstance( ).getProxy( ).getPlayer( owner_uuid ).ifPresent( player -> VMain.getInstance( ).getProxy( ).getServer( server_target ).ifPresent( server -> player.createConnectionRequest( server ).fireAndForget( ) ) );
                         
+                        
+                            /*json.remove( "type" );
+                            json.addProperty( "type" , "JOIN_WORLD_REQUEST_POST_DENY" );
+                            ServerSocketManager.getSocketByServer( current_server ).ifPresent( socket -> {
+                                socket.sendMessage( json );
+                            } );*/
                         
                     }
+                    
                     case "CONNECT_TO_SERVER": {
                         if ( !json.has( "server_target" ) ) continue;
                         if ( !json.has( "current_server" ) ) continue;
@@ -227,6 +259,7 @@ public class ProxySocketServer implements Runnable {
                         }
                         
                     }
+                    
                     case "KICK_FROM_WORLD": {
                         if ( !json.has( "server_target" ) ) continue;
                         if ( !json.has( "current_server" ) ) continue;
@@ -251,6 +284,7 @@ public class ProxySocketServer implements Runnable {
                         
                         
                     }
+                    
                     case "WORLD_KICK_SUCCESS": {
                         if ( !json.has( "server_target" ) ) continue;
                         if ( !json.has( "target_uuid" ) ) continue;
@@ -259,6 +293,7 @@ public class ProxySocketServer implements Runnable {
                         VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).ifPresent( ( p ) -> VMain.getInstance( ).getProxy( ).getServer( "lobby" ).ifPresent( server -> p.createConnectionRequest( server ).fireAndForget( ) ) );
                         
                     }
+                    
                     case "ERROR": {
                         if ( !json.has( "error" ) ) continue;
                         final String error = json.get( "error" ).getAsString( );

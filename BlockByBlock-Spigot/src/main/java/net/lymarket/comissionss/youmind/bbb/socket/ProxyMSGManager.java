@@ -37,7 +37,7 @@ public class ProxyMSGManager implements Listener {
         if ( e == null ) return;
         if ( e.isCancelled( ) ) return;
         Bukkit.getScheduler( ).runTaskAsynchronously( Main.getInstance( ) ,
-                ( ) -> Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatCreateWorldMSG( e ) ) );
+                ( ) -> Main.getInstance( ).getSocket( ).sendFormattedCreateWorldMSG( e ) );
     }
     
     

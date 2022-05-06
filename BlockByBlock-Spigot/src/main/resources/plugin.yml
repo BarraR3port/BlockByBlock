@@ -6,3 +6,5 @@ depend:
   - LuckPerms
 softdepend:
   - PlotSquared
+  - PlaceholderAPI
+load: POSTWORLD

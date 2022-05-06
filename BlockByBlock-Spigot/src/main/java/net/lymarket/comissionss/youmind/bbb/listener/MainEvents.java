@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.UUID;
 
@@ -40,6 +41,9 @@ public abstract class MainEvents implements Listener {
     }
     
     @EventHandler
+    public abstract void onPlayerTeleport( PlayerTeleportEvent e );
+    
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin( PlayerJoinEvent e ){
         final Player p = e.getPlayer( );
         p.setHealth( 20 );
@@ -72,11 +76,6 @@ public abstract class MainEvents implements Listener {
         Main.getInstance( ).getPlayers( ).savePlayer( user );
     }
     
-    /*@EventHandler
-    public void onPlayerChat( AsyncPlayerChatEvent e ){
-        final Player p = e.getPlayer( );
-        
-    }*/
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDamage( EntityDamageEvent e ){

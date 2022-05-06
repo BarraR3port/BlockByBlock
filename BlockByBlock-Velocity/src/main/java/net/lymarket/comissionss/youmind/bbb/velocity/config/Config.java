@@ -29,7 +29,7 @@ public class Config {
             node.set( MainConfig.class , config );
             loader.save( node );
         } catch ( ConfigurateException exception ) {
-            VMain.debug( "Could not load config.yml file, error: " + exception.getMessage( ) );
+            VMain.getInstance( ).debug( "Could not load config.yml file, error: " + exception.getMessage( ) );
         }
     }
     

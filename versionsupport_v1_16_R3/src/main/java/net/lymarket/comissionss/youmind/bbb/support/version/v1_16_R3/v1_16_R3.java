@@ -13,6 +13,7 @@
 
 package net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3;
 
+import net.lymarket.comissionss.youmind.bbb.support.common.plot.IPlotManager;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,5 +28,10 @@ public class v1_16_R3 extends VersionSupport {
     @Override
     public void registerPlotEvents( ){
         Bukkit.getServer( ).getPluginManager( ).registerEvents( new Events( ) , plugin );
+    }
+    
+    @Override
+    public IPlotManager getPlotManager( ){
+        return null;
     }
 }

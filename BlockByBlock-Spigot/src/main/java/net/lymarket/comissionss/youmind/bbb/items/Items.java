@@ -150,21 +150,21 @@ public final class Items {
                 .setDisplayName( "&7Plots &a101" )
                 .addLoreLine( "&7Click para entrar a este plot." )
                 .addLoreLine( "&7Tamaño: &a101x101" )
-                .addTag( "plot-101" , "plot-101" )
+                .addTag( "plot-type" , "P101" )
                 .build( );
         
         PLOT_501_BASE = new ItemBuilder( XMaterial.LIGHT_GRAY_WOOL.parseMaterial( ) , 8 )
                 .setDisplayName( "&7Plots &a501x501" )
                 .addLoreLine( "&7Click para entrar a este plot." )
                 .addLoreLine( "&7Tamaño: &a501x501" )
-                .addTag( "plot-501" , "plot-501" )
+                .addTag( "plot-type" , "P501" )
                 .build( );
         
         PLOT_1001_BASE = new ItemBuilder( XMaterial.BLACK_WOOL.parseMaterial( ) , 15 )
                 .setDisplayName( "&7Plots &a1001x1001" )
                 .addLoreLine( "&7Click para entrar a este plot." )
                 .addLoreLine( "&7Tamaño: &a1001x1001" )
-                .addTag( "plot-1001" , "plot-1001" )
+                .addTag( "plot-type" , "P1001" )
                 .build( );
         
         

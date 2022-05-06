@@ -5,11 +5,10 @@ import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
-import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.add.AddPlayersToWorldMenuSelector;
-import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
-import net.lymarket.lyapi.spigot.menu.PaginatedMenu;
+import net.lymarket.lyapi.spigot.menu.Menu;
+import net.lymarket.lyapi.spigot.menu.UpPaginatedMenu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
 import net.lymarket.lyapi.spigot.utils.NBTItem;
 import org.bukkit.Bukkit;
@@ -22,17 +21,19 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class PlayersInWorldMenu extends PaginatedMenu {
+public class PlayersInWorldMenu extends UpPaginatedMenu {
     
     private final UUID world_uuid;
     private final BukkitTask task;
     private final UUID targetUserUUID;
     private final boolean members;
+    
+    private final Menu lastMenu;
     private BWorld world;
     private User user;
     private ArrayList < User > onlineMembers;
     
-    public PlayersInWorldMenu( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , UUID targetUserUUID , boolean members ){
+    public PlayersInWorldMenu( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , UUID targetUserUUID , boolean members , Menu lastMenu ){
         super( playerMenuUtility );
         this.world_uuid = world_uuid;
         this.world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
@@ -42,6 +43,7 @@ public class PlayersInWorldMenu extends PaginatedMenu {
         super.FILLER_GLASS = new ItemBuilder( super.FILLER_GLASS.clone( ) ).setDurability( ( short ) 15 ).build( );
         this.targetUserUUID = targetUserUUID;
         this.members = members;
+        this.lastMenu = lastMenu;
     }
     
     public void setSize( ){
@@ -123,12 +125,14 @@ public class PlayersInWorldMenu extends PaginatedMenu {
             final UUID targetUUID = UUID.fromString( NBTItem.getTag( item , "user-uuid" ) );
             
             if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
-                if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.kick" ) || Main.getInstance( ).getPlayers( ).getPlayer( targetUUID ).getRank( ) == Rank.ADMIN ) {
-                    Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatKickFromWorld( getOwner( ).getUniqueId( ) , world , targetUUID ) );
+                if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.kick" ) || user.getRank( ) == Rank.ADMIN ) {
+                    Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( getOwner( ).getUniqueId( ) , world , targetUUID );
                 }
             }
             if ( e.getClick( ).equals( ClickType.LEFT ) ) {
-                new AddPlayersToWorldMenuSelector( playerMenuUtility , world_uuid , this , targetUUID ).open( );
+                if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || user.getRank( ) == Rank.ADMIN ) {
+                    new AddPlayersToWorldMenuSelector( playerMenuUtility , world_uuid , this , targetUUID ).open( );
+                }
                 return;
             }
             task.cancel( );
@@ -137,7 +141,7 @@ public class PlayersInWorldMenu extends PaginatedMenu {
             
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
             task.cancel( );
-            new WorldManagerMenu( playerMenuUtility , world.getVersion( ) , targetUserUUID ).open( );
+            lastMenu.open( );
         } else if ( NBTItem.hasTag( item , "ly-menu-next" ) ) {
             this.nextPage( );
         } else if ( NBTItem.hasTag( item , "ly-menu-previous" ) ) {

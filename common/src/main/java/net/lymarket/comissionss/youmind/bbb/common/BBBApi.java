@@ -19,5 +19,8 @@ public interface BBBApi {
     
     ISocket getSocket( );
     
-    void DEBUG( String message );
+    String getProxyServerName( );
+    
+    void debug( String message );
+    
 }

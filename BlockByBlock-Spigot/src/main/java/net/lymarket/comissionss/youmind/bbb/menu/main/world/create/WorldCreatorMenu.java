@@ -6,7 +6,7 @@ import net.lymarket.comissionss.youmind.bbb.event.PrevCreateWorld;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.comissionss.youmind.bbb.world.WorldManager;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
-import net.lymarket.lyapi.spigot.menu.Menu;
+import net.lymarket.lyapi.spigot.menu.UpdatableMenu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
 import net.lymarket.lyapi.spigot.utils.NBTItem;
 import org.bukkit.Bukkit;
@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class WorldCreatorMenu extends Menu {
+public class WorldCreatorMenu extends UpdatableMenu {
     
     
     private final String serverVersion;

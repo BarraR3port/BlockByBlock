@@ -54,7 +54,7 @@ public class LoadedUser {
     }
     
     public void destroy( String reason ){
-        Main.debug( "Destroyed PreLoaded User: " + uuid + " Reason: " + reason + ". Tolerance: " );
+        Main.getInstance( ).debug( "Destroyed PreLoaded User: " + uuid + " Reason: " + reason + ". Tolerance: " );
         loaded.remove( uuid );
     }
     

@@ -4,7 +4,6 @@ import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
-import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.Menu;
 import net.lymarket.lyapi.spigot.menu.MenuSelector;
@@ -56,7 +55,7 @@ public class DeleteWorldSelector extends MenuSelector {
     
     public boolean handleAccept( ){
         if ( world.getOwner( ).equals( target_uuid ) || Main.getInstance( ).getPlayers( ).getPlayer( target_uuid ).getRank( ) == Rank.ADMIN ) {
-            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatWorldDeleteRequest( getOwner( ) , world ) );
+            Main.getInstance( ).getSocket( ).sendFormattedWorldDeleteRequest( getOwner( ) , world );
             return true;
         }
         return false;

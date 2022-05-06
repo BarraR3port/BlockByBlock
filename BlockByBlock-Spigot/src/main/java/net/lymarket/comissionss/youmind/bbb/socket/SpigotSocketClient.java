@@ -5,15 +5,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocket;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocketClient;
 import net.lymarket.comissionss.youmind.bbb.event.PrevCreateWorld;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
-import net.lymarket.comissionss.youmind.bbb.menu.main.world.create.WorldCreatorMenu;
-import net.lymarket.comissionss.youmind.bbb.menu.main.world.edit.WorldEditorMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.add.AddPlayersToWorldMenuSelector;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
+import net.lymarket.comissionss.youmind.bbb.users.PlayersRepository;
+import net.lymarket.comissionss.youmind.bbb.world.WorldManager;
+import net.lymarket.lyapi.spigot.menu.IUpdatableMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -21,25 +23,26 @@ import org.bukkit.entity.Player;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class SpigotSocketClient implements ISocket {
+public class SpigotSocketClient extends ISocket {
     
     private ProxySocket mainSocket;
     
-    
-    public SpigotSocketClient( ){
-    
+    public SpigotSocketClient( PlayersRepository players , WorldManager worlds ){
+        super( players , worlds );
+        
     }
     
-    /**
-     * Format message to create World.
-     */
-    public static String formatCreateWorldMSG( PrevCreateWorld e ){
-        JsonObject js = new JsonObject( );
+    public ISocketClient getSocket( ){
+        return mainSocket;
+    }
+    
+    @Override
+    public void sendFormattedCreateWorldMSG( Object event ){
+        final PrevCreateWorld e = ( PrevCreateWorld ) event;
+        final JsonObject js = new JsonObject( );
         js.addProperty( "type" , "CREATE_WORLD" );
         js.addProperty( "server_name" , Settings.PROXY_SERVER_NAME );
         js.addProperty( "world_name" , e.getWorld( ).getName( ) );
@@ -49,27 +52,34 @@ public class SpigotSocketClient implements ISocket {
         js.addProperty( "world_server" , e.getWorld( ).getServer( ) );
         js.addProperty( "world_is_public" , e.getWorld( ).isPublicWorld( ) );
         js.addProperty( "world_layer_material" , e.getMaterial( ).toString( ) );
-        
-        return js.toString( );
+        sendMessage( js.toString( ) );
     }
     
-    public static String formatJoinServer( UUID owner , String serverTarget ){
-        return formatJoinServer( owner , serverTarget , "EMPTY" );
+    @Override
+    public void sendFormattedJoinServer( UUID owner , String serverTarget ){
+        final JsonObject js = new JsonObject( );
+        js.addProperty( "type" , "CONNECT_TO_SERVER" );
+        js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
+        js.addProperty( "server_target" , serverTarget );
+        js.addProperty( "owner_uuid" , owner.toString( ) );
+        js.addProperty( "msg" , "EMPTY" );
+        sendMessage( js.toString( ) );
     }
     
-    public static String formatJoinServer( UUID owner , String serverTarget , String msg ){
-        JsonObject js = new JsonObject( );
+    @Override
+    public void sendFormattedJoinServer( UUID owner , String serverTarget , String msg ){
+        final JsonObject js = new JsonObject( );
         js.addProperty( "type" , "CONNECT_TO_SERVER" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
         js.addProperty( "server_target" , serverTarget );
         js.addProperty( "owner_uuid" , owner.toString( ) );
         js.addProperty( "msg" , msg );
-        
-        return js.toString( );
+        sendMessage( js.toString( ) );
     }
     
-    public static String formatKickFromWorld( UUID owner , BWorld world , UUID target ){
-        JsonObject js = new JsonObject( );
+    @Override
+    public void sendFormattedKickFromWorld( UUID owner , BWorld world , UUID target ){
+        final JsonObject js = new JsonObject( );
         js.addProperty( "type" , "KICK_FROM_WORLD" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
         js.addProperty( "server_target" , world.getServer( ) );
@@ -77,10 +87,25 @@ public class SpigotSocketClient implements ISocket {
         js.addProperty( "owner_uuid" , owner.toString( ) );
         js.addProperty( "target_uuid" , target.toString( ) );
         
-        return js.toString( );
+        sendMessage( js.toString( ) );
     }
     
-    public static String formatWorldDeleteRequest( Player owner , BWorld world ){
+    @Override
+    public void sendFormattedKickFromWorld( UUID owner , String world_uuid , String server , UUID target ){
+        final JsonObject js = new JsonObject( );
+        js.addProperty( "type" , "KICK_FROM_WORLD" );
+        js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
+        js.addProperty( "server_target" , server );
+        js.addProperty( "world_uuid" , world_uuid );
+        js.addProperty( "owner_uuid" , owner.toString( ) );
+        js.addProperty( "target_uuid" , target.toString( ) );
+        
+        sendMessage( js.toString( ) );
+    }
+    
+    @Override
+    public void sendFormattedWorldDeleteRequest( Object player , BWorld world ){
+        final Player owner = ( Player ) player;
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "WORLD_DELETE_PREV" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -89,10 +114,11 @@ public class SpigotSocketClient implements ISocket {
         js.addProperty( "world_uuid" , world.getUUID( ).toString( ) );
         js.addProperty( "has_permission" , owner.hasPermission( "blockbyblock.admin.world.delete.other" ) );
         
-        return js.toString( );
+        sendMessage( js.toString( ) );
     }
     
-    public static String formatJoinWorldRequest( UUID owner , String serverTarget , UUID worldUUID , int item_slot ){
+    @Override
+    public void sendFormattedJoinWorldRequest( UUID owner , String serverTarget , UUID worldUUID , int item_slot ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "JOIN_WORLD_REQUEST" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -100,22 +126,36 @@ public class SpigotSocketClient implements ISocket {
         js.addProperty( "owner_uuid" , owner.toString( ) );
         js.addProperty( "world_uuid" , worldUUID.toString( ) );
         js.addProperty( "item_slot" , item_slot );
-        
-        
-        return js.toString( );
+        sendMessage( js.toString( ) );
     }
     
-    public static String formatSendMSGToPlayer( UUID target , String key ){
+    
+    @Override
+    public void sendFormattedJoinPlotRequest( UUID owner , String server_version , String plotID , PlotType plotType , int item_slot ){
+        JsonObject js = new JsonObject( );
+        js.addProperty( "type" , "JOIN_PLOT_REQUEST" );
+        js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
+        js.addProperty( "server_version" , server_version );
+        js.addProperty( "owner_uuid" , owner.toString( ) );
+        js.addProperty( "plot_id" , plotID == null ? "NONE" : plotID );
+        js.addProperty( "item_slot" , item_slot );
+        js.addProperty( "plot_type" , plotType.toString( ) );
+        sendMessage( js.toString( ) );
+    }
+    
+    @Override
+    public void sendFormattedSendMSGToPlayer( UUID target , String key ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "SEND_MSG_TO_PLAYER" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
         js.addProperty( "target_uuid" , target.toString( ) );
         js.addProperty( "key" , key );
         js.addProperty( "has-replacements" , false );
-        return js.toString( );
+        sendMessage( js.toString( ) );
     }
     
-    public static String formatSendMSGToPlayer( UUID target , String key , String word , String replacement ){
+    @Override
+    public void sendFormattedSendMSGToPlayer( UUID target , String key , String word , String replacement ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "SEND_MSG_TO_PLAYER" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -125,10 +165,11 @@ public class SpigotSocketClient implements ISocket {
         JsonObject replacements = new JsonObject( );
         replacements.addProperty( word , replacement );
         js.add( "replacements" , replacements );
-        return js.toString( );
+        sendMessage( js.toString( ) );
     }
     
-    public static String formatSendMSGToPlayer( UUID target , String key , HashMap < String, String > replacementsMap ){
+    @Override
+    public void sendFormattedSendMSGToPlayer( UUID target , String key , HashMap < String, String > replacementsMap ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "SEND_MSG_TO_PLAYER" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -140,22 +181,16 @@ public class SpigotSocketClient implements ISocket {
             replacements.addProperty( word , replacementsMap.get( word ) );
         }
         js.add( "replacements" , replacements );
-        return js.toString( );
+        sendMessage( js.toString( ) );
     }
     
-    /**
-     * Format message to create World.
-     */
-    public static String formatUpdate( ){
+    
+    @Override
+    public void sendFormattedUpdate( ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "UPDATE" );
         js.addProperty( "server_name" , Settings.PROXY_SERVER_NAME );
-        
-        return js.toString( );
-    }
-    
-    public ISocketClient getSocket( ){
-        return mainSocket;
+        sendMessage( js.toString( ) );
     }
     
     public SpigotSocketClient init( ) throws IOException{
@@ -245,12 +280,12 @@ public class SpigotSocketClient implements ISocket {
                         try {
                             json = new JsonParser( ).parse( msg ).getAsJsonObject( );
                         } catch ( JsonSyntaxException e ) {
-                            Main.debug( "Received bad data from: " + socket.getInetAddress( ).toString( ) );
+                            Main.getInstance( ).debug( "Received bad data from: " + socket.getInetAddress( ).toString( ) );
                             continue;
                         }
                         if ( json == null ) continue;
                         if ( !json.has( "type" ) ) continue;
-                        Main.debug( "Received message: \n" + json );
+                        Main.getInstance( ).debug( "Received message: \n" + json );
                         switch ( json.get( "type" ).getAsString( ).toUpperCase( ) ) {
                             //pre load data
                             //pld,worldIdentifier,uuidUser,languageIso,uuidPartyOwner
@@ -271,39 +306,42 @@ public class SpigotSocketClient implements ISocket {
                                 String world_server = json.get( "world_server" ).getAsString( );
                                 boolean world_is_public = json.get( "world_is_public" ).getAsBoolean( );
                                 String world_layer_material = json.get( "world_layer_material" ).getAsString( );
-                                Main.debug( "Received INIT_CREATE_WORLD request: world_name:" + world_name + " world_uuid:" + world_uuid + " world_version:" + world_version + " world_server:" + world_server + " world_is_public:" + world_is_public );
+                                Main.getInstance( ).debug( "Received INIT_CREATE_WORLD request: world_name:" + world_name + " world_uuid:" + world_uuid + " world_version:" + world_version + " world_server:" + world_server + " world_is_public:" + world_is_public );
                                 if ( Settings.PROXY_SERVER_NAME.equals( world_server ) ) {
-                                    Main.debug( "[World Creation] [Phase 1/2] Creating World: " + world_name );
+                                    Main.getInstance( ).debug( "[World Creation] [Phase 1/2] Creating World: " + world_name );
                                     BWorld world = new BWorld( owner , world_name , world_server , world_version , world_is_public , world_uuid );
-                                    Main.getInstance( ).getWorlds( ).createCustomLayerWorld( world , world_layer_material );
+                                    getWorlds( ).createCustomLayerWorld( world , world_layer_material );
                                     final World finalWorld = Bukkit.getWorld( world_uuid.toString( ) );
-                                    Main.debug( "[World Creation] [Phase 2/2] Creating World: " + world_uuid.toString( ) );
-                                    Main.getInstance( ).getWorlds( ).createWorld( world );
+                                    Main.getInstance( ).debug( "[World Creation] [Phase 2/2] Creating World: " + world_uuid.toString( ) );
+                                    getWorlds( ).createWorld( world );
                                     final Player p = Bukkit.getPlayer( owner );
                                     final boolean teleport = p == null;
-                                    Main.getInstance( ).getWorlds( ).addPlayerToTP( owner , world );
-                                    if ( !teleport ) {
-                                        for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
-                                            Bukkit.dispatchCommand( Bukkit.getConsoleSender( ) , "lp user " + p.getName( ) + " permission set " + perm + " " + true + " world=" + world_uuid.toString( ) + " server=" + world_server );
-                                        }
-                                        Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> p.teleport( finalWorld.getSpawnLocation( ) ) );
-                                    }
-                                    
+                                    getWorlds( ).addPlayerToTP( owner , world );
+                                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
+                                        Main.getInstance( ).managePermissions( owner , world_uuid , false );
+                                        /*for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
+                                            StringBuilder contexts = new StringBuilder( " " );
+                                            for ( BWorld worlds : getWorlds( ).getWorldsByUser( owner ) ) {
+                                                contexts.append( "server=" ).append( worlds.getServer( ) ).append( " world=" ).append( worlds.getUUID( ).toString( ) ).append( " " );
+                                            }
+                                            Bukkit.dispatchCommand( Bukkit.getConsoleSender( ) , "lp user " + owner + " permission set " + perm + " " + true + contexts );
+                                        }*/
+                                    } );
                                     
                                     json.remove( "type" );
                                     json.addProperty( "type" , "INIT_CREATE_WORLD_SUCCESS" );
                                     json.addProperty( "teleport" , teleport );
                                     sendMessage( json );
-                                    Main.debug( "[World Creation] Sending message to Proxy: " + json );
+                                    Main.getInstance( ).debug( "[World Creation] Sending message to Proxy: " + json );
                                 } else {
-                                    Main.debug( "Received INIT_CREATE_WORLD but its meant for another server.\n " + json );
+                                    Main.getInstance( ).debug( "Received INIT_CREATE_WORLD but its meant for another server.\n " + json );
                                 }
                             }
                             case "REMOVE_PLAYER_TO_TP_TO_WORLD": {
                                 if ( !json.has( "uuid" ) ) continue;
                                 UUID owner = UUID.fromString( json.get( "uuid" ).getAsString( ) );
                                 try {
-                                    Main.getInstance( ).getWorlds( ).removePlayerToTP( owner );
+                                    getWorlds( ).removePlayerToTP( owner );
                                 } catch ( Exception ignored ) {
                                 }
                             }
@@ -318,27 +356,25 @@ public class SpigotSocketClient implements ISocket {
                                 if ( !json.has( "world_layer_material" ) ) continue;
                                 if ( !json.has( "teleport" ) ) continue;
                                 final UUID owner = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
+                                final UUID world_uuid = UUID.fromString( json.get( "world_uuid" ).getAsString( ) );
                                 final Player p = Bukkit.getPlayer( owner );
                                 final boolean teleport = json.get( "teleport" ).getAsBoolean( );
-                                final String world_uuid = json.get( "world_uuid" ).getAsString( );
-                                final String world_server = json.get( "world_server" ).getAsString( );
-                                if ( teleport ) {
-                                    for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
-                                        Bukkit.dispatchCommand( Bukkit.getConsoleSender( ) , "lp user " + p.getName( ) + " permission set " + perm + " " + true + " world=" + world_uuid + " server=" + world_server );
-                                    }
+                                /*if ( teleport ) {
+                                 *//*Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
+                                        for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
+                                            StringBuilder contexts = new StringBuilder( " " );
+                                            for ( BWorld worlds : getWorlds().getWorldsByUser( owner ) ) {
+                                                contexts.append( "server=" ).append( worlds.getServer( ) ).append( " world=" ).append( worlds.getUUID( ).toString( ) ).append( " " );
+                                            }
+                                            Bukkit.dispatchCommand( Bukkit.getConsoleSender( ) , "lp user " + owner + " permission set " + perm + " " + true + contexts );
+                                        }
+                                    } );*//*
+                                    
+                                }*/
+                                if ( p.getInventory( ).getHolder( ) instanceof IUpdatableMenu ) {
+                                    (( IUpdatableMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( )).reOpen( );
                                 }
-                                if ( p.getInventory( ).getHolder( ) instanceof WorldManagerMenu ) {
-                                    WorldManagerMenu plotMenu = ( WorldManagerMenu ) p.getInventory( ).getHolder( );
-                                    plotMenu.reOpen( );
-                                }
-                                if ( p.getInventory( ).getHolder( ) instanceof WorldCreatorMenu ) {
-                                    WorldCreatorMenu plotMenu = ( WorldCreatorMenu ) p.getInventory( ).getHolder( );
-                                    plotMenu.reOpen( );
-                                }
-                                if ( p.getInventory( ).getHolder( ) instanceof WorldEditorMenu ) {
-                                    WorldEditorMenu plotMenu = ( WorldEditorMenu ) p.getInventory( ).getHolder( );
-                                    plotMenu.reOpen( );
-                                }
+                                
                                 
                             }
                             case "UPDATE_INV_WORLD_DELETE_SUCCESS": {
@@ -372,18 +408,18 @@ public class SpigotSocketClient implements ISocket {
                                 final String current_server = json.get( "current_server" ).getAsString( );
                                 final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                                 final UUID world_uuid = UUID.fromString( json.get( "world_uuid" ).getAsString( ) );
-                                final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
+                                final BWorld world = getWorlds( ).getWorld( world_uuid );
                                 if ( server_target.equals( current_server ) ) {
                                     final Player p = Bukkit.getPlayer( owner_uuid );
                                     final World localWorld = Bukkit.getWorld( world.getUUID( ).toString( ) );
                                     if ( p != null && localWorld != null && (world.isPublicWorld( ) || world.getOwner( ).equals( owner_uuid ) || world.getMembers( ).contains( owner_uuid )) ) {
-                                        Main.debug( "Teleporting " + p.getName( ) + " to " + localWorld.getName( ) );
+                                        Main.getInstance( ).debug( "Teleporting " + p.getName( ) + " to " + localWorld.getName( ) );
                                         Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> p.teleport( localWorld.getSpawnLocation( ) ) );
-                                        Main.getInstance( ).getWorlds( ).addPlayerToWorldOnlineMembers( owner_uuid , world_uuid );
+                                        getWorlds( ).addPlayerToWorldOnlineMembers( owner_uuid , world_uuid );
                                     } else {
-                                        Main.debug( "Teleporting " + owner_uuid + " to " + world.getUUID( ).toString( ) );
+                                        Main.getInstance( ).debug( "Teleporting " + owner_uuid + " to " + world.getUUID( ).toString( ) );
                                     }
-                                    sendMessage( formatSendMSGToPlayer( owner_uuid , "world.join" , "world" , world.getName( ) ) );
+                                    sendFormattedSendMSGToPlayer( owner_uuid , "world.join" , "world" , world.getName( ) );
                                     continue;
                                 }
                                 
@@ -391,7 +427,7 @@ public class SpigotSocketClient implements ISocket {
                                 json.addProperty( "type" , "JOIN_WORLD_REQUEST_POST" );
                                 
                                 if ( world.isPublicWorld( ) || world.getOwner( ).equals( owner_uuid ) || world.getMembers( ).contains( owner_uuid ) ) {
-                                    Main.getInstance( ).getWorlds( ).addPlayerToTP( owner_uuid , world );
+                                    getWorlds( ).addPlayerToTP( owner_uuid , world );
                                     json.addProperty( "response" , true );
                                 } else {
                                     json.addProperty( "response" , false );
@@ -408,7 +444,34 @@ public class SpigotSocketClient implements ISocket {
                                     if ( p.getOpenInventory( ).getTopInventory( ).getHolder( ) instanceof WorldManagerMenu ) {
                                         WorldManagerMenu menu = ( WorldManagerMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( );
                                         menu.checkSomething( p , item_slot , menu.getInventory( ).getItem( item_slot ) , "&cSin permisos" , "&cNo tienes permisos" );
-                                        sendMessage( formatSendMSGToPlayer( owner_uuid , "error.world.not-allowed-to-join-world" ) );
+                                        sendFormattedSendMSGToPlayer( owner_uuid , "error.world.not-allowed-to-join-world" );
+                                    }
+                                } catch ( Exception ignored ) {
+                                }
+                            }
+                            case "JOIN_PLOT_REQUEST_PREV": {
+                                if ( !json.has( "current_server" ) ) continue;
+                                if ( !json.has( "server_target" ) ) continue;
+                                if ( !json.has( "server_version" ) ) continue;
+                                if ( !json.has( "owner_uuid" ) ) continue;
+                                if ( !json.has( "plot_id" ) ) continue;
+                                if ( !json.has( "item_slot" ) ) continue;
+                                if ( !json.has( "plot_type" ) ) continue;
+                                
+                                Main.getInstance( ).getNMS( ).getPlotManager( ).manageJoinPlot( json );
+                                
+                            }
+                            case "JOIN_PLOT_REQUEST_POST_DENY": {
+                                if ( !json.has( "owner_uuid" ) ) continue;
+                                if ( !json.has( "item_slot" ) ) continue;
+                                final int item_slot = json.get( "item_slot" ).getAsInt( );
+                                final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
+                                try {
+                                    final Player p = Bukkit.getPlayer( owner_uuid );
+                                    if ( p.getOpenInventory( ).getTopInventory( ).getHolder( ) instanceof WorldManagerMenu ) {
+                                        WorldManagerMenu menu = ( WorldManagerMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( );
+                                        menu.checkSomething( p , item_slot , menu.getInventory( ).getItem( item_slot ) , "&cSin permisos" , "&cNo tienes permisos" );
+                                        sendFormattedSendMSGToPlayer( owner_uuid , "error.world.not-allowed-to-join-world" );
                                     }
                                 } catch ( Exception ignored ) {
                                 }
@@ -423,12 +486,12 @@ public class SpigotSocketClient implements ISocket {
                                 final boolean has_permission = json.get( "has_permission" ).getAsBoolean( );
                                 final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                                 final UUID world_uuid = UUID.fromString( json.get( "world_uuid" ).getAsString( ) );
-                                final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
+                                final BWorld world = getWorlds( ).getWorld( world_uuid );
                                 final String server_target = json.get( "server_target" ).getAsString( );
                                 json.remove( "type" );
                                 
                                 if ( world.getOwner( ).equals( owner_uuid ) || has_permission ) {
-                                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> Main.getInstance( ).getWorlds( ).deleteWorldFromOutside( owner_uuid , world , server_target , json ) );
+                                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> getWorlds( ).deleteWorldFromOutside( owner_uuid , world , server_target , json ) );
                                 } else {
                                     json.addProperty( "type" , "ERROR" );
                                     json.addProperty( "error" , "WORLD_DELETE_FAILED" );
@@ -451,7 +514,7 @@ public class SpigotSocketClient implements ISocket {
                                 final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
                                 if ( server_target.equalsIgnoreCase( currentServer ) ) {
                                     if ( owner_uuid.equals( target_uuid ) ) {
-                                        sendMessage( formatSendMSGToPlayer( owner_uuid , "world.cant-kick-own" ) );
+                                        sendFormattedSendMSGToPlayer( owner_uuid , "world.cant-kick-own" );
                                         continue;
                                     }
                                 }
@@ -472,8 +535,8 @@ public class SpigotSocketClient implements ISocket {
                                 try {
                                     final HashMap < String, String > replace = new HashMap <>( );
                                     replace.put( "world" , world_uuid.toString( ) );
-                                    replace.put( "player" , Main.getInstance( ).getPlayers( ).getPlayer( target_uuid ).getName( ) );
-                                    sendMessage( formatSendMSGToPlayer( owner_uuid , "world.kick-success" , replace ) );
+                                    replace.put( "player" , getPlayers( ).getPlayer( target_uuid ).getName( ) );
+                                    sendFormattedSendMSGToPlayer( owner_uuid , "world.kick-success" , replace );
                                 } catch ( NullPointerException ignored ) {
                                 }
                             }
@@ -493,7 +556,7 @@ public class SpigotSocketClient implements ISocket {
                                         final HashMap < String, String > replace = new HashMap <>( );
                                         
                                         for ( Map.Entry < String, JsonElement > entry : replacements.entrySet( ) ) {
-                                            Main.debug( "Replacement: " + entry.getKey( ) + " = " + entry.getValue( ).getAsString( ) );
+                                            Main.getInstance( ).debug( "Replacement: " + entry.getKey( ) + " = " + entry.getValue( ).getAsString( ) );
                                             replace.put( entry.getKey( ) , entry.getValue( ).getAsString( ) );
                                         }
                                         Main.getLang( ).sendMsg( player , key , replace );
@@ -502,10 +565,38 @@ public class SpigotSocketClient implements ISocket {
                                     }
                                     
                                 } catch ( NullPointerException ignored ) {
-                                    ignored.printStackTrace( );
+                                    
                                 }
                                 
                                 
+                            }
+                            case "UPDATE_ONLINE_PLAYERS_IN_WORLDS": {
+                                Bukkit.getScheduler( ).runTaskAsynchronously( Main.getInstance( ) , ( ) ->
+                                        getWorlds( ).getWorldsByServer( ).forEach( world -> {
+                                            boolean save = false;
+                                            final ArrayList < UUID > playersToAdd = new ArrayList <>( );
+                                            final World bukkitWorld = Bukkit.getWorld( world.getUUID( ).toString( ) );
+                                            Main.getInstance( ).debug( "[UPDATE_ONLINE_PLAYERS_IN_WORLDS] Current world=" + world.getName( ) );
+                                            if ( bukkitWorld == null ) {
+                                                if ( world.getOnlineMembers( ).size( ) > 0 ) {
+                                                    world.setOnlineMembers( new ArrayList <>( ) );
+                                                    save = true;
+                                                }
+                                            } else {
+                                                if ( bukkitWorld.getPlayers( ).size( ) != world.getOnlineMembers( ).size( ) ) {
+                                                    playersToAdd.addAll( bukkitWorld.getPlayers( ).stream( ).map( Player::getUniqueId ).collect( Collectors.toList( ) ) );
+                                                }
+                                                if ( playersToAdd.size( ) > 0 ) {
+                                                    world.setOnlineMembers( playersToAdd );
+                                                    save = true;
+                                                }
+                                                
+                                            }
+                                            if ( save ) {
+                                                getWorlds( ).saveWorld( world );
+                                            }
+                                            
+                                        } ) );
                             }
                             case "ERROR": {
                                 if ( !json.has( "error" ) ) continue;
@@ -517,7 +608,7 @@ public class SpigotSocketClient implements ISocket {
                                         if ( !json.has( "server_target" ) ) continue;
                                         final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                                         final String server_target = json.get( "server_target" ).getAsString( );
-                                        sendMessage( formatSendMSGToPlayer( owner_uuid , "error.server.not-online" , "server" , server_target ) );
+                                        sendFormattedSendMSGToPlayer( owner_uuid , "error.server.not-online" , "server" , server_target );
                                     }
                                     case "WORLD_DELETE_FAILED": {
                                         if ( !json.has( "owner_uuid" ) ) continue;
@@ -531,7 +622,7 @@ public class SpigotSocketClient implements ISocket {
                                             final HashMap < String, String > replace = new HashMap <>( );
                                             replace.put( "server" , server_target );
                                             replace.put( "world" , world_uuid );
-                                            sendMessage( formatSendMSGToPlayer( owner_uuid , "error.world.delete-failed" , replace ) );
+                                            sendFormattedSendMSGToPlayer( owner_uuid , "error.world.delete-failed" , replace );
                                             
                                         } catch ( NullPointerException ignored ) {
                                         }
@@ -577,7 +668,7 @@ public class SpigotSocketClient implements ISocket {
                 reconnect( "out.checkError( )" );
                 return false;
             }
-            Main.debug( "Sending message: \n" + message );
+            Main.getInstance( ).debug( "Sending message: \n" + message );
             out.println( message );
             return true;
         }
@@ -592,8 +683,8 @@ public class SpigotSocketClient implements ISocket {
         
         public void disable( String reason ){
             compute = false;
-            Main.debug( "Disabling socket: " + socket.toString( ) );
-            Main.debug( "Disabling socket Reason: " + reason );
+            Main.getInstance( ).debug( "Disabling socket: " + socket.toString( ) );
+            Main.getInstance( ).debug( "Disabling socket Reason: " + reason );
             try {
                 socket.close( );
             } catch ( IOException e ) {

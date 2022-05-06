@@ -6,7 +6,6 @@ import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.error.UserNotFoundException;
 import net.lymarket.comissionss.youmind.bbb.common.error.WorldNotFoundError;
 import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
-import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
 import net.lymarket.common.commands.*;
 import net.lymarket.lyapi.spigot.LyApi;
 import org.bukkit.entity.Player;
@@ -22,7 +21,7 @@ public final class WorldManagementCommand implements ILyCommand {
         
         if ( context.getSender( ) instanceof Player ) {
             final Player player = ( Player ) context.getSender( );
-            if ( context.getArgs( ).length == 0 && player.hasPermission( "blockbyblock.world" ) ) {
+            if ( context.getArgs( ).length == 0 ) {
                 new MainMenu( LyApi.getPlayerMenuUtility( player ) ).open( );
                 return true;
             }
@@ -41,7 +40,7 @@ public final class WorldManagementCommand implements ILyCommand {
                         final UUID uuid = UUID.fromString( context.getArg( 2 ) );
                         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( uuid );
                         if ( world.getOwner( ) == player.getUniqueId( ) || player.hasPermission( "blockbyblock.world.edit.other" ) ) {
-                            Main.getInstance( ).getSocket( ).sendMessage( SpigotSocketClient.formatWorldDeleteRequest( player , world ) );
+                            Main.getInstance( ).getSocket( ).sendFormattedWorldDeleteRequest( player , world );
                         }
                     } catch ( IllegalArgumentException | WorldNotFoundError e ) {
                         Main.getLang( ).sendErrorMsg( player , "world.not-found" , "world" , context.getArg( 2 ) );

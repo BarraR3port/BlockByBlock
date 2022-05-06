@@ -2,8 +2,11 @@ package net.lymarket.comissionss.youmind.bbb;
 
 import com.grinderwolf.swm.api.SlimePlugin;
 import net.luckperms.api.LuckPerms;
+import net.luckperms.api.context.MutableContextSet;
+import net.luckperms.api.node.Node;
 import net.lymarket.comissionss.youmind.bbb.commands.*;
 import net.lymarket.comissionss.youmind.bbb.common.BBBApi;
+import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.config.ConfigManager;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.lang.ESLang;
@@ -11,7 +14,6 @@ import net.lymarket.comissionss.youmind.bbb.listener.lobby.LobbyPlayerEvents;
 import net.lymarket.comissionss.youmind.bbb.listener.plot.PlotsPlayerEvent;
 import net.lymarket.comissionss.youmind.bbb.listener.plugin.PluginMessage;
 import net.lymarket.comissionss.youmind.bbb.listener.world.WorldPlayerEvents;
-import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.comissionss.youmind.bbb.papi.Placeholders;
 import net.lymarket.comissionss.youmind.bbb.settings.ServerType;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
@@ -26,6 +28,7 @@ import net.lymarket.common.error.LyApiInitializationError;
 import net.lymarket.common.lang.ILang;
 import net.lymarket.lyapi.spigot.LyApi;
 import net.lymarket.lyapi.spigot.config.Config;
+import net.lymarket.lyapi.spigot.menu.IUpdatableMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -33,6 +36,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public final class Main extends JavaPlugin implements BBBApi {
@@ -45,9 +50,9 @@ public final class Main extends JavaPlugin implements BBBApi {
     private Config config;
     private Config items;
     private String version;
-    private PlayersRepository playersRepository;
+    private PlayersRepository players;
     private VersionSupport nms;
-    private SpigotSocketClient proxySocketConnect;
+    private SpigotSocketClient socket;
     
     public static LyApi getApi( ){
         return api;
@@ -65,18 +70,12 @@ public final class Main extends JavaPlugin implements BBBApi {
         return lpApi;
     }
     
-    public static void debug( String message ){
-        if ( Settings.DEBUG ) {
-            instance.getLogger( ).info( "DEBUG: " + message );
-        }
-    }
-    
     public static SlimePlugin getSlimePlugin( ){
         return slimePlugin;
     }
     
     @Override
-    public void DEBUG( String message ){
+    public void debug( String message ){
         if ( Settings.DEBUG ) {
             instance.getLogger( ).info( "DEBUG: " + message );
         }
@@ -85,12 +84,6 @@ public final class Main extends JavaPlugin implements BBBApi {
     @Override
     public void onEnable( ){
         instance = this;
-        try {
-            proxySocketConnect = new SpigotSocketClient( ).init( );
-        } catch ( IOException | IllegalArgumentException e ) {
-            e.printStackTrace( );
-            getServer( ).shutdown( );
-        }
         getServer( ).getMessenger( ).registerOutgoingPluginChannel( this , "BungeeCord" );
         getServer( ).getMessenger( ).registerIncomingPluginChannel( this , "lymarket:bbb" , new PluginMessage( ) );
         getServer( ).getMessenger( ).registerOutgoingPluginChannel( this , "lymarket:bbb" );
@@ -122,6 +115,7 @@ public final class Main extends JavaPlugin implements BBBApi {
             } else {
                 getLogger( ).log( Level.SEVERE , String.format( "[%s] - Disabled due to no LuckPerms dependency found!" , getDescription( ).getName( ) ) );
                 getServer( ).getPluginManager( ).disablePlugin( this );
+                getServer( ).shutdown( );
             }
         }
         
@@ -135,15 +129,18 @@ public final class Main extends JavaPlugin implements BBBApi {
         if ( Bukkit.getPluginManager( ).getPlugin( "PlaceholderAPI" ) != null ) {
             new Placeholders( this ).register( );
         }
-        switch ( ServerType.valueOf( config.getString( "global.server-type" ) ) ) {
+        switch ( Settings.SERVER_TYPE ) {
             case LOBBY: {
                 getServer( ).getPluginManager( ).registerEvents( new LobbyPlayerEvents( ) , this );
+                break;
             }
             case WORLDS: {
                 getServer( ).getPluginManager( ).registerEvents( new WorldPlayerEvents( ) , this );
+                break;
             }
             case PLOT: {
                 getServer( ).getPluginManager( ).registerEvents( new PlotsPlayerEvent( ) , this );
+                break;
             }
         }
         
@@ -152,26 +149,30 @@ public final class Main extends JavaPlugin implements BBBApi {
         api.getCommandService( ).registerCommands( new SetSpawnCommand( ) );
         api.getCommandService( ).registerCommands( new DelSpawnCommand( ) );
         api.getCommandService( ).registerCommands( new SpawnCommand( ) );
-        api.getCommandService( ).registerCommands( new WorldManagementCommand( ) );
+        api.getCommandService( ).registerCommands( new MenuCommand( ) );
         api.getCommandService( ).registerCommands( new AdminCommand( ) );
         api.getCommandService( ).registerCommands( new RankCommand( ) );
         
         final MongoDBClient mongo = new MongoDBClient( "mongodb://" + config.getString( "db.host" ) + ":" + config.getString( "db.port" ) , config.getString( "db.database" ) );
-        playersRepository = new PlayersRepository( mongo , "players" );
+        players = new PlayersRepository( mongo , "players" );
         worldManager = new WorldManager( mongo , "worlds" );
-        
-        proxySocketConnect.sendMessage( SpigotSocketClient.formatUpdate( ) );
+        try {
+            socket = new SpigotSocketClient( players , worldManager ).init( );
+        } catch ( IOException | IllegalArgumentException e ) {
+            e.printStackTrace( );
+            getServer( ).shutdown( );
+        }
+        socket.sendFormattedUpdate( );
         
         getServer( ).getScheduler( ).runTaskTimer( this , ( ) -> {
             
             for ( Player p : Bukkit.getOnlinePlayers( ) ) {
-                if ( p.getOpenInventory( ).getTopInventory( ).getHolder( ) instanceof WorldManagerMenu ) {
-                    debug( "Updating WorldManagerMenu for " + p.getName( ) );
-                    (( WorldManagerMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( )).reOpen( );
+                if ( p.getOpenInventory( ).getTopInventory( ).getHolder( ) instanceof IUpdatableMenu ) {
+                    (( IUpdatableMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( )).reOpen( );
                 }
             }
             
-        } , 1 , 20L );
+        } , 10 , 20L );
         //new PacketManager( this );
         
     }
@@ -191,7 +192,7 @@ public final class Main extends JavaPlugin implements BBBApi {
     }
     
     public PlayersRepository getPlayers( ){
-        return playersRepository;
+        return players;
     }
     
     public VersionSupport getNMS( ){
@@ -203,7 +204,43 @@ public final class Main extends JavaPlugin implements BBBApi {
     }
     
     public SpigotSocketClient getSocket( ){
-        return proxySocketConnect;
+        return socket;
+    }
+    
+    @Override
+    public String getProxyServerName( ){
+        return Settings.PROXY_SERVER_NAME;
+    }
+    
+    
+    public CompletableFuture < Void > managePermissions( UUID player_uuid , UUID world_uuid , boolean delete ){
+        if ( Settings.SERVER_TYPE != ServerType.WORLDS ) return CompletableFuture.completedFuture( null );
+        Main.getInstance( ).debug( "[Permission Manager] Updating permissions to " + player_uuid + " in world " + world_uuid );
+        Main.getInstance( ).debug( "[Permission Manager] Removing all permissions from worlds." );
+        return lpApi.getUserManager( ).modifyUser( player_uuid , user -> {
+            for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
+                for ( final BWorld world : worldManager.getWorlds( ) ) {
+                    user.data( ).remove( Node.builder( perm ).context( MutableContextSet.of( "world" , world.getUUID( ).toString( ) ).mutableCopy( ) ).build( ) );
+                }
+            }
+            if ( delete ) return;
+            Main.getInstance( ).debug( "[Permission Manager] Removed all permissions from worlds." );
+            Main.getInstance( ).debug( "[Permission Manager] Adding all permissions to world=" + world_uuid );
+            for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
+                user.data( ).add( Node.builder( perm ).context( MutableContextSet.of( "world" , world_uuid.toString( ) ).mutableCopy( ) ).build( ) );
+            }
+        } );
+    }
+    
+    public CompletableFuture < Void > removePermissionsInOneWorld( UUID player_uuid , UUID world_uuid ){
+        if ( Settings.SERVER_TYPE != ServerType.WORLDS ) return CompletableFuture.completedFuture( null );
+        Main.getInstance( ).debug( "[Permission Manager] Updating permissions to " + player_uuid + " in world " + world_uuid );
+        Main.getInstance( ).debug( "[Permission Manager] Removing all permissions from worlds." );
+        return lpApi.getUserManager( ).modifyUser( player_uuid , user -> {
+            for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
+                user.data( ).remove( Node.builder( perm ).context( MutableContextSet.of( "world" , world_uuid.toString( ) ).mutableCopy( ) ).build( ) );
+            }
+        } );
     }
     
 }

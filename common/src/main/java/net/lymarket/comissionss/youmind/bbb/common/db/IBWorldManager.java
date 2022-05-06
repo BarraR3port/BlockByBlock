@@ -50,6 +50,10 @@ public abstract class IBWorldManager extends MongoDB < UUID, BWorld > {
     
     public abstract ArrayList < BWorld > getWorldsByUser( UUID uuid );
     
+    public abstract ArrayList < BWorld > getWorldsByServer( String serverName );
+    
+    public abstract ArrayList < BWorld > getWorldsByServer( );
+    
     public abstract Object createWorldSlimeWorld( BWorld world );
     
     public abstract Object createCustomLayerWorld( BWorld world , String material );

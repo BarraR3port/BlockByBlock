@@ -1,5 +1,8 @@
 package net.lymarket.comissionss.youmind.bbb.listener.lobby;
 
+import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
+import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.listener.MainEvents;
 import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
@@ -7,6 +10,8 @@ import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.lyapi.spigot.LyApi;
 import net.lymarket.lyapi.spigot.utils.NBTItem;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,10 +21,30 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-public class LobbyPlayerEvents extends MainEvents {
+import java.util.UUID;
+
+public final class LobbyPlayerEvents extends MainEvents {
+    
+    public LobbyPlayerEvents( ){
+    }
     
     public void subPlayerQuitEvent( PlayerQuitEvent e ){
     
+    }
+    
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerTeleport( PlayerTeleportEvent e ){
+        try {
+            
+            final World world = e.getTo( ).getWorld( );
+            final UUID playerUUID = e.getPlayer( ).getUniqueId( );
+            
+            final User user = Main.getInstance( ).getPlayers( ).getPlayer( playerUUID );
+            final Location loc = e.getTo( );
+            user.setLastLocation( new Loc( Settings.PROXY_SERVER_NAME , world.getName( ) , loc.getX( ) , loc.getY( ) , loc.getZ( ) ) );
+            Main.getInstance( ).getPlayers( ).savePlayer( user );
+        } catch ( NullPointerException ignored ) {
+        }
     }
     
     public void subPlayerJoinEvent( PlayerJoinEvent e ){
@@ -60,149 +85,126 @@ public class LobbyPlayerEvents extends MainEvents {
         if ( !Settings.PLACE_BLOCKS ) e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteractAtEntityEvent( PlayerInteractAtEntityEvent e ){
-        if ( e.isCancelled( ) ) return;
         if ( !Settings.PLAYER_INTERACT_AT_ENTITY ) e.setCancelled( true );
         
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteractEntityEvent( PlayerInteractEntityEvent e ){
-        if ( e.isCancelled( ) ) return;
         if ( !Settings.PLAYER_INTERACT_ENTITY ) e.setCancelled( true );
         
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerBedEnterEvent( PlayerBedEnterEvent e ){
-        if ( e.isCancelled( ) ) return;
         if ( !Settings.PLAYER_BED_EVENTS ) e.setCancelled( true );
         
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerBucketFillEvent( PlayerBucketFillEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
         
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerBucketEmptyEvent( PlayerBucketEmptyEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
         
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItemEvent( PlayerDropItemEvent e ){
-        if ( e.isCancelled( ) ) return;
         if ( !Settings.PLAYER_DROP_ITEMS ) e.setCancelled( true );
         
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerPickupItemEvent( EntityPickupItemEvent e ){
-        if ( e.isCancelled( ) ) return;
         if ( !Settings.PLAYER_PICKUP_ITEMS && e.getEntity( ) instanceof Player ) e.setCancelled( true );
         
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerPickupArrowEvent( PlayerPickupArrowEvent e ){
-        if ( e.isCancelled( ) ) return;
         if ( !Settings.PLAYER_PICKUP_ITEMS ) e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerItemConsumeEvent( PlayerItemConsumeEvent e ){
-        if ( e.isCancelled( ) ) return;
         if ( !Settings.CONSUME_ITEMS ) e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerPortalEvent( PlayerPortalEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerItemDamageEvent( PlayerItemDamageEvent e ){
-        if ( e.isCancelled( ) ) return;
         if ( !Settings.CONSUME_ITEMS ) e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerShearEntityEvent( PlayerShearEntityEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerFishEvent( PlayerFishEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onExplosionPrimeEvent( ExplosionPrimeEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityExplodeEvent( EntityExplodeEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityTargetLivingEntityEvent( EntityTargetLivingEntityEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntityEvent( EntityDamageByEntityEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByBlockEvent( EntityDamageByBlockEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityBreakDoorEvent( EntityBreakDoorEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityCreatePortalEvent( EntityCreatePortalEvent e ){
-        if ( e.isCancelled( ) ) return;
         e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntitySpawnEvent( EntitySpawnEvent e ){
-        if ( e.isCancelled( ) ) return;
         if ( !(e.getEntity( ) instanceof Player) )
             e.setCancelled( true );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerRespawnEvent( PlayerRespawnEvent e ){
         Items.setItems( e.getPlayer( ) );
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerRespawnEvent( PlayerMoveEvent e ){
-        if ( e.isCancelled( ) ) return;
-        
         if ( e.getPlayer( ).getLocation( ).getY( ) < 10 ) {
             e.getPlayer( ).teleport( e.getPlayer( ).getWorld( ).getSpawnLocation( ) );
         }

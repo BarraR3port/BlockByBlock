@@ -37,3 +37,5 @@ world:
   kick-success: "&aHas expulsado a &e%player% &adel mundo &e%world%&a."
   deleted-and-kicked: "&cEl mundo &e%world% &cha sido eliminado y has sido expulsado de este"
   join: "&aHas entrado al mundo &e%world%&a."
+plot:
+  join: "&aEntrando a la plot &e%plot%&a."
