@@ -146,6 +146,7 @@ public final class Main extends JavaPlugin implements BBBApi {
         
         getServer( ).getPluginManager( ).registerEvents( new ProxyMSGManager( ) , this );
         api.getCommandService( ).registerCommands( new MainCommand( ) );
+        api.getCommandService( ).registerCommands( new WorldManagementCommand( ) );
         api.getCommandService( ).registerCommands( new SetSpawnCommand( ) );
         api.getCommandService( ).registerCommands( new DelSpawnCommand( ) );
         api.getCommandService( ).registerCommands( new SpawnCommand( ) );

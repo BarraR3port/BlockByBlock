@@ -164,9 +164,6 @@ public class Placeholders extends PlaceholderExpansion {
                 case "world_owner": {
                     return Main.getInstance( ).getPlayers( ).getPlayer( world.getOwner( ) ).getName( );
                 }
-                case "world_public": {
-                    return String.valueOf( world.isPublicWorld( ) );
-                }
                 
             }
             

@@ -66,7 +66,6 @@ public class ProxySocketServer implements Runnable {
                         if ( !json.has( "world_uuid" ) ) continue;
                         if ( !json.has( "world_version" ) ) continue;
                         if ( !json.has( "world_server" ) ) continue;
-                        if ( !json.has( "world_is_public" ) ) continue;
                         if ( !json.has( "world_layer_material" ) ) continue;
                         final String serverName = json.get( "world_server" ).getAsString( );
                         
@@ -123,7 +122,6 @@ public class ProxySocketServer implements Runnable {
                         if ( !json.has( "world_uuid" ) ) continue;
                         if ( !json.has( "world_version" ) ) continue;
                         if ( !json.has( "world_server" ) ) continue;
-                        if ( !json.has( "world_is_public" ) ) continue;
                         if ( !json.has( "world_layer_material" ) ) continue;
                         if ( !json.has( "teleport" ) ) continue;
                         final String server_name = json.get( "server_name" ).getAsString( );

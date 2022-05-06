@@ -25,7 +25,6 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
     
     private final UUID world_uuid;
     private final BukkitTask task;
-    private final UUID targetUserUUID;
     private final boolean members;
     
     private final Menu lastMenu;
@@ -33,7 +32,7 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
     private User user;
     private ArrayList < User > onlineMembers;
     
-    public PlayersInWorldMenu( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , UUID targetUserUUID , boolean members , Menu lastMenu ){
+    public PlayersInWorldMenu( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , boolean members , Menu lastMenu ){
         super( playerMenuUtility );
         this.world_uuid = world_uuid;
         this.world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
@@ -41,7 +40,6 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
         user = Main.getInstance( ).getPlayers( ).getPlayer( getOwner( ).getUniqueId( ) );
         task = Bukkit.getServer( ).getScheduler( ).runTaskTimerAsynchronously( Main.getInstance( ) , this::reOpen , 40L , 20L );
         super.FILLER_GLASS = new ItemBuilder( super.FILLER_GLASS.clone( ) ).setDurability( ( short ) 15 ).build( );
-        this.targetUserUUID = targetUserUUID;
         this.members = members;
         this.lastMenu = lastMenu;
     }

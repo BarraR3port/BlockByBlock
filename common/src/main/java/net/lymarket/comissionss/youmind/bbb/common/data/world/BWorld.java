@@ -13,15 +13,14 @@ public class BWorld {
     private UUID owner;
     private String server;
     private String version;
-    private boolean publicWorld;
     
     public BWorld( UUID owner , String name , String server , String version ){
         this.owner = owner;
         this.name = name;
         this.server = server;
         this.version = version;
-        this.publicWorld = true;
         this.uuid = UUID.randomUUID( );
+        this.members.add( owner );
     }
     
     public BWorld( UUID owner , String server , String version ){
@@ -30,16 +29,16 @@ public class BWorld {
         this.name = uuid.toString( );
         this.server = server;
         this.version = version;
-        this.publicWorld = true;
+        this.members.add( owner );
     }
     
-    public BWorld( UUID owner , String name , String server , String version , boolean publicWorld , UUID uuid ){
+    public BWorld( UUID owner , String name , String server , String version , UUID uuid ){
         this.owner = owner;
         this.name = name;
         this.server = server;
         this.version = version;
-        this.publicWorld = publicWorld;
         this.uuid = uuid;
+        this.members.add( owner );
     }
     
     public UUID getOwner( ){
@@ -76,14 +75,6 @@ public class BWorld {
     
     public void setVersion( String version ){
         this.version = version;
-    }
-    
-    public boolean isPublicWorld( ){
-        return publicWorld;
-    }
-    
-    public void setPublicWorld( boolean publicWorld ){
-        this.publicWorld = publicWorld;
     }
     
     public ArrayList < UUID > getMembers( ){

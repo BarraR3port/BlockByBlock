@@ -63,8 +63,8 @@ public class WorldManagerMenu extends UpdatableMenu {
             } else if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
                 if ( world.getOwner( ).equals( ownerUUID ) || Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID ).getRank( ) == Rank.ADMIN ) {
                     new WorldEditorMenu( playerMenuUtility , targetUserUUID , world_uuid ).open( );
-                } else if ( world.isPublicWorld( ) || world.getMembers( ).contains( ownerUUID ) ) {
-                    new PlayersInWorldMenu( playerMenuUtility , world_uuid , targetUserUUID , false , this ).open( );
+                } else if ( world.getMembers( ).contains( ownerUUID ) ) {
+                    new PlayersInWorldMenu( playerMenuUtility , world_uuid  , false , this ).open( );
                 }
             }
         } else if ( NBTItem.hasTag( item , "world-available" ) && p.getUniqueId( ).equals( targetUserUUID ) ) {
@@ -114,13 +114,10 @@ public class WorldManagerMenu extends UpdatableMenu {
                         .addLoreLine( " &b> &7Server: &a" + world.getServer( ) )
                         .addLoreLine( " &b> &7Usuarios dentro: &a" + world.getOnlineMembers( ).size( ) )
                         .addLoreLine( " &b> &7ID: &a" + world.getUUID( ).toString( ).split( "-" )[0] )
-                        .addLoreLine( " &b> &7Publico: " + (world.isPublicWorld( ) ? "&aSi" : "&cNo") )
-                        
                         .addLoreLine( "" )
-                        .addLoreLine( world.getOwner( ).equals( ownerUUID ) || world.isPublicWorld( ) || world.getMembers( ).contains( ownerUUID ) ? "&7Click &eizquierdo &7para entrar al mundo." : null )
+                        .addLoreLine( world.getOwner( ).equals( ownerUUID ) || world.getMembers( ).contains( ownerUUID ) ? "&7Click &eizquierdo &7para entrar al mundo." : null )
                         .addLoreLine( "" )
-                        .addLoreLine( world.getOwner( ).equals( ownerUUID ) ? "&7Click &ederecho &7para editar el mundo" :
-                                world.isPublicWorld( ) || world.getMembers( ).contains( ownerUUID ) ? "&7Click &ederecho &7para ver la lista de miembros online" : null )
+                        .addLoreLine( world.getOwner( ).equals( ownerUUID ) ? "&7Click &ederecho &7para editar el mundo" : world.getMembers( ).contains( ownerUUID ) ? "&7Click &ederecho &7para ver la lista de miembros online" : null )
                         .addTag( "world-uuid" , world.getUUID( ).toString( ) )
                         .addTag( "world-server" , world.getServer( ) )
                         .build( )

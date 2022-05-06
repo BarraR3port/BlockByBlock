@@ -46,6 +46,7 @@ public final class WorldPlayerEvents extends MainEvents {
             Main.getInstance( ).getWorlds( ).saveWorld( world );
             if ( e.getPlayer( ).teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) ) {
                 Main.getInstance( ).getWorlds( ).removePlayerToTP( uuid );
+                Main.getInstance( ).managePermissions( uuid , world.getUUID( ) , false );
             }
         }
     }

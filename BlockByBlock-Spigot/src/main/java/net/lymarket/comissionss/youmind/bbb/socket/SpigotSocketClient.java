@@ -50,7 +50,6 @@ public class SpigotSocketClient extends ISocket {
         js.addProperty( "world_uuid" , e.getWorld( ).getUUID( ).toString( ) );
         js.addProperty( "world_version" , e.getWorld( ).getVersion( ) );
         js.addProperty( "world_server" , e.getWorld( ).getServer( ) );
-        js.addProperty( "world_is_public" , e.getWorld( ).isPublicWorld( ) );
         js.addProperty( "world_layer_material" , e.getMaterial( ).toString( ) );
         sendMessage( js.toString( ) );
     }
@@ -296,7 +295,6 @@ public class SpigotSocketClient extends ISocket {
                                 if ( !json.has( "world_uuid" ) ) continue;
                                 if ( !json.has( "world_version" ) ) continue;
                                 if ( !json.has( "world_server" ) ) continue;
-                                if ( !json.has( "world_is_public" ) ) continue;
                                 if ( !json.has( "world_layer_material" ) ) continue;
                                 
                                 String world_name = json.get( "world_name" ).getAsString( );
@@ -304,14 +302,12 @@ public class SpigotSocketClient extends ISocket {
                                 UUID world_uuid = UUID.fromString( json.get( "world_uuid" ).getAsString( ) );
                                 String world_version = json.get( "world_version" ).getAsString( );
                                 String world_server = json.get( "world_server" ).getAsString( );
-                                boolean world_is_public = json.get( "world_is_public" ).getAsBoolean( );
                                 String world_layer_material = json.get( "world_layer_material" ).getAsString( );
-                                Main.getInstance( ).debug( "Received INIT_CREATE_WORLD request: world_name:" + world_name + " world_uuid:" + world_uuid + " world_version:" + world_version + " world_server:" + world_server + " world_is_public:" + world_is_public );
+                                Main.getInstance( ).debug( "Received INIT_CREATE_WORLD request: world_name:" + world_name + " world_uuid:" + world_uuid + " world_version:" + world_version + " world_server:" + world_server );
                                 if ( Settings.PROXY_SERVER_NAME.equals( world_server ) ) {
                                     Main.getInstance( ).debug( "[World Creation] [Phase 1/2] Creating World: " + world_name );
-                                    BWorld world = new BWorld( owner , world_name , world_server , world_version , world_is_public , world_uuid );
+                                    BWorld world = new BWorld( owner , world_name , world_server , world_version , world_uuid );
                                     getWorlds( ).createCustomLayerWorld( world , world_layer_material );
-                                    final World finalWorld = Bukkit.getWorld( world_uuid.toString( ) );
                                     Main.getInstance( ).debug( "[World Creation] [Phase 2/2] Creating World: " + world_uuid.toString( ) );
                                     getWorlds( ).createWorld( world );
                                     final Player p = Bukkit.getPlayer( owner );
@@ -319,13 +315,6 @@ public class SpigotSocketClient extends ISocket {
                                     getWorlds( ).addPlayerToTP( owner , world );
                                     Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
                                         Main.getInstance( ).managePermissions( owner , world_uuid , false );
-                                        /*for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
-                                            StringBuilder contexts = new StringBuilder( " " );
-                                            for ( BWorld worlds : getWorlds( ).getWorldsByUser( owner ) ) {
-                                                contexts.append( "server=" ).append( worlds.getServer( ) ).append( " world=" ).append( worlds.getUUID( ).toString( ) ).append( " " );
-                                            }
-                                            Bukkit.dispatchCommand( Bukkit.getConsoleSender( ) , "lp user " + owner + " permission set " + perm + " " + true + contexts );
-                                        }*/
                                     } );
                                     
                                     json.remove( "type" );
@@ -352,25 +341,10 @@ public class SpigotSocketClient extends ISocket {
                                 if ( !json.has( "world_uuid" ) ) continue;
                                 if ( !json.has( "world_version" ) ) continue;
                                 if ( !json.has( "world_server" ) ) continue;
-                                if ( !json.has( "world_is_public" ) ) continue;
                                 if ( !json.has( "world_layer_material" ) ) continue;
                                 if ( !json.has( "teleport" ) ) continue;
                                 final UUID owner = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
-                                final UUID world_uuid = UUID.fromString( json.get( "world_uuid" ).getAsString( ) );
                                 final Player p = Bukkit.getPlayer( owner );
-                                final boolean teleport = json.get( "teleport" ).getAsBoolean( );
-                                /*if ( teleport ) {
-                                 *//*Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
-                                        for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
-                                            StringBuilder contexts = new StringBuilder( " " );
-                                            for ( BWorld worlds : getWorlds().getWorldsByUser( owner ) ) {
-                                                contexts.append( "server=" ).append( worlds.getServer( ) ).append( " world=" ).append( worlds.getUUID( ).toString( ) ).append( " " );
-                                            }
-                                            Bukkit.dispatchCommand( Bukkit.getConsoleSender( ) , "lp user " + owner + " permission set " + perm + " " + true + contexts );
-                                        }
-                                    } );*//*
-                                    
-                                }*/
                                 if ( p.getInventory( ).getHolder( ) instanceof IUpdatableMenu ) {
                                     (( IUpdatableMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( )).reOpen( );
                                 }
@@ -412,7 +386,7 @@ public class SpigotSocketClient extends ISocket {
                                 if ( server_target.equals( current_server ) ) {
                                     final Player p = Bukkit.getPlayer( owner_uuid );
                                     final World localWorld = Bukkit.getWorld( world.getUUID( ).toString( ) );
-                                    if ( p != null && localWorld != null && (world.isPublicWorld( ) || world.getOwner( ).equals( owner_uuid ) || world.getMembers( ).contains( owner_uuid )) ) {
+                                    if ( p != null && localWorld != null && (world.getOwner( ).equals( owner_uuid ) || world.getMembers( ).contains( owner_uuid )) ) {
                                         Main.getInstance( ).debug( "Teleporting " + p.getName( ) + " to " + localWorld.getName( ) );
                                         Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> p.teleport( localWorld.getSpawnLocation( ) ) );
                                         getWorlds( ).addPlayerToWorldOnlineMembers( owner_uuid , world_uuid );
@@ -426,7 +400,7 @@ public class SpigotSocketClient extends ISocket {
                                 json.remove( "type" );
                                 json.addProperty( "type" , "JOIN_WORLD_REQUEST_POST" );
                                 
-                                if ( world.isPublicWorld( ) || world.getOwner( ).equals( owner_uuid ) || world.getMembers( ).contains( owner_uuid ) ) {
+                                if ( world.getOwner( ).equals( owner_uuid ) || world.getMembers( ).contains( owner_uuid ) ) {
                                     getWorlds( ).addPlayerToTP( owner_uuid , world );
                                     json.addProperty( "response" , true );
                                 } else {

@@ -29,8 +29,6 @@ public class WorldEditorMenu extends UpdatableMenu {
     
     private BWorld world;
     
-    private boolean isPublic;
-    
     
     public WorldEditorMenu( IPlayerMenuUtility playerMenuUtility , UUID targetUserUUID , UUID world_uuid ){
         super( playerMenuUtility );
@@ -38,13 +36,11 @@ public class WorldEditorMenu extends UpdatableMenu {
         this.world_uuid = world_uuid;
         this.world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
         this.ownerUUID = getOwner( ).getUniqueId( );
-        this.isPublic = world.isPublicWorld( );
     }
     
     @Override
     public void onReOpen( ){
         this.world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
-        this.isPublic = world.isPublicWorld( );
     }
     
     public String getMenuName( ){
@@ -73,7 +69,6 @@ public class WorldEditorMenu extends UpdatableMenu {
                 .addLoreLine( " &b> &7Server: &a" + world.getServer( ) )
                 .addLoreLine( " &b> &7Usuarios dentro: &a" + world.getOnlineMembers( ).size( ) )
                 .addLoreLine( " &b> &7ID: &a" + world.getUUID( ).toString( ).split( "-" )[0] )
-                .addLoreLine( " &b> &7Publico: " + (world.isPublicWorld( ) ? "&aSi" : "&cNo") )
                 .addTag( "world-uuid" , world.getUUID( ).toString( ) )
                 .addTag( "world-server" , world.getServer( ) )
                 .addTag( "players-in-world" , "players-in-world" )
@@ -113,13 +108,6 @@ public class WorldEditorMenu extends UpdatableMenu {
                 .addTag( "delete-world" , "delete-world" )
                 .build( ) );
         
-        inventory.setItem( 13 , new ItemBuilder( isPublic ? XMaterial.LIME_DYE.parseMaterial( ) : XMaterial.GRAY_DYE.parseMaterial( ) , isPublic ? 10 : 8 )
-                .setDisplayName( "&7Mundo publico" )
-                .addLoreLine( "&7Estado: " + (isPublic ? "&aPublico" : "&cPrivado") )
-                .addLoreLine( "" )
-                .addLoreLine( "&7Click para cambiar" )
-                .addTag( "public" , "public" )
-                .build( ) );
         
         inventory.setItem( 18 , super.CLOSE_ITEM );
         
@@ -141,16 +129,10 @@ public class WorldEditorMenu extends UpdatableMenu {
                 checkSomething( getOwner( ) , e.getSlot( ) , item , "&cNo puedes borrar este mundo" , "" );
             }
             
-        }
-        if ( NBTItem.hasTag( item , "public" ) ) {
-            world.setPublicWorld( false );
-            Main.getInstance( ).getWorlds( ).saveWorld( world );
-            reOpen( );
-            
-        } else if ( NBTItem.hasTag( item , "players-in-world" ) ) {
-            new PlayersInWorldMenu( playerMenuUtility , world.getUUID( ) , targetUserUUID , false , this ).open( );
+        }else if ( NBTItem.hasTag( item , "players-in-world" ) ) {
+            new PlayersInWorldMenu( playerMenuUtility , world.getUUID( ) , false , this ).open( );
         } else if ( NBTItem.hasTag( item , "members-in-world" ) ) {
-            new PlayersInWorldMenu( playerMenuUtility , world.getUUID( ) , targetUserUUID , true , this ).open( );
+            new PlayersInWorldMenu( playerMenuUtility , world.getUUID( ) ,  true , this ).open( );
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
             new WorldManagerMenu( playerMenuUtility , world.getVersion( ) , targetUserUUID , 10L ).open( );
         }

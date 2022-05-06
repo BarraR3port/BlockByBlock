@@ -29,7 +29,6 @@ public class WorldCreatorMenu extends UpdatableMenu {
     
     private int currentIndex = 0;
     
-    private boolean isPublic = true;
     
     public WorldCreatorMenu( IPlayerMenuUtility playerMenuUtility , String serverVersion , UUID targetUserUUID ){
         super( playerMenuUtility );
@@ -73,14 +72,6 @@ public class WorldCreatorMenu extends UpdatableMenu {
         
         inventory.setItem( 7 , new ItemBuilder( Material.STAINED_GLASS_PANE , 5 ).setDisplayName( "&7Click para cambiar de material" ).build( ) );
         
-        inventory.setItem( 11 , new ItemBuilder( isPublic ? XMaterial.LIME_DYE.parseMaterial( ) : XMaterial.GRAY_DYE.parseMaterial( ) , isPublic ? 10 : 8 )
-                .setDisplayName( "&7Mundo publico" )
-                .addLoreLine( "&7Estado: " + (isPublic ? "&aPublico" : "&cPrivado") )
-                .addLoreLine( "" )
-                .addLoreLine( "&7Click para cambiar" )
-                .addTag( "public" , "public" )
-                .build( ) );
-        
         inventory.setItem( 13 , new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
                 .setHeadSkin( "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjgwZDMyOTVkM2Q5YWJkNjI3NzZhYmNiOGRhNzU2ZjI5OGE1NDVmZWU5NDk4YzRmNjlhMWMyYzc4NTI0YzgyNCJ9fX0=" )
                 .setDisplayName( "&7Click para crear el mundo" )
@@ -117,15 +108,9 @@ public class WorldCreatorMenu extends UpdatableMenu {
             reOpen( );
             return;
         }
-        
-        if ( NBTItem.hasTag( item , "public" ) ) {
-            isPublic = !isPublic;
-            reOpen( );
-            
-        } else if ( NBTItem.hasTag( item , "world" ) ) {
+        if ( NBTItem.hasTag( item , "world" ) ) {
             new WorldCreatorMenu( this.playerMenuUtility , serverVersion , targetUserUUID ).open( );
             final BWorld world = WorldManager.getWorldFormatted( p.getUniqueId( ) , serverVersion );
-            world.setPublicWorld( isPublic );
             final Material material = items.get( currentIndex ).getType( ) != Material.STAINED_GLASS_PANE ? items.get( currentIndex ).getType( ) : Material.AIR;
             Bukkit.getPluginManager( ).callEvent( new PrevCreateWorld( p.getUniqueId( ) , world , material ) );
             new WorldManagerMenu( this.playerMenuUtility , serverVersion , targetUserUUID , 10L ).open( );
