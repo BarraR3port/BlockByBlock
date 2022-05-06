@@ -1,5 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.common.data.loc;
 
+import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.common.Api;
 
 import java.util.UUID;
@@ -97,7 +98,7 @@ public class Loc {
     }
     
     public boolean isInPlot( ){
-        return Plot != null;
+        return Server.startsWith( "PP-" ) || Plot != null;
     }
     
     public String getPlot( ){
@@ -105,7 +106,7 @@ public class Loc {
     }
     
     public boolean isInBWorld( ){
-        return BWorld != null;
+        return  Server.startsWith( "PW-" ) || BWorld != null;
     }
     
     public UUID getBWorld( ){

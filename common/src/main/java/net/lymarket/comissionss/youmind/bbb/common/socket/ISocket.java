@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.common.socket;
 
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
+import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.db.IBWorldManager;
 import net.lymarket.comissionss.youmind.bbb.common.db.IPlayerRepository;
@@ -45,6 +46,7 @@ public abstract class ISocket {
     
     public abstract void sendFormattedJoinPlotRequest( UUID owner , String server_version , String plotID , PlotType plotType , int item_slot );
     
+    public abstract void sendFormattedSendVisitRequest( UUID owner_uuid , UUID target );
     
     public abstract void sendFormattedSendMSGToPlayer( UUID target , String key );
     

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
 import net.lymarket.comissionss.youmind.bbb.velocity.utils.Utils;
@@ -290,6 +291,47 @@ public class ProxySocketServer implements Runnable {
                         final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
                         VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).ifPresent( ( p ) -> VMain.getInstance( ).getProxy( ).getServer( "lobby" ).ifPresent( server -> p.createConnectionRequest( server ).fireAndForget( ) ) );
                         
+                    }
+                    
+                    case "SEND_VISIT_REQUEST": {
+                        if ( !json.has( "current_server" ) ) continue;
+                        if ( !json.has( "owner_uuid" ) ) continue;
+                        if ( !json.has( "target_uuid" ) ) continue;
+                        final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
+                        if (VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).isPresent() ){
+                            final Player p = VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).get( );
+                            p.getCurrentServer().ifPresent( server -> {
+                                final String serverName =server.getServerInfo( ).getName( );
+    
+                                json.remove( "type" );
+                                if ( serverName.equals( "lobby" ) ) {
+                                    json.addProperty( "type" , "VISIT_REQUEST_DENY" );
+                                    json.addProperty( "reason" , "error.visit.cant-visit-lobby" );
+                                    ServerSocketManager.getSocketByServer( json.get( "current_server" ).getAsString( ) ).ifPresent( socket -> socket.sendMessage( json ) );
+                                }
+                                json.addProperty( "type" , "VISIT_REQUEST_PREV" );
+                                if ( serverName.startsWith( "PP-" ) ) {
+                                    json.addProperty( "visit-type", "plot" );
+                                    ServerSocketManager.getSocketByServer( serverName ).ifPresent( socket -> socket.sendMessage( json ) );
+                                } else if ( serverName.startsWith( "PW-" ) ) {
+                                    json.addProperty( "visit-type", "world" );
+                                    ServerSocketManager.getSocketByServer( serverName ).ifPresent( socket -> socket.sendMessage( json ) );
+                                } else {
+                                    json.addProperty( "type" , "VISIT_REQUEST_DENY" );
+                                    json.addProperty( "reason" , "error.visit.cant-visit-lobby" );
+                                    ServerSocketManager.getSocketByServer( json.get( "current_server" ).getAsString( ) ).ifPresent( socket -> socket.sendMessage( json ) );
+                                }
+                                ServerSocketManager.getSocketByServer( serverName ).ifPresent( socket -> socket.sendMessage( json ) );
+        
+                            } );
+                        } else {
+                            json.remove( "type" );
+                            json.addProperty( "type" , "VISIT_REQUEST_DENY" );
+                            json.addProperty( "reason" , "error.player.not-found" );
+                            ServerSocketManager.getSocketByServer( json.get( "current_server" ).getAsString( ) ).ifPresent( socket -> socket.sendMessage( json ) );
+                            continue;
+                        }
+    
                     }
                     
                     case "ERROR": {

@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
+import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocket;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocketClient;
@@ -139,6 +140,16 @@ public class SpigotSocketClient extends ISocket {
         js.addProperty( "plot_id" , plotID == null ? "NONE" : plotID );
         js.addProperty( "item_slot" , item_slot );
         js.addProperty( "plot_type" , plotType.toString( ) );
+        sendMessage( js.toString( ) );
+    }
+    
+    @Override
+    public void sendFormattedSendVisitRequest( UUID owner_uuid , UUID target_uuid ){
+        JsonObject js = new JsonObject( );
+        js.addProperty( "type" , "SEND_VISIT_REQUEST" );
+        js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
+        js.addProperty( "owner_uuid" , owner_uuid.toString( ) );
+        js.addProperty( "target_uuid" , target_uuid.toString( ) );
         sendMessage( js.toString( ) );
     }
     
@@ -571,6 +582,13 @@ public class SpigotSocketClient extends ISocket {
                                             }
                                             
                                         } ) );
+                            }
+                            case "VISIT_REQUEST_PREV":{
+                                //TODO VISIT_REQUEST_PREV
+                            }
+                            
+                            case "VISIT_REQUEST_DENY":{
+                                //TODO VISIT_REQUEST_DENY
                             }
                             case "ERROR": {
                                 if ( !json.has( "error" ) ) continue;

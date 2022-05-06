@@ -47,9 +47,6 @@ public class WorldManagerMenu extends UpdatableMenu {
         
     }
     
-    /**
-     * @param e
-     */
     @Override
     public void handleMenu( InventoryClickEvent e ){
         final ItemStack item = e.getCurrentItem( );
