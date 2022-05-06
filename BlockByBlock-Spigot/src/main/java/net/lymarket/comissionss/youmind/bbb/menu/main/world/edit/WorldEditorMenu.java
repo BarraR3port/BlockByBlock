@@ -107,7 +107,14 @@ public class WorldEditorMenu extends UpdatableMenu {
                 .addLoreLine( "&7Click para borrar mundo" )
                 .addTag( "delete-world" , "delete-world" )
                 .build( ) );
-        
+    
+        inventory.setItem( 26, new ItemBuilder( Items.PLAYERS_IN_WORLD_BASE.clone( ) )
+                .setHeadSkin( "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTNkNTkxNTUzNzhiNGFjNGQyYjE0MmUyZjIzNWQwMzdmNjhhOWI4ZTI0YWU5ZWQ0ODU3MzE2YjI4ZGNlMDU2ZiJ9fX0=" )
+                .setDisplayName( "&aAgregar miembros: " )
+                .addLoreLine( "&7Click para agregar miembros." )
+                .addTag( "world-uuid" , world.getUUID( ).toString( ) )
+                .addTag( "add-members-to-world" , "add-members-to-world" )
+                .build( ) );
         
         inventory.setItem( 18 , super.CLOSE_ITEM );
         
@@ -129,10 +136,19 @@ public class WorldEditorMenu extends UpdatableMenu {
                 checkSomething( getOwner( ) , e.getSlot( ) , item , "&cNo puedes borrar este mundo" , "" );
             }
             
-        }else if ( NBTItem.hasTag( item , "players-in-world" ) ) {
+        }else if ( NBTItem.hasTag( item , "add-members-to-world" ) ) {
+            //TODO CREATE THE MENU
+            if ( world.getOwner( ).equals( ownerUUID ) || Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID ).getRank( ) == Rank.ADMIN ) {
+                p.spigot().sendMessage( Main.getApi( ).getUtils( ).formatTC( "&7Agrega miembros al mundo dándole " ) , Main.getApi( ).getUtils( ).hoverOverMessageSuggestCommand( "&aCLICK AQUÍ." , Collections.singletonList( "&e/worlds trust " + world.getUUID( ) + " < El nombre >" ) , "/worlds trust " + world.getUUID( ) + " " ) );
+                p.closeInventory();
+            } else {
+                checkSomething( getOwner( ) , e.getSlot( ) , item , "&cNo tienes permisos o no eres el Dueño del mundo" , "" );
+            }
+            
+        } else if ( NBTItem.hasTag( item , "players-in-world" ) ) {
             new PlayersInWorldMenu( playerMenuUtility , world.getUUID( ) , false , this ).open( );
         } else if ( NBTItem.hasTag( item , "members-in-world" ) ) {
-            new PlayersInWorldMenu( playerMenuUtility , world.getUUID( ) ,  true , this ).open( );
+            new PlayersInWorldMenu( playerMenuUtility , world.getUUID( ) , true , this ).open( );
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
             new WorldManagerMenu( playerMenuUtility , world.getVersion( ) , targetUserUUID , 10L ).open( );
         }

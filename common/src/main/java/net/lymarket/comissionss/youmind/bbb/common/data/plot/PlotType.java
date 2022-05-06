@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.common.data.plot;
 
 public enum PlotType {
+    P31( "31x31" , "bbb-plot-31" ),
     P101( "101x101" , "bbb-plot-101" ),
     P501( "501x501" , "bbb-plot-501" ),
     P1001( "1001x1001" , "bbb-plot-1001" );

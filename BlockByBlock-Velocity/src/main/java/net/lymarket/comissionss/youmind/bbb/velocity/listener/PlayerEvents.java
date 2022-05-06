@@ -8,7 +8,10 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
+import com.velocitypowered.api.event.proxy.ProxyPingEvent;
+import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import com.velocitypowered.api.proxy.server.ServerPing;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
@@ -96,6 +99,23 @@ public class PlayerEvents {
         } else {
             e.setResult( KickedFromServerEvent.DisconnectPlayer.create( Utils.format( "&cNo hay lobbys disponibles!" ) ) );
         }
+    }
+    
+    @Subscribe(order = PostOrder.LAST)
+    public void onProxyPing( ProxyPingEvent event ){
+        ServerPing prev = event.getPing( );
+        if ( prev.getPlayers( ).isPresent( ) && prev.getFavicon( ).isPresent( ) ) {
+            if ( prev.getModinfo( ).isPresent( ) ) {
+                
+                if ( prev.getVersion( ).getProtocol( ) > 757 || prev.getVersion( ).getProtocol( ) < 46 ) {
+                    prev.asBuilder( ).version( new ServerPing.Version( ProtocolVersion.MINECRAFT_1_18.getProtocol( ) , "BlockByBlock 1.8.x - 1.18.x " ) );
+                } else {
+                    prev.asBuilder( ).version( new ServerPing.Version( prev.getVersion( ).getProtocol( ) , "BlockByBlock 1.8.x - 1.18.x " ) );
+                }
+            }
+            event.setPing( prev.asBuilder( ).build( ) );
+        }
+        
     }
     
 }

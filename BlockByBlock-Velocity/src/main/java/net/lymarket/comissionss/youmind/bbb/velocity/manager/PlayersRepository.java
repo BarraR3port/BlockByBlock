@@ -178,6 +178,11 @@ public class PlayersRepository extends IPlayerRepository {
     }
     
     @Override
+    public ArrayList < String > getPlayersUUID( ArrayList < UUID > playersUUID ){
+        return null;
+    }
+    
+    @Override
     public ArrayList < String > getPlayersName( String playerName ){
         return database.findMany( TABLE_NAME , User.class ).stream( ).map( User::getName ).filter( name -> !name.equalsIgnoreCase( playerName ) ).collect( Collectors.toCollection( ArrayList::new ) );
     }

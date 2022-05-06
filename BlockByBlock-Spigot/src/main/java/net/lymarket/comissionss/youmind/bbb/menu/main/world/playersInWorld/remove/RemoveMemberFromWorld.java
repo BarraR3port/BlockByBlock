@@ -1,7 +1,6 @@
-package net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.add;
+package net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.remove;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.Menu;
@@ -11,7 +10,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.UUID;
 
-public class AddPlayersToWorldMenuSelector extends MenuSelector {
+public class RemoveMemberFromWorld extends MenuSelector {
     
     private final Menu lastMenu;
     
@@ -20,16 +19,16 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     private final UUID target_uuid;
     
     @Override
-    public String getMenuName(){
-        return "&7Añadir jugador a mundo";
+    public String getMenuName( ){
+        return "&7Echar al jugador";
     }
     
-    public AddPlayersToWorldMenuSelector( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , Menu lastMenu , UUID target_uuid ){
+    public RemoveMemberFromWorld( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , Menu lastMenu , UUID target_uuid ){
         super( playerMenuUtility );
         this.lastMenu = lastMenu;
         super.ACCEPT = new ItemBuilder( super.ACCEPT.clone( ) )
-                .addLoreLine( "&7Click para añadir a la" )
-                .addLoreLine( "&7lista de usuarios del mundo." )
+                .addLoreLine( "&7Click para echar al jugador" )
+                .addLoreLine( "&7del los miembros del mundo." )
                 .build( );
         
         this.world_uuid = world_uuid;
@@ -58,12 +57,10 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     }
     
     public boolean handleAccept( ){
-        final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( this.world_uuid );
-        if ( world.getOwner( ).equals( getOwner( ).getUniqueId( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || Main.getInstance( ).getPlayers( ).getPlayer( target_uuid ).getRank( ) == Rank.ADMIN ) {
-            world.addMember( target_uuid );
-            return Main.getInstance( ).getWorlds( ).saveWorld( world );
-        }
-        return false;
+        BWorld world = Main.getInstance( ).getWorlds( ).getWorld( this.world_uuid );
+        world.removeMember( this.target_uuid );
+        Main.getInstance( ).getWorlds( ).saveWorld( world );
+        return true;
     }
     
     public boolean handleDeny( ){

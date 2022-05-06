@@ -5,6 +5,7 @@ import com.intellectualcrafters.plot.object.Plot;
 import com.plotsquared.bukkit.events.PlayerClaimPlotEvent;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
+import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.support.common.events.PlotCreateFailed;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -56,7 +58,14 @@ public class P2Listener implements Listener {
             case DEV:
                 break;
             case BUILDER: {
-                if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
+                if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
+                    if ( user.getPlots31( ).size( ) >= 10 ) {
+                        e.setCancelled( true );
+                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P31 ) );
+                        canCreate = false;
+                        break;
+                    }
+                } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
                     if ( user.getPlots101( ).size( ) >= 10 ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P101 ) );
@@ -81,7 +90,14 @@ public class P2Listener implements Listener {
                 break;
             }
             case VISITOR: {
-                if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
+                if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
+                    if ( user.getPlots31( ).size( ) >= 5 ) {
+                        e.setCancelled( true );
+                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P31 ) );
+                        canCreate = false;
+                        break;
+                    }
+                } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
                     if ( user.getPlots101( ).size( ) >= 5 ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P101 ) );
@@ -105,7 +121,9 @@ public class P2Listener implements Listener {
         }
         
         if ( canCreate ) {
-            if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
+            if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
+                user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P31 , plot.getId( ).toString( ) )) );
+            } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
                 user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P101 , plot.getId( ).toString( ) )) );
             } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
                 user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P501 , plot.getId( ).toString( ) ) );
@@ -146,6 +164,22 @@ public class P2Listener implements Listener {
         final Loc location = new Loc( vs.getBbbApi( ).getProxyServerName( ) , world.getName( ) , loc.getX( ) , loc.getY( ) , loc.getZ( ) , plot == null ? null : plot.getId( ).toString( ) );
         user.setLastLocation( location );
         vs.getBbbApi( ).getPlayers( ).savePlayer( user );
+    }
+    
+    @EventHandler
+    public void onPlayerChangeWorld( PlayerChangedWorldEvent e ){
+        final Player player = e.getPlayer( );
+        final World world = player.getWorld( );
+        final UUID playerUUID = player.getUniqueId( );
+        
+        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
+        if ( world.getName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
+            if ( user.getRank( ).equals( Rank.VISITOR ) ) {
+                vs.getBbbApi( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
+                vs.getBbbApi( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.plot.not-allowed-to-join-1001" );
+            }
+        }
+        
     }
     
 }

@@ -1,4 +1,4 @@
-package net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.add;
+package net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.kick;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
@@ -11,7 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.UUID;
 
-public class AddPlayersToWorldMenuSelector extends MenuSelector {
+public class KickPlayerFromWorld extends MenuSelector {
     
     private final Menu lastMenu;
     
@@ -21,15 +21,15 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     
     @Override
     public String getMenuName(){
-        return "&7Añadir jugador a mundo";
+        return "&7Echar jugador del mundo";
     }
     
-    public AddPlayersToWorldMenuSelector( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , Menu lastMenu , UUID target_uuid ){
+    public KickPlayerFromWorld( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , Menu lastMenu , UUID target_uuid ){
         super( playerMenuUtility );
         this.lastMenu = lastMenu;
         super.ACCEPT = new ItemBuilder( super.ACCEPT.clone( ) )
-                .addLoreLine( "&7Click para añadir a la" )
-                .addLoreLine( "&7lista de usuarios del mundo." )
+                .addLoreLine( "&7Click para echar al jugador" )
+                .addLoreLine( "&7del mundo." )
                 .build( );
         
         this.world_uuid = world_uuid;
@@ -59,11 +59,8 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     
     public boolean handleAccept( ){
         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( this.world_uuid );
-        if ( world.getOwner( ).equals( getOwner( ).getUniqueId( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || Main.getInstance( ).getPlayers( ).getPlayer( target_uuid ).getRank( ) == Rank.ADMIN ) {
-            world.addMember( target_uuid );
-            return Main.getInstance( ).getWorlds( ).saveWorld( world );
-        }
-        return false;
+        Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( getOwner( ).getUniqueId( ) , world , target_uuid );
+        return true;
     }
     
     public boolean handleDeny( ){

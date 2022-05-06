@@ -185,6 +185,15 @@ public final class PlayersRepository extends IPlayerRepository {
     }
     
     @Override
+    public ArrayList < String > getPlayersUUID( ArrayList<UUID> playersUUID ){
+        final ArrayList < String > players = new ArrayList < > ( );
+        for ( UUID uuid : playersUUID ){
+            players.add( getPlayer( uuid ).getName() );
+        }
+        return players;
+    }
+    
+    @Override
     public ArrayList < String > getPlayersName( ){
         return database.findMany( TABLE_NAME , User.class ).stream( ).map( User::getName ).collect( Collectors.toCollection( ArrayList::new ) );
     }

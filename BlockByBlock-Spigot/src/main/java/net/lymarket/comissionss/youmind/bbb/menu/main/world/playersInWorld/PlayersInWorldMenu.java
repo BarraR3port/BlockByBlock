@@ -6,6 +6,8 @@ import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.add.AddPlayersToWorldMenuSelector;
+import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.kick.KickPlayerFromWorld;
+import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.remove.RemoveMemberFromWorld;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.Menu;
 import net.lymarket.lyapi.spigot.menu.UpPaginatedMenu;
@@ -26,7 +28,6 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
     private final UUID world_uuid;
     private final BukkitTask task;
     private final boolean members;
-    
     private final Menu lastMenu;
     private BWorld world;
     private User user;
@@ -54,7 +55,7 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
     }
     
     public String getMenuName( ){
-        return "Jugadores en el mundo: " + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( ));
+        return  (members ? "Miembros de " :"Jugadores en: ") + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( ));
     }
     
     public void setMenuItems( ){
@@ -70,18 +71,31 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
                     break;
                 if ( onlineMembers.get( this.index ) != null ) {
                     final User user = onlineMembers.get( this.index );
-                    this.inventory.addItem( new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
-                            .setHeadSkin( user.getSkin( ) )
-                            .setDisplayName( "&6" + user.getName( ) )
-                            .addLoreLine( "&7Es dueño: " + (world.getOwner( ).equals( user.getUUID( ) ) ? "&aSi" : "&cNo") )
-                            .addLoreLine( "&7Es miembro: " + (world.getMembers( ).contains( user.getUUID( ) ) ? "&aSi" : "&cNo") )
-                            .addLoreLine( "" )
-                            .addLoreLine( world.getOwner( ).equals( user.getUUID( ) ) ? "&7Click &eizquierdo &7para agregar a la lista de miembros." : null )
-                            .addLoreLine( "" )
-                            .addLoreLine( world.getOwner( ).equals( user.getUUID( ) ) ? "&7Click &ederecho &7para sacar del mundo" : null )
-                            .addTag( "user-name" , user.getName( ) )
-                            .addTag( "user-uuid" , user.getUUID( ).toString( ) )
-                            .build( ) );
+                    if ( members){
+                        this.inventory.addItem( new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
+                                .setHeadSkin( user.getSkin( ) )
+                                .setDisplayName( "&6" + user.getName( ) )
+                                .addLoreLine( "&7Es dueño: " + (world.getOwner( ).equals( user.getUUID( ) ) ? "&aSi" : "&cNo") )
+                                .addLoreLine( "" )
+                                .addLoreLine( world.getOwner( ).equals( user.getUUID( ) ) ? "&7Click &ederecho &7para eliminar de los miembros" : null )
+                                .addTag( "user-name" , user.getName( ) )
+                                .addTag( "user-uuid" , user.getUUID( ).toString( ) )
+                                .build( ) );
+                    } else {
+                        this.inventory.addItem( new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
+                                .setHeadSkin( user.getSkin( ) )
+                                .setDisplayName( "&6" + user.getName( ) )
+                                .addLoreLine( "&7Es dueño: " + (world.getOwner( ).equals( user.getUUID( ) ) ? "&aSi" : "&cNo") )
+                                .addLoreLine( "&7Es miembro: " + (world.getMembers( ).contains( user.getUUID( ) ) ? "&aSi" : "&cNo") )
+                                .addLoreLine( "" )
+                                .addLoreLine( world.getOwner( ).equals( user.getUUID( ) ) ? "&7Click &eizquierdo &7para agregar a la lista de miembros." : null )
+                                .addLoreLine( "" )
+                                .addLoreLine( world.getOwner( ).equals( user.getUUID( ) ) ? "&7Click &ederecho &7para sacar del mundo" : null )
+                                .addTag( "user-name" , user.getName( ) )
+                                .addTag( "user-uuid" , user.getUUID( ).toString( ) )
+                                .build( ) );
+                    }
+                    
                 }
             }
     }
@@ -121,17 +135,24 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
         
         if ( NBTItem.hasTag( item , "user-name" ) ) {
             final UUID targetUUID = UUID.fromString( NBTItem.getTag( item , "user-uuid" ) );
-            
-            if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
-                if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.kick" ) || user.getRank( ) == Rank.ADMIN ) {
-                    Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( getOwner( ).getUniqueId( ) , world , targetUUID );
+            if (members){
+                if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
+                    if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.kick" ) || user.getRank( ) == Rank.ADMIN ) {
+                        new KickPlayerFromWorld( playerMenuUtility , world_uuid , this , targetUUID ).open( );
+                    }
                 }
-            }
-            if ( e.getClick( ).equals( ClickType.LEFT ) ) {
-                if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || user.getRank( ) == Rank.ADMIN ) {
-                    new AddPlayersToWorldMenuSelector( playerMenuUtility , world_uuid , this , targetUUID ).open( );
+                if ( e.getClick( ).equals( ClickType.LEFT ) ) {
+                    if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || user.getRank( ) == Rank.ADMIN ) {
+                        new AddPlayersToWorldMenuSelector( playerMenuUtility , world_uuid , this , targetUUID ).open( );
+                    }
+                    return;
                 }
-                return;
+            } else {
+                if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
+                    if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.kick" ) || user.getRank( ) == Rank.ADMIN ) {
+                        new RemoveMemberFromWorld( playerMenuUtility , world_uuid , this , targetUUID ).open( );
+                    }
+                }
             }
             task.cancel( );
             e.getWhoClicked( ).closeInventory( );

@@ -1,9 +1,13 @@
 package net.lymarket.comissionss.youmind.bbb.commands;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
+import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
+import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
+import net.lymarket.lyapi.spigot.LyApi;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -16,44 +20,32 @@ public final class MainCommand implements ILyCommand {
      *
      * @return
      */
-    @Command(name = "ymh", permission = "blockbyblock.admin", aliases = "ymhub", description = "YouMindHub Command")
+    @Command(name = "ym", permission = "blockbyblock.visitor", description = "Admin Command")
     public boolean command( SCommandContext context ){
         if ( context.getSender( ) instanceof Player ) {
-            Player player = ( Player ) context.getSender( );
-            if ( !player.hasPermission( "blockbyblock.admin" ) ) return false;
+            final Player player = ( Player ) context.getSender( );
             if ( context.getArgs( ).length == 0 ) {
-                Main.getApi( ).getUtils( ).sendMessage( player , "&c&lBlockByBlockHub &7- &a&lV" + Main.getInstance( ).getDescription( ).getVersion( ) );
-                Main.getApi( ).getUtils( ).sendMessage( player , " " );
-                Main.getApi( ).getUtils( ).sendMessage( player , "&aCommands: " );
-                Main.getApi( ).getUtils( ).sendMessage( player , " " );
-                Main.getApi( ).getUtils( ).sendMessage( player , " > ymh reload" );
+                new MainMenu( LyApi.getPlayerMenuUtility( player ) ).open( );
                 return true;
-            } else if ( context.getArgs( ).length == 1 ) {
-                if ( context.getArg( 0 ).equalsIgnoreCase( "reload" ) ) {
-                    Main.getApi( ).getUtils( ).sendMessage( player , "&c&lBlockByBlockHub &7- Reloading" );
-                    
-                    Main.getInstance( ).getConfig( ).reloadConfig( );
-                    Main.getInstance( ).getItems( ).reloadConfig( );
-                    Main.getLang( ).reloadLang( );
-                    
-                    Main.getApi( ).getUtils( ).sendMessage( player , "&c&lBlockByBlockHub reloaded Successfully!" );
-                    Settings.init( Main.getInstance( ).getConfig( ) );
-                    Items.init( Main.getInstance( ).getItems( ) );
-                    return true;
-                }
             }
         }
-        
-        
         return true;
     }
     
     @Tab
     public ArrayList < String > tabComplete( STabContext context ){
-        if ( context.getSender( ) instanceof Player ) {
-            Player player = ( Player ) context.getSender( );
-            if ( !player.hasPermission( "blockbyblock.admin" ) ) return new ArrayList <>( );
+        final ArrayList < String > list = new ArrayList <>( );
+        if ( context.getSender( ).hasPermission( "blockbyblock.admin" ) ) {
+            if ( context.getArgs( ).length == 0 ) {
+                list.add( "reload" );
+                list.add( "worlds" );
+            }
+            if ( context.getArgs( ).length == 1 ) {
+                list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
+            }
+            
         }
-        return new ArrayList <>( );
+        
+        return list;
     }
 }

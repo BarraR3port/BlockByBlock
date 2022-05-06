@@ -22,6 +22,8 @@ error:
     not-found: "&cEl mundo &e%world%&c no existe."
     delete-failed: "&cError al eliminar el mundo &e%world%&c en el server &e%server%&c."
     cant-kick-own: "&cNo puedes expulsar a ti mismo."
+    trust-no-permission: "&cNo tienes permiso para hacele trust a &e%player%&c."
+    un-trust-no-permission: "&cNo tienes permiso para hacele untrust a &e%player%&c."
   player:
     not-found: "&cNo se encontró al jugador &e%player%&c."
   server:
@@ -30,6 +32,7 @@ error:
   plot:
     create:
       failed: "&cYa tienes el máximo de plots &e%plot-type% &cen esta versión."
+    not-allowed-to-join-1001: "&cNo tienes permiso para unirte a plots de &e1001x1001."
 world:
   unloaded: "&cEl mundo &e%world%&c ha sido eliminado."
   set-name: "&aEl nombre del mundo ha sido cambiado a &e%name%&a."
@@ -37,5 +40,7 @@ world:
   kick-success: "&aHas expulsado a &e%player% &adel mundo &e%world%&a."
   deleted-and-kicked: "&cEl mundo &e%world% &cha sido eliminado y has sido expulsado de este"
   join: "&aHas entrado al mundo &e%world%&a."
+  trust: "&aHas añadido &e%player% &aal mundo &e%world%&a."
+  un-trust: "&aHas eliminado a &e%player% &adel mundo &e%world%&a."
 plot:
   join: "&aEntrando a la plot &e%plot%&a."

@@ -5,8 +5,8 @@ import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
-import net.lymarket.comissionss.youmind.bbb.menu.main.plot.PlotMenu;
-import net.lymarket.comissionss.youmind.bbb.menu.main.world.create.WorldCreatorMenu;
+import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
+import net.lymarket.comissionss.youmind.bbb.menu.main.world.create.version.VersionChooser;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.edit.WorldEditorMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.PlayersInWorldMenu;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
@@ -24,22 +24,23 @@ import java.util.UUID;
 
 public class WorldManagerMenu extends UpdatableMenu {
     
-    private final String serverVersion;
-    
     private final UUID targetUserUUID;
     
     private final UUID ownerUUID;
     
-    public WorldManagerMenu( IPlayerMenuUtility playerMenuUtility , String serverVersion , UUID targetUserUUID ){
+    public WorldManagerMenu( IPlayerMenuUtility playerMenuUtility , UUID targetUserUUID ){
         super( playerMenuUtility );
-        this.serverVersion = serverVersion;
         this.targetUserUUID = targetUserUUID;
+        this.ownerUUID = getOwner( ).getUniqueId( );
+    }
+    public WorldManagerMenu( IPlayerMenuUtility playerMenuUtility ){
+        super( playerMenuUtility );
+        this.targetUserUUID = getOwner( ).getUniqueId( );
         this.ownerUUID = getOwner( ).getUniqueId( );
     }
     
     public WorldManagerMenu( IPlayerMenuUtility playerMenuUtility , String serverVersion , UUID targetUserUUID , long reOpenDelay ){
         super( playerMenuUtility );
-        this.serverVersion = serverVersion;
         this.targetUserUUID = targetUserUUID;
         Bukkit.getServer( ).getScheduler( ).runTaskLater( Main.getInstance( ) , this::reOpen , reOpenDelay );
         this.ownerUUID = getOwner( ).getUniqueId( );
@@ -64,14 +65,13 @@ public class WorldManagerMenu extends UpdatableMenu {
                 if ( world.getOwner( ).equals( ownerUUID ) || Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID ).getRank( ) == Rank.ADMIN ) {
                     new WorldEditorMenu( playerMenuUtility , targetUserUUID , world_uuid ).open( );
                 } else if ( world.getMembers( ).contains( ownerUUID ) ) {
-                    new PlayersInWorldMenu( playerMenuUtility , world_uuid  , false , this ).open( );
+                    new PlayersInWorldMenu( playerMenuUtility , world_uuid , false , this ).open( );
                 }
             }
         } else if ( NBTItem.hasTag( item , "world-available" ) && p.getUniqueId( ).equals( targetUserUUID ) ) {
-            new WorldCreatorMenu( this.playerMenuUtility , serverVersion , targetUserUUID ).open( );
+            new VersionChooser( playerMenuUtility , targetUserUUID , this ).open( );
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
-            getOwner( ).closeInventory( );
-            new PlotMenu( playerMenuUtility , serverVersion , targetUserUUID ).open( );
+            new MainMenu( playerMenuUtility , targetUserUUID ).open( );
         }
         
         
@@ -105,25 +105,24 @@ public class WorldManagerMenu extends UpdatableMenu {
         final ArrayList < ItemStack > finalWorlds = new ArrayList <>( );
         
         for ( BWorld world : worlds ) {
-            if ( world.getVersion( ).equalsIgnoreCase( serverVersion ) ) {
-                finalWorlds.add( new ItemBuilder( Items.CREATED_WORLD_BASE.clone( ) )
-                        .setDisplayName( "&bMundo: " + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( )) )
-                        .addLoreLine( "&7Click para ir al mundo." )
-                        .addLoreLine( "&bInfo:" )
-                        .addLoreLine( " &b> &7Versión: &a" + world.getVersion( ) )
-                        .addLoreLine( " &b> &7Server: &a" + world.getServer( ) )
-                        .addLoreLine( " &b> &7Usuarios dentro: &a" + world.getOnlineMembers( ).size( ) )
-                        .addLoreLine( " &b> &7ID: &a" + world.getUUID( ).toString( ).split( "-" )[0] )
-                        .addLoreLine( "" )
-                        .addLoreLine( world.getOwner( ).equals( ownerUUID ) || world.getMembers( ).contains( ownerUUID ) ? "&7Click &eizquierdo &7para entrar al mundo." : null )
-                        .addLoreLine( "" )
-                        .addLoreLine( world.getOwner( ).equals( ownerUUID ) ? "&7Click &ederecho &7para editar el mundo" : world.getMembers( ).contains( ownerUUID ) ? "&7Click &ederecho &7para ver la lista de miembros online" : null )
-                        .addTag( "world-uuid" , world.getUUID( ).toString( ) )
-                        .addTag( "world-server" , world.getServer( ) )
-                        .build( )
-                );
-            }
+            finalWorlds.add( new ItemBuilder( Items.CREATED_WORLD_BASE.clone( ) )
+                    .setDisplayName( "&bMundo: " + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( )) )
+                    .addLoreLine( "&7Click para ir al mundo." )
+                    .addLoreLine( "&bInfo:" )
+                    .addLoreLine( " &b> &7Versión: &a" + world.getVersion( ) )
+                    .addLoreLine( " &b> &7Server: &a" + world.getServer( ) )
+                    .addLoreLine( " &b> &7Usuarios dentro: &a" + world.getOnlineMembers( ).size( ) )
+                    .addLoreLine( " &b> &7ID: &a" + world.getUUID( ).toString( ).split( "-" )[0] )
+                    .addLoreLine( "" )
+                    .addLoreLine( world.getOwner( ).equals( ownerUUID ) || world.getMembers( ).contains( ownerUUID ) ? "&7Click &eizquierdo &7para entrar al mundo." : null )
+                    .addLoreLine( "" )
+                    .addLoreLine( world.getOwner( ).equals( ownerUUID ) ? "&7Click &ederecho &7para editar el mundo" : world.getMembers( ).contains( ownerUUID ) ? "&7Click &ederecho &7para ver la lista de miembros online" : null )
+                    .addTag( "world-uuid" , world.getUUID( ).toString( ) )
+                    .addTag( "world-server" , world.getServer( ) )
+                    .build( )
+            );
         }
+        
         
         for ( int i = 0; i < finalWorlds.size( ); i++ ) {
             try {

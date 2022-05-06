@@ -111,6 +111,9 @@ public class User {
         return plots;
     }
     
+    public ArrayList < Plot > getPlots31( ){
+        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P31 ) ).collect( Collectors.toCollection( ArrayList::new ) );
+    }
     public ArrayList < Plot > getPlots101( ){
         return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P101 ) ).collect( Collectors.toCollection( ArrayList::new ) );
     }

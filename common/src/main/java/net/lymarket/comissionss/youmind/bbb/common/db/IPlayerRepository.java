@@ -58,6 +58,8 @@ public abstract class IPlayerRepository extends MongoDB < UUID, User > {
     
     public abstract void removeWarp( User player , UUID uuid );
     
+    public abstract ArrayList < String > getPlayersUUID( ArrayList < UUID > playersUUID );
+    
     public abstract ArrayList < String > getPlayersName( );
     
     public abstract ArrayList < String > getPlayersName( String playerName );

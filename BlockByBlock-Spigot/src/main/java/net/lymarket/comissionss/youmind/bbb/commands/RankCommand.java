@@ -55,15 +55,17 @@ public class RankCommand implements ILyCommand {
     @Tab
     public ArrayList < String > tabComplete( STabContext context ){
         ArrayList < String > list = new ArrayList <>( );
-        if ( context.getArgs( ).length == 1 ) {
-            list.add( "set" );
-        }
-        if ( context.getArgs( ).length == 2 ) {
-            list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
-        }
-        if ( context.getArgs( ).length == 3 ) {
-            for ( Rank rank : Rank.values( ) ) {
-                list.add( StringUtils.capitalize( rank.name( ).toLowerCase( Locale.ROOT ) ) );
+        if ( context.getSender().hasPermission( "blockbyblock.rank" )){
+            if ( context.getArgs( ).length == 1 ) {
+                list.add( "set" );
+            }
+            if ( context.getArgs( ).length == 2 ) {
+                list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
+            }
+            if ( context.getArgs( ).length == 3 ) {
+                for ( Rank rank : Rank.values( ) ) {
+                    list.add( StringUtils.capitalize( rank.name( ).toLowerCase( Locale.ROOT ) ) );
+                }
             }
         }
         return list;

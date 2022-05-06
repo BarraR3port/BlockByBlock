@@ -6,6 +6,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.user.Stats;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.main.plot.PlotMenu;
+import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.Menu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
@@ -44,11 +45,10 @@ public class MainMenu extends Menu {
         final ItemStack item = e.getCurrentItem( );
         if ( NBTItem.hasTag( item , "server-version" ) ) {
             final String version = NBTItem.getTag( item , "server-version" );
-            getOwner( ).closeInventory( );
             new PlotMenu( playerMenuUtility , version , targetUserUUID ).open( );
-            return;
-        }
-        if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
+        } else if ( NBTItem.hasTag( item , "world" ) ) {
+            new WorldManagerMenu( playerMenuUtility , targetUserUUID ).open( );
+        } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
             getOwner( ).closeInventory( );
         }
     }
@@ -64,8 +64,12 @@ public class MainMenu extends Menu {
         inventory.setItem( 22 , Items.BUILDER_1_16 );
         
         inventory.setItem( 24 , Items.BUILDER_1_18 );
+    
+        inventory.setItem( 40 , new ItemBuilder( Items.WORLDS.clone( ) )
+                .addLoreLine( "&7Mundos: &a" + Main.getInstance( ).getWorlds( ).getWorldsByUser( targetUserUUID ).size( ) )
+                .build( ) );
         
-        inventory.setItem( 40 , new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
+        inventory.setItem( 53 , new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
                 .setHeadSkin( user.getSkin( ) )
                 .setDisplayName( "&b&lStats" )
                 .addLoreLine( "" )
