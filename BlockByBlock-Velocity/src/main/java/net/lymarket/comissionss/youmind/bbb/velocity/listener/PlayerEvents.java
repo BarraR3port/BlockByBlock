@@ -30,7 +30,14 @@ public class PlayerEvents {
         VMain.getInstance( ).getProxy( ).getScheduler( ).buildTask( VMain.getInstance( ) , ( ) -> {
             final long currentTime = System.currentTimeMillis( );
             VMain.getInstance( ).getProxy( ).getAllPlayers( ).forEach( player -> {
-                final User user = VMain.getInstance( ).getPlayers( ).getPlayer( player.getUniqueId( ) );
+                User user = VMain.getInstance( ).getPlayers( ).getPlayer( player.getUniqueId( ) );
+                if ( user == null ) {
+                    user = VMain.getInstance( ).getPlayers( ).getPlayer( player.getUsername( ) );
+                    if ( user == null ) {
+                        return;
+                    }
+                    user.setUUID( player.getUniqueId( ) );
+                }
                 user.getStats( ).addTIME_PLAYED( currentTime - timeOnline.getOrDefault( player.getUniqueId( ) , 0L ) );
                 VMain.getInstance( ).getPlayers( ).savePlayer( user );
                 timeOnline.remove( player.getUniqueId( ) );
@@ -82,23 +89,23 @@ public class PlayerEvents {
         
         VMain.debug( "KickedFromServerEvent  " + e.getPlayer( ).getUsername( ) + "  " + e.getPlayer( ).getUniqueId( ) );
         for ( RegisteredServer server : VMain.getInstance( ).getProxy( ).getAllServers( ) ) {
-            ServerSocketManager.getSocketByServer( server.getServerInfo( ).getName( ) ).ifPresent( socket -> {
-                try {
+            try {
+                ServerSocketManager.getSocketByServer( server.getServerInfo( ).getName( ) ).ifPresent( socket -> {
                     final JsonObject json = new JsonObject( );
                     json.addProperty( "type" , "REMOVE_PLAYER_TO_TP_TO_WORLD" );
                     json.addProperty( "uuid" , e.getPlayer( ).getUniqueId( ).toString( ) );
-                    socket.getOut( ).println( json );
-                    
-                } catch ( Exception ignored ) {
-                }
-            } );
+                    socket.sendMessage( json );
+                } );
+            } catch ( Exception ignored ) {
+            }
         }
         
         if ( VMain.getInstance( ).getProxy( ).getServer( "lobby" ).isPresent( ) ) {
             e.setResult( KickedFromServerEvent.RedirectPlayer.create( VMain.getInstance( ).getProxy( ).getServer( "lobby" ).get( ) ) );
-        } else {
-            e.setResult( KickedFromServerEvent.DisconnectPlayer.create( Utils.format( "&cNo hay lobbys disponibles!" ) ) );
+            return;
         }
+        e.setResult( KickedFromServerEvent.DisconnectPlayer.create( Utils.format( "&cNo hay lobbys disponibles!" ) ) );
+        
     }
     
     @Subscribe(order = PostOrder.LAST)

@@ -5,9 +5,19 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.context.MutableContextSet;
 import net.luckperms.api.node.Node;
 import net.lymarket.comissionss.youmind.bbb.commands.*;
+import net.lymarket.comissionss.youmind.bbb.commands.home.HomeCommand;
+import net.lymarket.comissionss.youmind.bbb.commands.home.Homes;
+import net.lymarket.comissionss.youmind.bbb.commands.home.RemoveHome;
+import net.lymarket.comissionss.youmind.bbb.commands.home.SetHome;
+import net.lymarket.comissionss.youmind.bbb.commands.spawn.DelSpawn;
+import net.lymarket.comissionss.youmind.bbb.commands.spawn.SetSpawn;
+import net.lymarket.comissionss.youmind.bbb.commands.spawn.Spawn;
+import net.lymarket.comissionss.youmind.bbb.commands.warp.WarpCmd;
+import net.lymarket.comissionss.youmind.bbb.commands.warp.Warps;
 import net.lymarket.comissionss.youmind.bbb.common.BBBApi;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.config.ConfigManager;
+import net.lymarket.comissionss.youmind.bbb.home.HomeManager;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.lang.ESLang;
 import net.lymarket.comissionss.youmind.bbb.listener.lobby.LobbyPlayerEvents;
@@ -21,6 +31,7 @@ import net.lymarket.comissionss.youmind.bbb.socket.ProxyMSGManager;
 import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
 import net.lymarket.comissionss.youmind.bbb.users.PlayersRepository;
+import net.lymarket.comissionss.youmind.bbb.warp.WarpManager;
 import net.lymarket.comissionss.youmind.bbb.world.WorldManager;
 import net.lymarket.common.config.ConfigGenerator;
 import net.lymarket.common.db.MongoDBClient;
@@ -46,13 +57,15 @@ public final class Main extends JavaPlugin implements BBBApi {
     private static Main instance;
     private static SlimePlugin slimePlugin;
     private static LuckPerms lpApi;
-    public WorldManager worldManager;
+    public WorldManager worlds;
+    public HomeManager homes;
     private Config config;
     private Config items;
     private String version;
     private PlayersRepository players;
     private VersionSupport nms;
     private SpigotSocketClient socket;
+    private WarpManager warps;
     
     public static LyApi getApi( ){
         return api;
@@ -91,14 +104,14 @@ public final class Main extends JavaPlugin implements BBBApi {
         config = configManager.getConfig( );
         items = configManager.getItems( );
         try {
-            api = new LyApi( this , "BlockByBlock" , "&cSin permisos" , new ESLang( new ConfigGenerator( this , "es.yml" ) , config.getString( "global.prefix" ) , "&c[&4ERROR&c]" ) );
+            api = new LyApi( this , "BlockByBlock" , "&c[&4ERROR&c] &cNo tienes el siguiente permiso:&e permission" , new ESLang( new ConfigGenerator( this , "es.yml" ) , config.getString( "global.prefix" ) , "&c[&4ERROR&c]" ) );
         } catch ( LyApiInitializationError e ) {
             e.printStackTrace( );
             getServer( ).shutdown( );
         }
+        version = Bukkit.getServer( ).getClass( ).getName( ).split( "\\." )[3];
         Settings.init( config );
         Items.init( items );
-        version = Bukkit.getServer( ).getClass( ).getName( ).split( "\\." )[3];
         
         try {
             Class < ? > supp = Class.forName( "net.lymarket.comissionss.youmind.bbb.support.version." + version + "." + version );
@@ -146,24 +159,34 @@ public final class Main extends JavaPlugin implements BBBApi {
         
         getServer( ).getPluginManager( ).registerEvents( new ProxyMSGManager( ) , this );
         api.getCommandService( ).registerCommands( new MainCommand( ) );
-        api.getCommandService( ).registerCommands( new WorldManagementCommand( ) );
-        api.getCommandService( ).registerCommands( new SetSpawnCommand( ) );
-        api.getCommandService( ).registerCommands( new DelSpawnCommand( ) );
-        api.getCommandService( ).registerCommands( new SpawnCommand( ) );
-        api.getCommandService( ).registerCommands( new MenuCommand( ) );
-        api.getCommandService( ).registerCommands( new AdminCommand( ) );
-        api.getCommandService( ).registerCommands( new RankCommand( ) );
-        
-        final MongoDBClient mongo = new MongoDBClient( "mongodb://" + config.getString( "db.host" ) + ":" + config.getString( "db.port" ) , config.getString( "db.database" ) );
+        api.getCommandService( ).registerCommands( new WorldManagement( ) );
+        api.getCommandService( ).registerCommands( new SetSpawn( ) );
+        api.getCommandService( ).registerCommands( new DelSpawn( ) );
+        api.getCommandService( ).registerCommands( new Spawn( ) );
+        api.getCommandService( ).registerCommands( new Menu( ) );
+        api.getCommandService( ).registerCommands( new Admin( ) );
+        api.getCommandService( ).registerCommands( new Rank( ) );
+        api.getCommandService( ).registerCommands( new Visit( ) );
+        api.getCommandService( ).registerCommands( new HomeCommand( ) );
+        api.getCommandService( ).registerCommands( new Homes( ) );
+        api.getCommandService( ).registerCommands( new RemoveHome( ) );
+        api.getCommandService( ).registerCommands( new SetHome( ) );
+        api.getCommandService( ).registerCommands( new WarpCmd( ) );
+        api.getCommandService( ).registerCommands( new Warps( ) );
+    
+        //final MongoDBClient mongo = new MongoDBClient( "mongodb://" + config.getString( "db.host" ) + ":" + config.getString( "db.port" ) , config.getString( "db.database" ) );
+        final MongoDBClient mongo = new MongoDBClient( config.getString( "db.urli" ) , "bbb" );
         players = new PlayersRepository( mongo , "players" );
-        worldManager = new WorldManager( mongo , "worlds" );
+        worlds = new WorldManager( mongo , "worlds" );
+        homes = new HomeManager( mongo , "homes" );
+        warps = new WarpManager( mongo , "warps" );
         try {
-            socket = new SpigotSocketClient( players , worldManager ).init( );
+            socket = new SpigotSocketClient( players , worlds , homes , warps , nms ).init( "51.161.86.217" , 5555 );
         } catch ( IOException | IllegalArgumentException e ) {
             e.printStackTrace( );
             getServer( ).shutdown( );
         }
-        socket.sendFormattedUpdate( );
+        socket.sendUpdate( );
         
         getServer( ).getScheduler( ).runTaskTimer( this , ( ) -> {
             
@@ -187,25 +210,32 @@ public final class Main extends JavaPlugin implements BBBApi {
         return items;
     }
     
+    public PlayersRepository getPlayers( ){
+        return players;
+    }
+    
+    public WorldManager getWorlds( ){
+        return worlds;
+    }
+    
+    public HomeManager getHomes( ){
+        return homes;
+    }
+    
+    public WarpManager getWarps( ){
+        return warps;
+    }
+    
+    public SpigotSocketClient getSocket( ){
+        return socket;
+    }
     
     public String getVersion( ){
         return version;
     }
     
-    public PlayersRepository getPlayers( ){
-        return players;
-    }
-    
     public VersionSupport getNMS( ){
         return nms;
-    }
-    
-    public WorldManager getWorlds( ){
-        return worldManager;
-    }
-    
-    public SpigotSocketClient getSocket( ){
-        return socket;
     }
     
     @Override
@@ -213,14 +243,13 @@ public final class Main extends JavaPlugin implements BBBApi {
         return Settings.PROXY_SERVER_NAME;
     }
     
-    
     public CompletableFuture < Void > managePermissions( UUID player_uuid , UUID world_uuid , boolean delete ){
         if ( Settings.SERVER_TYPE != ServerType.WORLDS ) return CompletableFuture.completedFuture( null );
         Main.getInstance( ).debug( "[Permission Manager] Updating permissions to " + player_uuid + " in world " + world_uuid );
         Main.getInstance( ).debug( "[Permission Manager] Removing all permissions from worlds." );
         return lpApi.getUserManager( ).modifyUser( player_uuid , user -> {
             for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
-                for ( final BWorld world : worldManager.getWorlds( ) ) {
+                for ( final BWorld world : worlds.getWorlds( ) ) {
                     user.data( ).remove( Node.builder( perm ).context( MutableContextSet.of( "world" , world.getUUID( ).toString( ) ).mutableCopy( ) ).build( ) );
                 }
             }

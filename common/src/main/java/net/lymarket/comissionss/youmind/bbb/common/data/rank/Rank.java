@@ -35,4 +35,16 @@ public enum Rank {
         return this.tabPrefix;
     }
     
+    public boolean isBuilder( ){
+        return this == BUILDER || this == DEV || this == ADMIN;
+    }
+    
+    public boolean isDev( ){
+        return this == DEV;
+    }
+    
+    public boolean isAdmin( ){
+        return this == ADMIN;
+    }
+    
 }

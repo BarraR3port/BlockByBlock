@@ -11,6 +11,7 @@ lobby-book-details:
         - "Puedes utilizar la brújula para abrir el menú de servidores o usar el comando /ym"
         - "Puedes unirte a nuestra comunidad y recibir clases en directo uniéndote a nuestro discord: &bhttps://discord.gg/blockbyblock"
 error:
+  cant-execute-commands-from-console: "&cNo puedes ejecutar comandos desde la consola"
   wrong-command: "&cComando incorrecto. Intenta usando: &e%command%&c."
   world:
     failed-to-unload: "&cError al cargar el mundo &e%world%&c."
@@ -24,8 +25,12 @@ error:
     cant-kick-own: "&cNo puedes expulsar a ti mismo."
     trust-no-permission: "&cNo tienes permiso para hacele trust a &e%player%&c."
     un-trust-no-permission: "&cNo tienes permiso para hacele untrust a &e%player%&c."
+    not-in-server: "&cNo estás en un server de &eMundos"
   player:
     not-found: "&cNo se encontró al jugador &e%player%&c."
+    not-available-to-be-visited: "&cEl jugador &e%player%&c no está disponible para ser visitado."
+    in-lobby: "&cEl jugador &e%player%&c está en el lobby."
+    not-online: "&cEl jugador &e%player%&c no está conectado."
   server:
     not-online: "&cEl servidor &e%server%&c no está online."
   no-permission: "&cNo tienes permiso para usar este comando."
@@ -33,8 +38,21 @@ error:
     create:
       failed: "&cYa tienes el máximo de plots &e%plot-type% &cen esta versión."
     not-allowed-to-join-1001: "&cNo tienes permiso para unirte a plots de &e1001x1001."
+  home:
+    not-found: "&cNo se encontró la casa &e%home%&c."
+    no-homes: "&cNo tienes casas."
+    not-found-in-world: "&cNo se encontró la casa &e%home%&c en el mundo &e%world%&c."
+    error-deleting: "&cError al eliminar la casa &e%home%&c."
   visit:
     cant-visit-lobby: "&cEl jugador está en el lobby."
+    plot:
+      not-trusted: "&cNo tienes permiso para acceder la plot de &e%player%&c."
+  warp:
+    no-warps: "&cNo hay warps."
+    no-permission-to-delete: "&cNo tienes permiso para eliminar este warp."
+    invalid-name: "&cEl nombre del warp es inválido."
+    no-permission-to-go: "&cNo tienes permiso para ir a este warp."
+
 world:
   unloaded: "&cEl mundo &e%world%&c ha sido eliminado."
   set-name: "&aEl nombre del mundo ha sido cambiado a &e%name%&a."
@@ -46,3 +64,38 @@ world:
   un-trust: "&aHas eliminado a &e%player% &adel mundo &e%world%&a."
 plot:
   join: "&aEntrando a la plot &e%plot%&a."
+home:
+  tp-to-home: "&aHas teletransportado a la home &e%home%&a."
+  teleport: "&7Te has tepeado a la home &a%home%&7."
+  created-successfully: "&7Has creado la casa &a%home%&7."
+  homes-of: "&7Casas de &b%player% &7:"
+  homes-of-page: "&7[&dPAG: &5%currentPage%&7/&5%pages%&7] "
+  deleted-successfully: "&7Has borrado la home &a%home%&7."
+  homes-of-description:
+    - "&7Click para tepearte a la home &b%home%&7."
+    - ""
+    - "&7Información:"
+    - "&dLugar: "
+    - " &8- &dMundo: &5%world_name%"
+    - " &8- &dVersión: &5%version%"
+    - " &8- &dServer: &5%server%"
+    - " &8- &dX: &5%x_location%"
+    - " &8- &dY: &5%y_location%"
+    - " &8- &dZ: &5%z_location%"
+warp:
+  created: "&aHas creado el warp &e%warp%&a."
+  deleted: "&aHas borrado el warp &e%warp%&a."
+  warps-of-page: "&7[&dPAG: &5%currentPage%&7/&5%pages%&7] "
+  teleported-to-world: "&aEntraste al mundo de warps."
+  warp-list: "&7Warps:"
+  warps-of-description:
+    - "&7Click para tepearte a la warp &b%warp%&7."
+    - ""
+    - "&7Información:"
+    - "&dLugar: "
+    - " &8- &dMundo: &5%world_name%"
+    - " &8- &dVersión: &5%version%"
+    - " &8- &dServer: &5%server%"
+    - " &8- &dX: &5%x_location%"
+    - " &8- &dY: &5%y_location%"
+    - " &8- &dZ: &5%z_location%"

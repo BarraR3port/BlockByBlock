@@ -12,6 +12,7 @@ import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.UpdatableMenu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
 import net.lymarket.lyapi.spigot.utils.NBTItem;
+import net.lymarket.lyapi.spigot.utils.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -107,8 +108,8 @@ public class WorldEditorMenu extends UpdatableMenu {
                 .addLoreLine( "&7Click para borrar mundo" )
                 .addTag( "delete-world" , "delete-world" )
                 .build( ) );
-    
-        inventory.setItem( 26, new ItemBuilder( Items.PLAYERS_IN_WORLD_BASE.clone( ) )
+        
+        inventory.setItem( 26 , new ItemBuilder( Items.PLAYERS_IN_WORLD_BASE.clone( ) )
                 .setHeadSkin( "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTNkNTkxNTUzNzhiNGFjNGQyYjE0MmUyZjIzNWQwMzdmNjhhOWI4ZTI0YWU5ZWQ0ODU3MzE2YjI4ZGNlMDU2ZiJ9fX0=" )
                 .setDisplayName( "&aAgregar miembros: " )
                 .addLoreLine( "&7Click para agregar miembros." )
@@ -126,9 +127,9 @@ public class WorldEditorMenu extends UpdatableMenu {
         
         if ( NBTItem.hasTag( item , "edit-name" ) ) {
             p.closeInventory( );
-            p.sendMessage( Main.getApi( ).getUtils( ).format( "&8&m----------------------------------------------&e" ) );
-            p.spigot( ).sendMessage( Main.getApi( ).getUtils( ).formatTC( "&7Edita el nombre de tu mundo dándole " ) , Main.getApi( ).getUtils( ).hoverOverMessageSuggestCommand( "&aCLICK AQUÍ." , Collections.singletonList( "&e/worlds set name " + world.getUUID( ) + " < El nombre >" ) , "/worlds set name " + world.getUUID( ) + " " ) );
-            p.sendMessage( Main.getApi( ).getUtils( ).format( "&8&m----------------------------------------------&e" ) );
+            p.sendMessage( Utils.format( "&8&m----------------------------------------------&e" ) );
+            p.spigot( ).sendMessage( Utils.formatTC( "&7Edita el nombre de tu mundo dándole " ) , Utils.hoverOverMessageSuggestCommand( "&aCLICK AQUÍ." , Collections.singletonList( "&e/worlds set name " + world.getUUID( ) + " < El nombre >" ) , "/worlds set name " + world.getUUID( ) + " " ) );
+            p.sendMessage( Utils.format( "&8&m----------------------------------------------&e" ) );
         } else if ( NBTItem.hasTag( item , "delete-world" ) ) {
             if ( world.getOwner( ).equals( ownerUUID ) || Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID ).getRank( ) == Rank.ADMIN ) {
                 new DeleteWorldSelector( playerMenuUtility , world.getUUID( ) , this , p.getUniqueId( ) ).open( );
@@ -136,11 +137,11 @@ public class WorldEditorMenu extends UpdatableMenu {
                 checkSomething( getOwner( ) , e.getSlot( ) , item , "&cNo puedes borrar este mundo" , "" );
             }
             
-        }else if ( NBTItem.hasTag( item , "add-members-to-world" ) ) {
+        } else if ( NBTItem.hasTag( item , "add-members-to-world" ) ) {
             //TODO CREATE THE MENU
             if ( world.getOwner( ).equals( ownerUUID ) || Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID ).getRank( ) == Rank.ADMIN ) {
-                p.spigot().sendMessage( Main.getApi( ).getUtils( ).formatTC( "&7Agrega miembros al mundo dándole " ) , Main.getApi( ).getUtils( ).hoverOverMessageSuggestCommand( "&aCLICK AQUÍ." , Collections.singletonList( "&e/worlds trust " + world.getUUID( ) + " < El nombre >" ) , "/worlds trust " + world.getUUID( ) + " " ) );
-                p.closeInventory();
+                p.spigot( ).sendMessage( Utils.formatTC( "&7Agrega miembros al mundo dándole " ) , Utils.hoverOverMessageSuggestCommand( "&aCLICK AQUÍ." , Collections.singletonList( "&e/worlds trust " + world.getUUID( ) + " < El nombre >" ) , "/worlds trust " + world.getUUID( ) + " " ) );
+                p.closeInventory( );
             } else {
                 checkSomething( getOwner( ) , e.getSlot( ) , item , "&cNo tienes permisos o no eres el Dueño del mundo" , "" );
             }

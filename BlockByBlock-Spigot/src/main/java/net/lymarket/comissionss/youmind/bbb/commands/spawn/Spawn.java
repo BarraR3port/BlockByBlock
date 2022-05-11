@@ -1,4 +1,4 @@
-package net.lymarket.comissionss.youmind.bbb.commands;
+package net.lymarket.comissionss.youmind.bbb.commands.spawn;
 
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public final class SpawnCommand implements ILyCommand {
+public final class Spawn implements ILyCommand {
     
     
     /**

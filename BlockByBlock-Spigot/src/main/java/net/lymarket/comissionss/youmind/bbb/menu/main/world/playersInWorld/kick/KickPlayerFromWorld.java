@@ -1,7 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.kick;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.Menu;
@@ -19,11 +18,6 @@ public class KickPlayerFromWorld extends MenuSelector {
     
     private final UUID target_uuid;
     
-    @Override
-    public String getMenuName(){
-        return "&7Echar jugador del mundo";
-    }
-    
     public KickPlayerFromWorld( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , Menu lastMenu , UUID target_uuid ){
         super( playerMenuUtility );
         this.lastMenu = lastMenu;
@@ -35,6 +29,11 @@ public class KickPlayerFromWorld extends MenuSelector {
         this.world_uuid = world_uuid;
         
         this.target_uuid = target_uuid;
+    }
+    
+    @Override
+    public String getMenuName( ){
+        return "&7Echar jugador del mundo";
     }
     
     public void setSubMenuItems( ){
@@ -59,7 +58,7 @@ public class KickPlayerFromWorld extends MenuSelector {
     
     public boolean handleAccept( ){
         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( this.world_uuid );
-        Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( getOwner( ).getUniqueId( ) , world , target_uuid );
+        Main.getInstance( ).getSocket( ).sendKickFromWorld( getOwner( ).getUniqueId( ) , world , target_uuid );
         return true;
     }
     

@@ -56,13 +56,22 @@ public class MainMenu extends Menu {
     
     @Override
     public void setMenuItems( ){
-        
-        final User user = Main.getInstance( ).getPlayers( ).getUpdatedPlayer( targetUserUUID );
+    
+        User user = Main.getInstance( ).getPlayers( ).getUpdatedPlayer( targetUserUUID );
+        if ( user == null ) {
+            user = Main.getInstance( ).getPlayers( ).getPlayer( getOwner( ).getName( ) );
+            if ( user == null ) {
+                getOwner( ).closeInventory( );
+                return;
+            }
+            user.setUUID( getOwner( ).getUniqueId( ) );
+            Main.getInstance( ).getPlayers( ).savePlayer( user );
+        }
         final Stats stats = user.getStats( );
         inventory.setItem( 20 , Items.BUILDER_1_12 );
-        
+    
         inventory.setItem( 22 , Items.BUILDER_1_16 );
-        
+    
         inventory.setItem( 24 , Items.BUILDER_1_18 );
     
         inventory.setItem( 40 , new ItemBuilder( Items.WORLDS.clone( ) )

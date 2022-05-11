@@ -109,7 +109,7 @@ public class Placeholders extends PlaceholderExpansion {
             
         }
         
-        final User p = Main.getInstance( ).getPlayers( ).getPlayer( player.getName( ) );
+        final User p = Main.getInstance( ).getPlayers( ).getLocalStoredPlayer( player.getUniqueId( ) );
         
         if ( p == null ) return "Jugador no encontrado";
         //%lydark_lycoins%
@@ -127,6 +127,15 @@ public class Placeholders extends PlaceholderExpansion {
             }
             case "address": {
                 return p.getAddress( );
+            }
+            case "rank_tab": {
+                return p.getRank( ).getTabPrefix( );
+            }
+            case "rank_prefix": {
+                return p.getRank( ).getPrefix( );
+            }
+            case "version": {
+                return plugin.getDescription( ).getVersion( );
             }
             /*case "lycoins_formatted": {
                 DecimalFormat df = new DecimalFormat( "#.##" );

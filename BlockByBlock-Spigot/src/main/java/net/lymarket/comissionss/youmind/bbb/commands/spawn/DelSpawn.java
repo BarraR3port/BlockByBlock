@@ -1,31 +1,29 @@
-package net.lymarket.comissionss.youmind.bbb.commands;
+package net.lymarket.comissionss.youmind.bbb.commands.spawn;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.common.commands.*;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public final class SetSpawnCommand implements ILyCommand {
+public final class DelSpawn implements ILyCommand {
     
     /**
      * @param context
      *
      * @return
      */
-    @Command(name = "setspawn", usage = "setspawn", description = "Set the spawn point of the server")
+    @Command(name = "delspawn", usage = "delspawn", description = "Set the spawn point of the server")
     public boolean command( SCommandContext context ){
         
         if ( context.getSender( ) instanceof Player ) {
             Player p = ( Player ) context.getSender( );
             
             if ( !p.hasPermission( "blockbyblock.admin" ) )
-                if ( !p.hasPermission( "blockbyblock.admin.setspawn" ) ) return false;
+                if ( !p.hasPermission( "blockbyblock.admin.delspawn" ) ) return false;
             
-            final Location loc = p.getLocation( );
-            p.getWorld( ).setSpawnLocation( loc );
-            Main.getInstance( ).getConfig( ).set( "spawn.location" , loc );
+            
+            Main.getInstance( ).getConfig( ).set( "spawn.location" , null );
             Main.getInstance( ).getConfig( ).saveData( );
             
         }

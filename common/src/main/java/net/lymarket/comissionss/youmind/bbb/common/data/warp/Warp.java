@@ -3,47 +3,45 @@ package net.lymarket.comissionss.youmind.bbb.common.data.warp;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 public class Warp {
-    
-    private final Date date;
     private final UUID uuid;
     private String name;
     private Loc location;
-    private String owner;
-    private ArrayList < String > members = new ArrayList <>( );
+    private final String version;
+    private UUID owner;
     private boolean isPublic = false;
+    private ArrayList < UUID > members = new ArrayList <>( );
     
-    public Warp( String name , Loc location , String owner ){
+    public Warp( String name , Loc location , UUID owner , String version ){
         this.uuid = UUID.randomUUID( );
         this.name = name;
         this.location = location;
         this.owner = owner;
         this.members.add( owner );
-        this.date = new Date( );
+        this.version = version;
     }
     
-    public Warp( String name , Loc location , String owner , boolean isPublic ){
+    public Warp( String name , Loc location , UUID owner , String version , boolean isPublic ){
         this.uuid = UUID.randomUUID( );
         this.name = name;
         this.location = location;
         this.owner = owner;
         this.members.add( owner );
-        this.date = new Date( );
         this.isPublic = isPublic;
+        this.version = version;
     }
     
-    public Warp( String uuid , String name , Loc location , String owner , List < String > members , Date date , boolean isPublic ){
+    public Warp( String uuid , String name , Loc location , UUID owner , String version , boolean isPublic , List < UUID > members ){
         this.uuid = UUID.fromString( uuid );
         this.name = name;
         this.location = location;
         this.owner = owner;
         this.members.addAll( members );
-        this.date = date;
         this.isPublic = isPublic;
+        this.version = version;
     }
     
     public UUID getUUID( ){
@@ -58,11 +56,11 @@ public class Warp {
         this.name = name;
     }
     
-    public String getOwner( ){
+    public UUID getOwner( ){
         return owner;
     }
     
-    public void setOwner( String owner ){
+    public void setOwner( UUID owner ){
         this.owner = owner;
     }
     
@@ -74,20 +72,24 @@ public class Warp {
         this.location = location;
     }
     
-    public ArrayList < String > getMembers( ){
+    public ArrayList < UUID > getMembers( ){
         return members;
     }
     
-    public void setMembers( ArrayList < String > members ){
+    public void setMembers( ArrayList < UUID > members ){
         this.members = members;
     }
     
-    public void addMember( String member ){
+    public void addMember( UUID member ){
         this.members.add( member );
     }
     
-    public Date getDate( ){
-        return date;
+    public void removeMember( UUID member ){
+        this.members.remove( member );
+    }
+    
+    public boolean isMember( UUID member ){
+        return this.members.contains( member );
     }
     
     public boolean isPublic( ){
@@ -96,6 +98,10 @@ public class Warp {
     
     public void setPublic( boolean aPublic ){
         isPublic = aPublic;
+    }
+    
+    public String getVersion( ){
+        return version;
     }
     
     

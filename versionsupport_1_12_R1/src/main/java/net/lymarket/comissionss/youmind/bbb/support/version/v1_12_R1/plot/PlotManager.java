@@ -4,12 +4,14 @@ import com.google.gson.JsonObject;
 import com.intellectualcrafters.plot.api.PlotAPI;
 import com.intellectualcrafters.plot.object.Plot;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
+import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.support.common.plot.IPlotManager;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
@@ -18,8 +20,12 @@ public class PlotManager extends IPlotManager < Plot > {
     private final PlotAPI api = new PlotAPI( );
     private final VersionSupport vs;
     
-    public PlotManager( VersionSupport vs ){
+    private final JavaPlugin plugin;
+    
+    
+    public PlotManager( JavaPlugin plugin , VersionSupport vs ){
         this.vs = vs;
+        this.plugin = plugin;
     }
     
     
@@ -48,8 +54,10 @@ public class PlotManager extends IPlotManager < Plot > {
             } else {
                 vs.getBbbApi( ).debug( "Teleporting " + owner_uuid + " to " + plot_type.getWorldName( ) );
             }
-            vs.getBbbApi( ).getSocket( ).sendFormattedSendMSGToPlayer( owner_uuid , "plot.join" , "plot" , plot_type.getWorldName( ) );
+            vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( owner_uuid , "plot.join" , "plot" , plot_type.getWorldName( ) );
             return;
+        } else {
+            addWorldToTp( owner_uuid , Bukkit.getWorld( plot_type.getWorldName( ) ) );
         }
         if ( plot != null ) {
             super.addPlot( owner_uuid , plot );
@@ -58,6 +66,48 @@ public class PlotManager extends IPlotManager < Plot > {
         json.addProperty( "type" , "JOIN_PLOT_REQUEST_POST" );
         
         vs.getBbbApi( ).getSocket( ).getSocket( ).sendMessage( json );
+        
+    }
+    
+    @Override
+    public void manageVisitJoinPlot( UUID owner_uuid , User targetUser , String fromServer , String currentServer ){
+        
+        final Plot plot = api.wrapPlayer( targetUser.getUUID( ) ).getCurrentPlot( );
+        final JsonObject json = new JsonObject( );
+        if ( fromServer.equals( currentServer ) ) {
+            final Player p = Bukkit.getPlayer( owner_uuid );
+            if ( p != null ) {
+                Bukkit.getScheduler( ).runTask( ( Plugin ) vs.getBbbApi( ) , ( ) -> {
+                    if ( plot != null && plot.getTrusted( ).contains( owner_uuid ) ) {
+                        vs.getBbbApi( ).debug( "Teleporting " + p.getName( ) + " to " + plot.getWorldName( ) );
+                        if ( plot.teleportPlayer( api.wrapPlayer( p ) ) ) {
+                            for ( final Player players : Bukkit.getOnlinePlayers( ) ) {
+                                p.showPlayer( plugin , players );
+                                players.showPlayer( plugin , p );
+                            }
+                        }
+                        
+                    } else {
+                        vs.getBbbApi( ).debug( "Error " + p.getName( ) + " is not trusted." );
+                        vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( owner_uuid , "error.visit.plot.not-trusted" , "player" , targetUser.getName( ) );
+                    }
+                } );
+                return;
+                
+            }
+            vs.getBbbApi( ).debug( "Error " + owner_uuid + " is not online." );
+            vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( owner_uuid , "error.player.not-online" , "player" , targetUser.getName( ) );
+        } else {
+            if ( plot != null && plot.getTrusted( ).contains( owner_uuid ) ) {
+                addPlot( owner_uuid , plot );
+                json.addProperty( "type" , "JOIN_VISIT_PLOT_REQUEST_POST" );
+                json.addProperty( "server_target" , currentServer );
+                json.addProperty( "target_uuid" , owner_uuid.toString( ) );
+                vs.getBbbApi( ).getSocket( ).getSocket( ).sendMessage( json );
+            } else {
+                vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( owner_uuid , "error.visit.plot.not-trusted" , "player" , targetUser.getName( ) );
+            }
+        }
         
     }
 }

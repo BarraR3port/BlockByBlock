@@ -1,5 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.settings;
 
+import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.lyapi.spigot.config.Config;
 import org.bukkit.Location;
 
@@ -34,6 +35,8 @@ public class Settings {
     
     public static ServerType SERVER_TYPE;
     
+    public static String VERSION;
+    
     
     public Settings( ){
     
@@ -57,6 +60,20 @@ public class Settings {
         PERMS_WHEN_CREATING_WORLD = new ArrayList <>( config.getStringList( "perms.when-creating-world" ) );
         PERMS_WHEN_JOINING_WORLD = new ArrayList <>( config.getStringList( "perms.when-joining-world" ) );
         SERVER_TYPE = ServerType.valueOf( config.getString( "global.server-type" ) );
+        switch ( Main.getInstance( ).getVersion( ) ) {
+            case "v1_12_R1": {
+                VERSION = "1.12";
+                break;
+            }
+            case "v1_16_R1": {
+                VERSION = "1.16";
+                break;
+            }
+            default: {
+                VERSION = "1.18";
+                break;
+            }
+        }
     }
     
     

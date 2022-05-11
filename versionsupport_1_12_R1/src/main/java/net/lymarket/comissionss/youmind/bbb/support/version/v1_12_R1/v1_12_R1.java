@@ -21,7 +21,7 @@ public class v1_12_R1 extends VersionSupport {
     public void registerPlotEvents( ){
         
         Bukkit.getServer( ).getPluginManager( ).registerEvents( new P2Listener( this ) , plugin );
-        plotManager = new PlotManager( this );
+        plotManager = new PlotManager( plugin , this );
     }
     
     public IPlotManager getPlotManager( ){

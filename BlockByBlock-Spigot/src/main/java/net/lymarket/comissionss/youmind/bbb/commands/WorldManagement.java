@@ -8,7 +8,6 @@ import net.lymarket.comissionss.youmind.bbb.common.error.WorldNotFoundError;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.common.commands.*;
 import net.lymarket.lyapi.spigot.LyApi;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public final class WorldManagementCommand implements ILyCommand {
+public final class WorldManagement implements ILyCommand {
     
     @Command(name = "world", permission = "blockbyblock.world", usage = "world", description = "World Management", aliases = {"w" , "worlds" , "mundo" , "mundos"})
     public boolean command( SCommandContext context ){
@@ -43,7 +42,7 @@ public final class WorldManagementCommand implements ILyCommand {
                         final UUID uuid = UUID.fromString( context.getArg( 1 ) );
                         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( uuid );
                         if ( world.getOwner( ) == player.getUniqueId( ) || player.hasPermission( "blockbyblock.world.edit.other" ) ) {
-                            Main.getInstance( ).getSocket( ).sendFormattedWorldDeleteRequest( player , world );
+                            Main.getInstance( ).getSocket( ).sendWorldDeleteRequest( player , world );
                         }
                     } catch ( IllegalArgumentException | WorldNotFoundError e ) {
                         Main.getLang( ).sendErrorMsg( player , "world.not-found" , "world" , context.getArg( 2 ) );
@@ -57,11 +56,11 @@ public final class WorldManagementCommand implements ILyCommand {
                         final User userTarget = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 2 ) );
                         if ( world.getOwner( ) == player.getUniqueId( ) || player.hasPermission( "blockbyblock.world.edit.other" ) ) {
                             world.addMember( userTarget.getUUID( ) );
-                            Main.getInstance().getWorlds().saveWorld( world );
-                            final HashMap<String, String> replace = new HashMap<>( );
+                            Main.getInstance( ).getWorlds( ).saveWorld( world );
+                            final HashMap < String, String > replace = new HashMap <>( );
                             replace.put( "world" , world.getName( ) );
                             replace.put( "player" , userTarget.getName( ) );
-                            Main.getLang( ).sendMsg( player , "world.trust.add", replace  );
+                            Main.getLang( ).sendMsg( player , "world.trust.add" , replace );
                         } else {
                             Main.getLang( ).sendErrorMsg( player , "world.trust-no-permission" , "world" , world.getName( ) );
                         }
@@ -73,19 +72,19 @@ public final class WorldManagementCommand implements ILyCommand {
                         
                     }
                     return true;
-                }else if ( context.getArg( 0 ).equalsIgnoreCase( "untrust" ) ) {
+                } else if ( context.getArg( 0 ).equalsIgnoreCase( "untrust" ) ) {
                     try {
                         final UUID uuid = UUID.fromString( context.getArg( 1 ) );
                         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( uuid );
                         final User userTarget = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 2 ) );
                         if ( world.getOwner( ) == player.getUniqueId( ) || player.hasPermission( "blockbyblock.world.edit.other" ) ) {
                             world.removeMember( userTarget.getUUID( ) );
-                            Main.getInstance().getWorlds().saveWorld( world );
-                            final HashMap<String, String> replace = new HashMap<>( );
+                            Main.getInstance( ).getWorlds( ).saveWorld( world );
+                            final HashMap < String, String > replace = new HashMap <>( );
                             replace.put( "world" , world.getName( ) );
                             replace.put( "player" , userTarget.getName( ) );
-                            Main.getLang( ).sendMsg( player , "world.un-trust", replace  );
-                         }else {
+                            Main.getLang( ).sendMsg( player , "world.un-trust" , replace );
+                        } else {
                             Main.getLang( ).sendErrorMsg( player , "world.un-trust-no-permission" , "world" , world.getName( ) );
                         }
                         
@@ -168,22 +167,22 @@ public final class WorldManagementCommand implements ILyCommand {
                     break;
                 }
                 default: {
-                    list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
+                    list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( ) );
                 }
             }
         } else if ( context.getArgs( ).length == 3 ) {
             if ( context.getArg( 0 ).equals( "trust" ) ) {
-                try{
+                try {
                     final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( context.getArg( 1 ) ) );
-                    list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) ) ;
+                    list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
                     list.removeIf( p -> world.hasMember( Main.getInstance( ).getPlayers( ).getPlayer( p ).getUUID( ) ) );
-                }catch ( WorldNotFoundError | IllegalArgumentException | NullPointerException ignored ) {
+                } catch ( WorldNotFoundError | IllegalArgumentException | NullPointerException ignored ) {
                 }
             } else if ( context.getArg( 0 ).equals( "untrust" ) ) {
-                try{
+                try {
                     final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( context.getArg( 1 ) ) );
-                    list.addAll( Main.getInstance( ).getPlayers( ).getPlayersUUID( world.getMembers() ) ) ;
-                }catch ( WorldNotFoundError | IllegalArgumentException | NullPointerException ignored ) {
+                    list.addAll( Main.getInstance( ).getPlayers( ).getPlayersUUID( world.getMembers( ) ) );
+                } catch ( WorldNotFoundError | IllegalArgumentException | NullPointerException ignored ) {
                 }
             }
             

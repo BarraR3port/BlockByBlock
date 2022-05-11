@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.lyapi.spigot.config.Config;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
+import net.lymarket.lyapi.spigot.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -57,8 +58,8 @@ public final class Items {
                 .build( );
         LOBBY_BOOK = new ItemBuilder( config.getItem( "lobby-book" ) )
                 .addTag( "lobby-book" , "lobby-book" )
-                .setBookTitle( Main.getApi( ).getUtils( ).format( Main.getLang( ).getConfig( ).getString( "lobby-book-details.title" ) ) )
-                .setBookAuthor( Main.getApi( ).getUtils( ).format( Main.getLang( ).getConfig( ).getString( "lobby-book-details.author" ) ) )
+                .setBookTitle( Utils.format( Main.getLang( ).getConfig( ).getString( "lobby-book-details.title" ) ) )
+                .setBookAuthor( Utils.format( Main.getLang( ).getConfig( ).getString( "lobby-book-details.author" ) ) )
                 .build( );
         
         BookMeta bookMeta = ( BookMeta ) LOBBY_BOOK.getItemMeta( );
@@ -147,7 +148,7 @@ public final class Items {
         
         PLAYERS_IN_WORLD_BASE = new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
                 .setHeadSkin( "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzBjZjZjZGMxMWRiNzRjMGQ3N2JhMzc1NmM2ZmRlMzQ1ZmU1NDQzZWNmN2VhNGE0MWQxNjI1NGU2NTk1ODRjZiJ9fX0" ).build( );
-    
+        
         PLOT_31_BASE = new ItemBuilder( XMaterial.WHITE_WOOL.parseMaterial( ) , 0 )
                 .setDisplayName( "&7Plots &a31" )
                 .addLoreLine( "&7Click para entrar a este plot." )

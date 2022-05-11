@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
 import net.lymarket.comissionss.youmind.bbb.velocity.utils.Utils;
@@ -19,29 +18,52 @@ import java.util.UUID;
 public class ProxySocketServer implements Runnable {
     
     private final Socket socket;
-    private Scanner scanner;
+    private Scanner in;
     private PrintWriter out;
     
     public ProxySocketServer( Socket socket ){
         this.socket = socket;
         try {
             this.out = new PrintWriter( socket.getOutputStream( ) , true );
-            this.scanner = new Scanner( socket.getInputStream( ) );
+            this.in = new Scanner( socket.getInputStream( ) );
         } catch ( IOException e ) {
             e.printStackTrace( );
         }
     }
     
+    public void closeConnections( ){
+        try {
+            socket.close( );
+        } catch ( IOException ignored ) {
+        }
+    }
+    
     public void sendMessage( JsonObject message ){
+        if ( socket == null ) {
+            return;
+        }
+        if ( !socket.isConnected( ) ) {
+            return;
+        }
+        if ( out == null ) {
+            return;
+        }
+        if ( in == null ) {
+            return;
+        }
+        if ( out.checkError( ) ) {
+            return;
+        }
         VMain.debug( "Sending message: \n" + message );
+        
         out.println( message );
     }
     
     @Override
     public void run( ){
         while (ServerSocketTask.compute && socket.isConnected( )) {
-            if ( scanner.hasNext( ) ) {
-                String message = scanner.next( );
+            if ( in.hasNext( ) ) {
+                String message = in.next( );
                 if ( message.isEmpty( ) ) continue;
                 final JsonObject json;
                 try {
@@ -77,6 +99,7 @@ public class ProxySocketServer implements Runnable {
                             socket.sendMessage( json );
                             
                         } );
+                        continue;
                         
                     }
                     
@@ -87,6 +110,7 @@ public class ProxySocketServer implements Runnable {
                         ServerSocketTask.otherTasks.add( VMain.getInstance( ).getProxy( ).getScheduler( ).buildTask( VMain.getInstance( ) , ( ) ->
                                 ServerSocketManager.getInstance( ).registerServerSocket( json.get( "server_name" ).getAsString( ) , this )
                         ).schedule( ) );
+                        continue;
                         
                     }
                     
@@ -115,6 +139,7 @@ public class ProxySocketServer implements Runnable {
                             this.sendMessage( json );
                             
                         }
+                        continue;
                     }
                     case "INIT_CREATE_WORLD_SUCCESS": {
                         if ( !json.has( "server_name" ) ) continue;
@@ -132,6 +157,7 @@ public class ProxySocketServer implements Runnable {
                             json.addProperty( "type" , "UPDATE_INV_POST_INIT_CREATE_WORLD_SUCCESS" );
                             socket.sendMessage( json );
                         } );
+                        continue;
                     }
                     
                     case "WORLD_DELETE_SUCCESS": {
@@ -142,6 +168,7 @@ public class ProxySocketServer implements Runnable {
                             json.addProperty( "type" , "UPDATE_INV_WORLD_DELETE_SUCCESS" );
                             socket.sendMessage( json );
                         } );
+                        continue;
                         
                     }
                     
@@ -158,6 +185,7 @@ public class ProxySocketServer implements Runnable {
                         /*ServerSocketManager.getSocketByServer( current_server ).ifPresent( socket -> {
                             socket.sendMessage( json );
                         } );*/
+                        continue;
                         
                     }
                     
@@ -171,6 +199,7 @@ public class ProxySocketServer implements Runnable {
                         json.remove( "type" );
                         json.addProperty( "type" , "JOIN_WORLD_REQUEST_PREV" );
                         ServerSocketManager.getSocketByServer( server_target ).ifPresent( socket -> socket.sendMessage( json ) );
+                        continue;
                     }
                     
                     case "JOIN_WORLD_REQUEST_POST": {
@@ -195,6 +224,7 @@ public class ProxySocketServer implements Runnable {
                                 socket.sendMessage( json );
                             } );
                         }
+                        continue;
                     }
                     
                     case "JOIN_PLOT_REQUEST": {
@@ -210,6 +240,7 @@ public class ProxySocketServer implements Runnable {
                         String server_target = "PP-" + server_version.replace( "." , "" ) + "-1";
                         json.addProperty( "server_target" , server_target );
                         ServerSocketManager.getSocketByServer( server_target ).ifPresent( socket -> socket.sendMessage( json ) );
+                        continue;
                     }
                     
                     case "JOIN_PLOT_REQUEST_POST": {
@@ -232,7 +263,8 @@ public class ProxySocketServer implements Runnable {
                             ServerSocketManager.getSocketByServer( current_server ).ifPresent( socket -> {
                                 socket.sendMessage( json );
                             } );*/
-                        
+    
+                        continue;
                     }
                     
                     case "CONNECT_TO_SERVER": {
@@ -256,7 +288,8 @@ public class ProxySocketServer implements Runnable {
                                 p.sendMessage( Utils.format( msg.replace( "%player%" , p.getUsername( ) ) ) );
                             }
                         }
-                        
+    
+                        continue;
                     }
                     
                     case "KICK_FROM_WORLD": {
@@ -280,8 +313,8 @@ public class ProxySocketServer implements Runnable {
                         json.addProperty( "type" , "KICK_FROM_WORLD_PREV" );
                         
                         ServerSocketManager.getSocketByServer( server_target ).ifPresent( socket -> socket.sendMessage( json ) );
-                        
-                        
+    
+                        continue;
                     }
                     
                     case "WORLD_KICK_SUCCESS": {
@@ -290,7 +323,7 @@ public class ProxySocketServer implements Runnable {
                         
                         final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
                         VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).ifPresent( ( p ) -> VMain.getInstance( ).getProxy( ).getServer( "lobby" ).ifPresent( server -> p.createConnectionRequest( server ).fireAndForget( ) ) );
-                        
+                        continue;
                     }
                     
                     case "SEND_VISIT_REQUEST": {
@@ -298,31 +331,33 @@ public class ProxySocketServer implements Runnable {
                         if ( !json.has( "owner_uuid" ) ) continue;
                         if ( !json.has( "target_uuid" ) ) continue;
                         final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
-                        if (VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).isPresent() ){
+                        if ( VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).isPresent( ) ) {
                             final Player p = VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).get( );
-                            p.getCurrentServer().ifPresent( server -> {
-                                final String serverName =server.getServerInfo( ).getName( );
-    
+                            p.getCurrentServer( ).ifPresent( server -> {
+                                final String serverName = server.getServerInfo( ).getName( );
                                 json.remove( "type" );
                                 if ( serverName.equals( "lobby" ) ) {
                                     json.addProperty( "type" , "VISIT_REQUEST_DENY" );
                                     json.addProperty( "reason" , "error.visit.cant-visit-lobby" );
                                     ServerSocketManager.getSocketByServer( json.get( "current_server" ).getAsString( ) ).ifPresent( socket -> socket.sendMessage( json ) );
+                                    return;
                                 }
                                 json.addProperty( "type" , "VISIT_REQUEST_PREV" );
                                 if ( serverName.startsWith( "PP-" ) ) {
-                                    json.addProperty( "visit-type", "plot" );
+                                    json.addProperty( "visit-type" , "plot" );
                                     ServerSocketManager.getSocketByServer( serverName ).ifPresent( socket -> socket.sendMessage( json ) );
+                                    return;
                                 } else if ( serverName.startsWith( "PW-" ) ) {
-                                    json.addProperty( "visit-type", "world" );
+                                    json.addProperty( "visit-type" , "world" );
                                     ServerSocketManager.getSocketByServer( serverName ).ifPresent( socket -> socket.sendMessage( json ) );
+                                    return;
                                 } else {
                                     json.addProperty( "type" , "VISIT_REQUEST_DENY" );
                                     json.addProperty( "reason" , "error.visit.cant-visit-lobby" );
                                     ServerSocketManager.getSocketByServer( json.get( "current_server" ).getAsString( ) ).ifPresent( socket -> socket.sendMessage( json ) );
                                 }
                                 ServerSocketManager.getSocketByServer( serverName ).ifPresent( socket -> socket.sendMessage( json ) );
-        
+                                
                             } );
                         } else {
                             json.remove( "type" );
@@ -331,7 +366,40 @@ public class ProxySocketServer implements Runnable {
                             ServerSocketManager.getSocketByServer( json.get( "current_server" ).getAsString( ) ).ifPresent( socket -> socket.sendMessage( json ) );
                             continue;
                         }
+                        continue;
+                    }
+                    case "JOIN_VISIT_PLOT_REQUEST_POST": {
+                        if ( !json.has( "server_target" ) ) continue;
+                        if ( !json.has( "target_uuid" ) ) continue;
+                        if ( !json.has( "server_target" ) ) continue;
+                        final String server_target = json.get( "server_target" ).getAsString( );
+                        final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
+                        VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).ifPresent( ( p ) -> VMain.getInstance( ).getProxy( ).getServer( server_target ).ifPresent( server -> p.createConnectionRequest( server ).fireAndForget( ) ) );
+                        continue;
+                    }
     
+                    case "JOIN_HOME": {
+                        if ( !json.has( "current_server" ) ) continue;
+                        if ( !json.has( "server_target" ) ) continue;
+                        if ( !json.has( "home_uuid" ) ) continue;
+                        if ( !json.has( "owner_uuid" ) ) continue;
+                        json.remove( "type" );
+                        json.addProperty( "type" , "JOIN_HOME_PREV" );
+                        ServerSocketManager.getSocketByServer( json.get( "server_target" ).getAsString( ) ).ifPresent( socket -> socket.sendMessage( json ) );
+                        continue;
+                    }
+                    case "JOIN_HOME_POST": {
+                        if ( !json.has( "tp" ) ) continue;
+                        if ( !json.has( "server_target" ) ) continue;
+                        if ( !json.has( "owner_uuid" ) ) continue;
+                        final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
+                        final String server_target = json.get( "server_target" ).getAsString( );
+                        boolean tp = json.get( "tp" ).getAsBoolean( );
+                        if ( tp ) {
+                            VMain.debug( "Sending " + owner_uuid + " to " + server_target );
+                            VMain.getInstance( ).getProxy( ).getPlayer( owner_uuid ).ifPresent( ( p ) -> VMain.getInstance( ).getProxy( ).getServer( server_target ).ifPresent( server -> p.createConnectionRequest( server ).fireAndForget( ) ) );
+                        }
+                        continue;
                     }
                     
                     case "ERROR": {

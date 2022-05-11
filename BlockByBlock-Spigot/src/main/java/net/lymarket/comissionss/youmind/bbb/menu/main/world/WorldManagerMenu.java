@@ -33,6 +33,7 @@ public class WorldManagerMenu extends UpdatableMenu {
         this.targetUserUUID = targetUserUUID;
         this.ownerUUID = getOwner( ).getUniqueId( );
     }
+    
     public WorldManagerMenu( IPlayerMenuUtility playerMenuUtility ){
         super( playerMenuUtility );
         this.targetUserUUID = getOwner( ).getUniqueId( );
@@ -57,7 +58,7 @@ public class WorldManagerMenu extends UpdatableMenu {
             final UUID world_uuid = UUID.fromString( NBTItem.getTag( item , "world-uuid" ) );
             final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
             if ( e.getClick( ).equals( ClickType.LEFT ) ) {
-                Main.getInstance( ).getSocket( ).sendFormattedJoinWorldRequest( ownerUUID , server_target , world_uuid , e.getSlot( ) );
+                Main.getInstance( ).getSocket( ).sendJoinWorldRequest( ownerUUID , server_target , world_uuid , e.getSlot( ) );
             } else if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
                 if ( world.getOwner( ).equals( ownerUUID ) || Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID ).getRank( ) == Rank.ADMIN ) {
                     new WorldEditorMenu( playerMenuUtility , targetUserUUID , world_uuid ).open( );

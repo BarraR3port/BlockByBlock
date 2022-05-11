@@ -1,11 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.commands;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
-import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
-import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
-import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
 import net.lymarket.lyapi.spigot.LyApi;
 import org.bukkit.entity.Player;
@@ -41,7 +37,7 @@ public final class MainCommand implements ILyCommand {
                 list.add( "worlds" );
             }
             if ( context.getArgs( ).length == 1 ) {
-                list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
+                list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( ) );
             }
             
         }

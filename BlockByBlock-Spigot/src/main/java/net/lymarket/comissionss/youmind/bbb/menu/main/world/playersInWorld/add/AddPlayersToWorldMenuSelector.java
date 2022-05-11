@@ -19,11 +19,6 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     
     private final UUID target_uuid;
     
-    @Override
-    public String getMenuName(){
-        return "&7Añadir jugador a mundo";
-    }
-    
     public AddPlayersToWorldMenuSelector( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , Menu lastMenu , UUID target_uuid ){
         super( playerMenuUtility );
         this.lastMenu = lastMenu;
@@ -35,6 +30,11 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
         this.world_uuid = world_uuid;
         
         this.target_uuid = target_uuid;
+    }
+    
+    @Override
+    public String getMenuName( ){
+        return "&7Añadir jugador a mundo";
     }
     
     public void setSubMenuItems( ){

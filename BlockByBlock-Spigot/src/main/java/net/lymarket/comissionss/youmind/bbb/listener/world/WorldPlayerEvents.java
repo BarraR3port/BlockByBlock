@@ -2,12 +2,13 @@ package net.lymarket.comissionss.youmind.bbb.listener.world;
 
 
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
-import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.listener.MainEvents;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
+import net.lymarket.comissionss.youmind.bbb.transformers.Transformer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -38,8 +39,10 @@ public final class WorldPlayerEvents extends MainEvents {
     @Override
     public void subPlayerJoinEvent( PlayerJoinEvent e ){
         final UUID uuid = e.getPlayer( ).getUniqueId( );
-        final boolean tp = Main.getInstance( ).getWorlds( ).isPlayerToTP( uuid );
-        if ( tp ) {
+        final boolean tpToWorld = Main.getInstance( ).getWorlds( ).isPlayerToTP( uuid );
+        final boolean tpToHome = Main.getInstance( ).getHomes( ).isPlayerToTP( uuid );
+        final boolean isWarpWorld = e.getPlayer( ).getLocation( ).getWorld( ).getName( ).equalsIgnoreCase( "warp" );
+        if ( tpToWorld ) {
             final BWorld world = Main.getInstance( ).getWorlds( ).getPlayerToTP( uuid );
             final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
             world.addOnlineMember( uuid );
@@ -48,26 +51,42 @@ public final class WorldPlayerEvents extends MainEvents {
                 Main.getInstance( ).getWorlds( ).removePlayerToTP( uuid );
                 Main.getInstance( ).managePermissions( uuid , world.getUUID( ) , false );
             }
+        } else if ( tpToHome ) {
+            final Home home = Main.getInstance( ).getHomes( ).getPlayerToTP( uuid );
+            final Loc homeLoc = home.getLocation( );
+            final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( homeLoc.getBWorld( ) );
+            world.addOnlineMember( uuid );
+            Main.getInstance( ).getWorlds( ).saveWorld( world );
+            if ( e.getPlayer( ).teleport( Transformer.toLocation( homeLoc ) , PlayerTeleportEvent.TeleportCause.PLUGIN ) ) {
+                Main.getInstance( ).getHomes( ).removePlayerToTP( uuid );
+                Main.getInstance( ).managePermissions( uuid , world.getUUID( ) , false );
+            }
+        } else if ( isWarpWorld ) {
+    
         }
     }
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerBreaksBlock( BlockBreakEvent e ){
+        final boolean isWarpWorld = e.getBlock( ).getLocation( ).getWorld( ).getName( ).equalsIgnoreCase( "warp" );
+        if ( isWarpWorld ) {
+            return;
+        }
         final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
-            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendJoinServer( playerUUID , "lobby" );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             e.setCancelled( true );
             return;
         }
         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( worldUUID );
         final Player player = e.getPlayer( );
         if ( world == null ) {
-            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             e.setCancelled( true );
             return;
         }
@@ -76,8 +95,8 @@ public final class WorldPlayerEvents extends MainEvents {
             e.setCancelled( true );
             world.removeOnlineMember( playerUUID );
             Main.getInstance( ).getWorlds( ).saveWorld( world );
-            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( world.getOwner( ) , world , playerUUID );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
         }
         
         
@@ -85,21 +104,25 @@ public final class WorldPlayerEvents extends MainEvents {
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerPlaceBlocks( BlockPlaceEvent e ){
+        final boolean isWarpWorld = e.getBlock( ).getLocation( ).getWorld( ).getName( ).equalsIgnoreCase( "warp" );
+        if ( isWarpWorld ) {
+            return;
+        }
         final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
-            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendJoinServer( playerUUID , "lobby" );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             e.setCancelled( true );
             return;
         }
         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( worldUUID );
         final Player player = e.getPlayer( );
         if ( world == null ) {
-            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             e.setCancelled( true );
             return;
         }
@@ -108,21 +131,25 @@ public final class WorldPlayerEvents extends MainEvents {
             e.setCancelled( true );
             world.removeOnlineMember( playerUUID );
             Main.getInstance( ).getWorlds( ).saveWorld( world );
-            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( world.getOwner( ) , world , playerUUID );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
         }
     }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerTeleport( PlayerTeleportEvent e ){
+        final boolean isWarpWorld = e.getTo( ).getWorld( ).getName( ).equalsIgnoreCase( "warp" );
+        if ( isWarpWorld ) {
+            return;
+        }
         final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
             if ( e.getFrom( ).getWorld( ).equals( e.getTo( ).getWorld( ) ) ) {
-                Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
-                Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+                Main.getInstance( ).getSocket( ).sendJoinServer( playerUUID , "lobby" );
+                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
                 e.setCancelled( true );
             }
             return;
@@ -133,8 +160,8 @@ public final class WorldPlayerEvents extends MainEvents {
             
             if ( prevWorld == null || postWorld == null ) {
                 e.setCancelled( true );
-                Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
-                Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+                Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
+                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
                 return;
             }
             if ( postWorld.getMembers( ).contains( playerUUID ) || postWorld.getOwner( ).equals( playerUUID ) ) {
@@ -143,8 +170,8 @@ public final class WorldPlayerEvents extends MainEvents {
                 e.setCancelled( true );
                 postWorld.removeOnlineMember( playerUUID );
                 Main.getInstance( ).getWorlds( ).saveWorld( postWorld );
-                Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , postWorld , postWorld.getOwner( ) );
-                Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+                Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , postWorld , postWorld.getOwner( ) );
+                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             }
         }
         final User user = Main.getInstance( ).getPlayers( ).getPlayer( playerUUID );
@@ -156,21 +183,25 @@ public final class WorldPlayerEvents extends MainEvents {
     
     @EventHandler
     public void onPlayerChangeWorld( PlayerChangedWorldEvent e ){
+        final boolean isWarpWorld = e.getPlayer( ).getLocation( ).getWorld( ).getName( ).equalsIgnoreCase( "warp" );
+        if ( isWarpWorld ) {
+            return;
+        }
         final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
-            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendJoinServer( playerUUID , "lobby" );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             return;
         }
         
         final BWorld postWorld = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) ) );
         
         if ( postWorld == null ) {
-            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.PROXY_SERVER_NAME , playerUUID );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             return;
         }
         if ( postWorld.getMembers( ).contains( playerUUID ) || postWorld.getOwner( ).equals( playerUUID ) ) {
@@ -179,21 +210,25 @@ public final class WorldPlayerEvents extends MainEvents {
         } else {
             postWorld.removeOnlineMember( playerUUID );
             Main.getInstance( ).getWorlds( ).saveWorld( postWorld );
-            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( playerUUID , postWorld , postWorld.getOwner( ) );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , postWorld , postWorld.getOwner( ) );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
         }
         
     }
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocessEvent( PlayerCommandPreprocessEvent e ){
+        final boolean isWarpWorld = e.getPlayer( ).getLocation( ).getWorld( ).getName( ).equalsIgnoreCase( "warp" );
+        if ( isWarpWorld ) {
+            return;
+        }
         final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         UUID worldUUID;
         try {
             worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
         } catch ( IllegalArgumentException ex ) {
-            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendJoinServer( playerUUID , "lobby" );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             e.setCancelled( true );
             return;
         }
@@ -202,29 +237,29 @@ public final class WorldPlayerEvents extends MainEvents {
         
         if ( world == null ) {
             // kick the player with the bukkit api
-            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" , "&cMundo no encontrado" );
+            Main.getInstance( ).getSocket( ).sendJoinServer( playerUUID , "lobby" , "&cMundo no encontrado" );
             e.setCancelled( true );
             return;
         }
         
-        Main.getInstance( ).debug( "Player " + player.getName( ) + " is in world " + world.getName( ) );
+        /*Main.getInstance( ).debug( "Player " + player.getName( ) + " is in world " + world.getName( ) );
         Main.getInstance( ).debug( "Player " + player.getName( ) + " is member: " + world.getMembers( ).contains( playerUUID ) );
         Main.getInstance( ).debug( "Player " + player.getName( ) + " is owner: " + world.getOwner( ).equals( playerUUID ) );
         Main.getInstance( ).debug( "Player " + player.getName( ) + " can Join: " + (!world.getMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID )) );
-        
+        */
         String command = e.getMessage( );
-        if ( (command.startsWith( "//calc" ) || command.startsWith( "//eval" ) || command.startsWith( "//solve" ) || command.startsWith( "//evaluate " ) && !(Main.getInstance( ).getPlayers( ).getPlayer( playerUUID ).getRank( ).equals( Rank.ADMIN ))) ) {
+        if ( (command.startsWith( "//calc" ) || command.startsWith( "//eval" ) || command.startsWith( "//solve" ) || command.startsWith( "//evaluate " ) && !(Main.getInstance( ).getPlayers( ).getPlayer( playerUUID ).getRank( ).isAdmin( ))) ) {
             e.setCancelled( true );
-            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( world.getOwner( ) , world , playerUUID );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-use-commands-in-this-world" );
+            Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-use-commands-in-this-world" );
         }
         
         if ( !world.getMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID ) ) {
             e.setCancelled( true );
             world.removeOnlineMember( playerUUID );
             Main.getInstance( ).getWorlds( ).saveWorld( world );
-            Main.getInstance( ).getSocket( ).sendFormattedKickFromWorld( world.getOwner( ) , world , playerUUID );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
         }
         
         

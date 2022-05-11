@@ -5,7 +5,6 @@ import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
-import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.skin.SkinManager;
 import net.lymarket.common.Api;
 
@@ -18,7 +17,7 @@ public class User {
     private final HashMap < String, Boolean > options = new HashMap <>( );
     private final HashMap < String, String > properties = new HashMap <>( );
     private final ArrayList < Plot > plots = new ArrayList <>( );
-    private final ArrayList < Warp > warps = new ArrayList <>( );
+    private final ArrayList < net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp > warps = new ArrayList <>( );
     private final ArrayList < Home > homes = new ArrayList <>( );
     
     private Rank rank;
@@ -114,6 +113,7 @@ public class User {
     public ArrayList < Plot > getPlots31( ){
         return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P31 ) ).collect( Collectors.toCollection( ArrayList::new ) );
     }
+    
     public ArrayList < Plot > getPlots101( ){
         return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P101 ) ).collect( Collectors.toCollection( ArrayList::new ) );
     }
@@ -151,15 +151,15 @@ public class User {
         this.address = address;
     }
     
-    public ArrayList < Warp > getWarps( ){
+    public ArrayList < net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp > getWarps( ){
         return warps;
     }
     
-    public void addWarp( Warp warp ){
+    public void addWarp( net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp warp ){
         warps.add( warp );
     }
     
-    public void removeWarp( Warp warp ){
+    public void removeWarp( net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp warp ){
         warps.remove( warp );
     }
     

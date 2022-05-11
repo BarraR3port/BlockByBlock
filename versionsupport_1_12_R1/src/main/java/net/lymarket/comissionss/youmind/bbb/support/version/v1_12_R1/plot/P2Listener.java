@@ -34,12 +34,18 @@ public class P2Listener implements Listener {
     @EventHandler
     public void onPlayerJoinEvent( PlayerJoinEvent e ){
         final UUID uuid = e.getPlayer( ).getUniqueId( );
-        final boolean tp = vs.getPlotManager( ).hasPlot( uuid );
-        if ( tp ) {
+        final boolean tpToPlot = vs.getPlotManager( ).hasPlot( uuid );
+        final boolean tpToWorld = vs.getPlotManager( ).hasWorldToTp( uuid );
+        if ( tpToPlot ) {
             final Plot plot = ( Plot ) vs.getPlotManager( ).getPlot( uuid );
             if ( plot.teleportPlayer( new PlotAPI( ).wrapPlayer( uuid ) ) ) {
                 vs.getPlotManager( ).removePlot( uuid );
             }
+        } else if ( tpToWorld ) {
+            final World world = vs.getPlotManager( ).getWorldToTp( uuid );
+            vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( uuid , "plot.join" , "plot" , world.getName( ) );
+            e.getPlayer( ).teleport( world.getSpawnLocation( ) );
+            
         }
     }
     
@@ -59,7 +65,7 @@ public class P2Listener implements Listener {
                 break;
             case BUILDER: {
                 if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                    if ( user.getPlots31( ).size( ) >= 10 ) {
+                    if ( user.getPlots31( ).size( ) >= 15 ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P31 ) );
                         canCreate = false;
@@ -91,7 +97,7 @@ public class P2Listener implements Listener {
             }
             case VISITOR: {
                 if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                    if ( user.getPlots31( ).size( ) >= 5 ) {
+                    if ( user.getPlots31( ).size( ) >= 15 ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P31 ) );
                         canCreate = false;
@@ -175,8 +181,8 @@ public class P2Listener implements Listener {
         final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
         if ( world.getName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
             if ( user.getRank( ).equals( Rank.VISITOR ) ) {
-                vs.getBbbApi( ).getSocket( ).sendFormattedJoinServer( playerUUID , "lobby" );
-                vs.getBbbApi( ).getSocket( ).sendFormattedSendMSGToPlayer( playerUUID , "error.plot.not-allowed-to-join-1001" );
+                vs.getBbbApi( ).getSocket( ).sendJoinServer( playerUUID , "lobby" );
+                vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.plot.not-allowed-to-join-1001" );
             }
         }
         

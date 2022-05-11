@@ -81,13 +81,13 @@ public final class VMain extends LyApiVelocity {
         proxy.getChannelRegistrar( ).register( new LegacyChannelIdentifier( "lymarket:bbb" ) );
         proxy.getEventManager( ).register( this , new onPluginMessage( ) );
         proxy.getEventManager( ).register( this , new PlayerEvents( ) );
-        serverManager.init( );
+        //serverManager.init( );
         
         
         if ( ServerSocketTask.init( ) ) {
             debug( "ServerSocketTask started" );
         }
-        String url = config.getDb_urli( ).equals( "" ) ? "mongodb://" + config.getDb_username( ) + ":" + config.getDb_password( ) + "@" + config.getDb_host( ) + ":" + config.getDb_port( ) : config.getDb_urli( );
+        String url = /*config.getDb_urli( ).equals( "" ) ? "mongodb://" + config.getDb_username( ) + ":" + config.getDb_password( ) + "@" + config.getDb_host( ) + ":" + config.getDb_port( ) :*/ config.getDb_urli( );
         final MongoDBClient mongo = new MongoDBClient( url , config.getDb_database( ) );
         playersRepository = new PlayersRepository( mongo , "players" );
         worldManager = new WorldManager( mongo , "worlds" );

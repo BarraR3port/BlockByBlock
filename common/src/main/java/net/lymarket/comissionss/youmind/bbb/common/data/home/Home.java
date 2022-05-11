@@ -3,34 +3,35 @@ package net.lymarket.comissionss.youmind.bbb.common.data.home;
 
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 
-import java.util.Date;
 import java.util.UUID;
 
 public class Home {
     
-    private final String owner;
+    private final UUID owner;
     private final UUID uuid;
-    private final Date date;
     private String name;
     private Loc location;
     
-    public Home( String owner , String name , Loc location ){
+    private String version;
+    
+    
+    public Home( UUID owner , String name , Loc location , String version ){
         this.owner = owner;
         this.uuid = UUID.randomUUID( );
-        this.date = new Date( );
         this.name = name;
         this.location = location;
+        this.version = version;
     }
     
-    public Home( String uuid , String owner , String name , Loc location , Date date ){
+    public Home( String uuid , UUID owner , String name , Loc location , String version ){
         this.owner = owner;
         this.name = name;
         this.location = location;
         this.uuid = UUID.fromString( uuid );
-        this.date = date;
+        this.version = version;
     }
     
-    public String getOwner( ){
+    public UUID getOwner( ){
         return owner;
     }
     
@@ -54,7 +55,11 @@ public class Home {
         return uuid;
     }
     
-    public Date getDate( ){
-        return date;
+    public String getVersion( ){
+        return version;
+    }
+    
+    public void setVersion( String version ){
+        this.version = version;
     }
 }

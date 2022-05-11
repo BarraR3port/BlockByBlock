@@ -77,13 +77,13 @@ public class PlotMenu extends Menu {
         
         if ( NBTItem.hasTag( item , "plot-type" ) ) {
             final PlotType plotType = PlotType.valueOf( NBTItem.getTag( item , "plot-type" ) );
-            if ( plotType.equals( PlotType.P1001 )){
+            if ( plotType.equals( PlotType.P1001 ) ) {
                 if ( user.getRank( ).equals( Rank.VISITOR ) ) {
-                    Main.getLang().sendErrorMsg( e.getWhoClicked( ) , "plot.not-allowed-to-join-1001" );
+                    Main.getLang( ).sendErrorMsg( e.getWhoClicked( ) , "plot.not-allowed-to-join-1001" );
                     return;
                 }
             }
-            Main.getInstance( ).getSocket( ).sendFormattedJoinPlotRequest( getOwner( ).getUniqueId( ) , serverVersion , null , plotType , e.getSlot( ) );
+            Main.getInstance( ).getSocket( ).sendJoinPlotRequest( getOwner( ).getUniqueId( ) , serverVersion , null , plotType , e.getSlot( ) );
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
             new MainMenu( playerMenuUtility ).open( );
         }

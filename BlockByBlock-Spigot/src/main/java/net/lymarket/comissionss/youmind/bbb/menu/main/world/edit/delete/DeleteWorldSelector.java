@@ -55,7 +55,7 @@ public class DeleteWorldSelector extends MenuSelector {
     
     public boolean handleAccept( ){
         if ( world.getOwner( ).equals( target_uuid ) || Main.getInstance( ).getPlayers( ).getPlayer( target_uuid ).getRank( ) == Rank.ADMIN ) {
-            Main.getInstance( ).getSocket( ).sendFormattedWorldDeleteRequest( getOwner( ) , world );
+            Main.getInstance( ).getSocket( ).sendWorldDeleteRequest( getOwner( ) , world );
             return true;
         }
         return false;

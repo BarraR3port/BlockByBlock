@@ -1,21 +1,3 @@
-#TODO Crear sistema de permisos:
-# Para manejar las parcelas los usuarios deben tener ciertos permisos. Por ejemplo para entrar a las parcelas 101x101 en la
-# 1.12:
-# 1.12 y 101x101 -> bbb.parcelas.101x101.1.12
-# 1.12 y 501x501 -> bbb.parcelas.501x501.1.12
-# 1.12 y 1000x1000 -> bbb.parcelas.1000x1000.1.12
-#
-# 1.16:
-# 1.16 y 101x101 -> bbb.parcelas.101x101.1.16
-# 1.16 y 501x501 -> bbb.parcelas.501x501.1.16
-# 1.16 y 1000x1000 -> bbb.parcelas.1000x1000.1.16
-#
-# 1.18:
-# 1.18 y 101x101 -> bbb.parcelas.101x101.1.18
-# 1.18 y 501x501 -> bbb.parcelas.501x501.1.18
-# 1.18 y 1000x1000 -> bbb.parcelas.1000x1000.1.18
-
-
 global:
   prefix: "&aBlock By Block"
   server-type: "CORE" #LOBBY, CORE
@@ -39,6 +21,7 @@ db:
   user: root
   password: root
   database: blockbyblock
+  urli: "mongodb://bbb:luk@51.161.86.217:27017/bbb"
 
 
 perms:

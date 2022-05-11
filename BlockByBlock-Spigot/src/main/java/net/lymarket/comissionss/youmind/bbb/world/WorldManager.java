@@ -7,6 +7,7 @@ import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.mongodb.client.model.Filters;
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.db.IBWorldManager;
 import net.lymarket.comissionss.youmind.bbb.common.error.WorldNotFoundError;
@@ -141,7 +142,7 @@ public class WorldManager extends IBWorldManager {
         Main.getInstance( ).debug( "[WorldDestroyer] Deleting the world: " + worldName );
         if ( world == null ) {
             Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: world == null" );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.not-loaded" , "world" , worldName ) );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.not-loaded" , "world" , worldName ) );
             
             isDone = false;
         }
@@ -152,12 +153,12 @@ public class WorldManager extends IBWorldManager {
         
         if ( !players.isEmpty( ) ) {
             players.forEach( player -> player.kickPlayer( "El mundo ha sido borrado" ) );
-            Main.getInstance( ).getSocket( ).sendFormattedJoinServer( owner_uuid , "lobby" );
+            Main.getInstance( ).getSocket( ).sendJoinServer( owner_uuid , "lobby" );
         }
         
         if ( !Bukkit.unloadWorld( world , true ) ) {
             Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: &e!Bukkit.unloadWorld( world , true )" );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) );
             isDone = false;
         }
         
@@ -174,18 +175,26 @@ public class WorldManager extends IBWorldManager {
         } catch ( UnknownWorldException | IOException e ) {
             e.printStackTrace( );
         }
-        
+    
+        final ArrayList < Home > homesByWorld = Main.getInstance( ).getHomes( ).getHomesByWorld( bworld.getUUID( ) );
+        Main.getInstance( ).debug( "[WorldDestroyer] Deleting the " + homesByWorld.size( ) + " Homes from the world..." );
+        for ( Home home : homesByWorld ) {
+            Main.getInstance( ).getHomes( ).deleteHome( home );
+            Main.getInstance( ).debug( "[WorldDestroyer] Deleted the home: " + home.getName( ) + " from the world" );
+        }
+        Main.getInstance( ).debug( "[WorldDestroyer] Deleted all the homes." );
+    
         database.deleteOne( TABLE_NAME , Filters.eq( "uuid" , bworld.getUUID( ).toString( ) ) );
-        
+    
         try {
             Main.getInstance( ).debug( "[WorldDestroyer] Deleting the World Folder of: " + worldName + "..." );
             FileUtils.deleteDirectory( new File( worldName ) );
-            FileUtils.forceDelete( new File( Main.getInstance( ).getServer( ).getWorldContainer( ) , "\\slime_worlds\\" + worldName + ".slime" ) );
+            FileUtils.forceDelete( new File( Main.getInstance( ).getServer( ).getWorldContainer( ) , "/slime_worlds/" + worldName + ".slime" ) );
             Main.getInstance( ).debug( "[WorldDestroyer] Deleted the World Folder of: " + worldName + "." );
         } catch ( Exception e ) {
             e.printStackTrace( );
-            Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: File file = new File( Main.getInstance( ).getDataFolder( ) , \"/\" + worldName )" );
-            Main.getInstance( ).getSocket( ).sendFormattedSendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) );
+            Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: File file = new File( Main.getInstance( ).getDataFolder( ) , /" + worldName );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) );
             isDone = false;
         }
         

@@ -5,6 +5,7 @@ import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
+import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -55,6 +56,7 @@ public class ServerSocketTask {
                 new ServerSocketTask( 5555 );
                 return true;
             } catch ( IOException e ) {
+                e.printStackTrace( );
                 return false;
             }
         }
@@ -63,6 +65,7 @@ public class ServerSocketTask {
     
     public static void stopTasks( ){
         compute = false;
+        VMain.getInstance( ).getProxy( ).getAllServers( ).forEach( server -> ServerSocketManager.getSocketByServer( server.getServerInfo( ).getName( ) ).ifPresent( ProxySocketServer::closeConnections ) );
         for ( ScheduledTask t : otherTasks ) {
             t.cancel( );
         }

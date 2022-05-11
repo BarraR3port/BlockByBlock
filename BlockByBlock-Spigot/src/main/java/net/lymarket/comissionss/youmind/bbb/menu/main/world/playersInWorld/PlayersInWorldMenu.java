@@ -55,7 +55,7 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
     }
     
     public String getMenuName( ){
-        return  (members ? "Miembros de " :"Jugadores en: ") + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( ));
+        return (members ? "Miembros de " : "Jugadores en: ") + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( ));
     }
     
     public void setMenuItems( ){
@@ -71,7 +71,7 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
                     break;
                 if ( onlineMembers.get( this.index ) != null ) {
                     final User user = onlineMembers.get( this.index );
-                    if ( members){
+                    if ( members ) {
                         this.inventory.addItem( new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
                                 .setHeadSkin( user.getSkin( ) )
                                 .setDisplayName( "&6" + user.getName( ) )
@@ -135,7 +135,7 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
         
         if ( NBTItem.hasTag( item , "user-name" ) ) {
             final UUID targetUUID = UUID.fromString( NBTItem.getTag( item , "user-uuid" ) );
-            if (members){
+            if ( members ) {
                 if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
                     if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.kick" ) || user.getRank( ) == Rank.ADMIN ) {
                         new KickPlayerFromWorld( playerMenuUtility , world_uuid , this , targetUUID ).open( );

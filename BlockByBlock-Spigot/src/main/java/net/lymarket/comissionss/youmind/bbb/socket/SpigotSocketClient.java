@@ -5,16 +5,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
+import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
+import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocket;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocketClient;
 import net.lymarket.comissionss.youmind.bbb.event.PrevCreateWorld;
+import net.lymarket.comissionss.youmind.bbb.home.HomeManager;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.add.AddPlayersToWorldMenuSelector;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
+import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
+import net.lymarket.comissionss.youmind.bbb.transformers.Transformer;
 import net.lymarket.comissionss.youmind.bbb.users.PlayersRepository;
+import net.lymarket.comissionss.youmind.bbb.warp.WarpManager;
 import net.lymarket.comissionss.youmind.bbb.world.WorldManager;
 import net.lymarket.lyapi.spigot.menu.IUpdatableMenu;
 import org.bukkit.Bukkit;
@@ -29,10 +36,12 @@ import java.util.stream.Collectors;
 
 public class SpigotSocketClient extends ISocket {
     
+    private final VersionSupport vs;
     private ProxySocket mainSocket;
     
-    public SpigotSocketClient( PlayersRepository players , WorldManager worlds ){
-        super( players , worlds );
+    public SpigotSocketClient( PlayersRepository players , WorldManager worlds , HomeManager homes , WarpManager warps , VersionSupport plots ){
+        super( players , worlds , homes , warps );
+        this.vs = plots;
         
     }
     
@@ -41,7 +50,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedCreateWorldMSG( Object event ){
+    public void sendCreateWorldMSG( Object event ){
         final PrevCreateWorld e = ( PrevCreateWorld ) event;
         final JsonObject js = new JsonObject( );
         js.addProperty( "type" , "CREATE_WORLD" );
@@ -56,7 +65,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedJoinServer( UUID owner , String serverTarget ){
+    public void sendJoinServer( UUID owner , String serverTarget ){
         final JsonObject js = new JsonObject( );
         js.addProperty( "type" , "CONNECT_TO_SERVER" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -67,7 +76,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedJoinServer( UUID owner , String serverTarget , String msg ){
+    public void sendJoinServer( UUID owner , String serverTarget , String msg ){
         final JsonObject js = new JsonObject( );
         js.addProperty( "type" , "CONNECT_TO_SERVER" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -78,7 +87,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedKickFromWorld( UUID owner , BWorld world , UUID target ){
+    public void sendKickFromWorld( UUID owner , BWorld world , UUID target ){
         final JsonObject js = new JsonObject( );
         js.addProperty( "type" , "KICK_FROM_WORLD" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -91,7 +100,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedKickFromWorld( UUID owner , String world_uuid , String server , UUID target ){
+    public void sendKickFromWorld( UUID owner , String world_uuid , String server , UUID target ){
         final JsonObject js = new JsonObject( );
         js.addProperty( "type" , "KICK_FROM_WORLD" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -104,7 +113,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedWorldDeleteRequest( Object player , BWorld world ){
+    public void sendWorldDeleteRequest( Object player , BWorld world ){
         final Player owner = ( Player ) player;
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "WORLD_DELETE_PREV" );
@@ -118,7 +127,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedJoinWorldRequest( UUID owner , String serverTarget , UUID worldUUID , int item_slot ){
+    public void sendJoinWorldRequest( UUID owner , String serverTarget , UUID worldUUID , int item_slot ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "JOIN_WORLD_REQUEST" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -131,7 +140,7 @@ public class SpigotSocketClient extends ISocket {
     
     
     @Override
-    public void sendFormattedJoinPlotRequest( UUID owner , String server_version , String plotID , PlotType plotType , int item_slot ){
+    public void sendJoinPlotRequest( UUID owner , String server_version , String plotID , PlotType plotType , int item_slot ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "JOIN_PLOT_REQUEST" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -144,7 +153,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedSendVisitRequest( UUID owner_uuid , UUID target_uuid ){
+    public void sendVisitRequest( UUID owner_uuid , UUID target_uuid ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "SEND_VISIT_REQUEST" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -154,7 +163,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedSendMSGToPlayer( UUID target , String key ){
+    public void sendMSGToPlayer( UUID target , String key ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "SEND_MSG_TO_PLAYER" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -165,7 +174,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedSendMSGToPlayer( UUID target , String key , String word , String replacement ){
+    public void sendMSGToPlayer( UUID target , String key , String word , String replacement ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "SEND_MSG_TO_PLAYER" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -179,7 +188,7 @@ public class SpigotSocketClient extends ISocket {
     }
     
     @Override
-    public void sendFormattedSendMSGToPlayer( UUID target , String key , HashMap < String, String > replacementsMap ){
+    public void sendMSGToPlayer( UUID target , String key , HashMap < String, String > replacementsMap ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "SEND_MSG_TO_PLAYER" );
         js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
@@ -194,24 +203,43 @@ public class SpigotSocketClient extends ISocket {
         sendMessage( js.toString( ) );
     }
     
+    @Override
+    public void sendJoinHome( UUID owner , Home home ){
+        JsonObject js = new JsonObject( );
+        js.addProperty( "type" , "JOIN_HOME" );
+        js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
+        js.addProperty( "server_target" , home.getLocation( ).getServer( ) );
+        js.addProperty( "home_uuid" , home.getUUID( ).toString( ) );
+        js.addProperty( "owner_uuid" , owner.toString( ) );
+        sendMessage( js.toString( ) );
+    }
     
     @Override
-    public void sendFormattedUpdate( ){
+    public void sendJoinWarp( UUID owner , Warp warp ){
+        JsonObject js = new JsonObject( );
+        /*js.addProperty( "type" , "JOIN_HOME" );
+        js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
+        js.addProperty( "server_target" , home.getLocation( ).getServer( ) );
+        js.addProperty( "home_uuid" , home.getUUID( ).toString( ) );
+        js.addProperty( "owner_uuid" , owner.toString( ) );
+        sendMessage( js.toString( ) );*/
+    }
+    
+    
+    @Override
+    public void sendUpdate( ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "UPDATE" );
         js.addProperty( "server_name" , Settings.PROXY_SERVER_NAME );
         sendMessage( js.toString( ) );
     }
     
-    public SpigotSocketClient init( ) throws IOException{
-        Socket socket = new Socket( "localhost" , 5555 );
+    public SpigotSocketClient init( String host , int port ) throws IOException{
+        Socket socket = new Socket( host , port );
         mainSocket = new ProxySocket( socket );
         return this;
     }
     
-    /**
-     * Send arena data to the lobbies.
-     */
     public void sendMessage( String message ){
         if ( message == null ) return;
         if ( message.isEmpty( ) ) return;
@@ -319,7 +347,7 @@ public class SpigotSocketClient extends ISocket {
                                     Main.getInstance( ).debug( "[World Creation] [Phase 1/2] Creating World: " + world_name );
                                     BWorld world = new BWorld( owner , world_name , world_server , world_version , world_uuid );
                                     getWorlds( ).createCustomLayerWorld( world , world_layer_material );
-                                    Main.getInstance( ).debug( "[World Creation] [Phase 2/2] Creating World: " + world_uuid.toString( ) );
+                                    Main.getInstance( ).debug( "[World Creation] [Phase 2/2] Creating World: " + world_uuid );
                                     getWorlds( ).createWorld( world );
                                     final Player p = Bukkit.getPlayer( owner );
                                     final boolean teleport = p == null;
@@ -404,7 +432,7 @@ public class SpigotSocketClient extends ISocket {
                                     } else {
                                         Main.getInstance( ).debug( "Teleporting " + owner_uuid + " to " + world.getUUID( ).toString( ) );
                                     }
-                                    sendFormattedSendMSGToPlayer( owner_uuid , "world.join" , "world" , world.getName( ) );
+                                    sendMSGToPlayer( owner_uuid , "world.join" , "world" , world.getName( ) );
                                     continue;
                                 }
                                 
@@ -429,7 +457,7 @@ public class SpigotSocketClient extends ISocket {
                                     if ( p.getOpenInventory( ).getTopInventory( ).getHolder( ) instanceof WorldManagerMenu ) {
                                         WorldManagerMenu menu = ( WorldManagerMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( );
                                         menu.checkSomething( p , item_slot , menu.getInventory( ).getItem( item_slot ) , "&cSin permisos" , "&cNo tienes permisos" );
-                                        sendFormattedSendMSGToPlayer( owner_uuid , "error.world.not-allowed-to-join-world" );
+                                        sendMSGToPlayer( owner_uuid , "error.world.not-allowed-to-join-world" );
                                     }
                                 } catch ( Exception ignored ) {
                                 }
@@ -443,7 +471,7 @@ public class SpigotSocketClient extends ISocket {
                                 if ( !json.has( "item_slot" ) ) continue;
                                 if ( !json.has( "plot_type" ) ) continue;
                                 
-                                Main.getInstance( ).getNMS( ).getPlotManager( ).manageJoinPlot( json );
+                                vs.getPlotManager( ).manageJoinPlot( json );
                                 
                             }
                             case "JOIN_PLOT_REQUEST_POST_DENY": {
@@ -456,7 +484,7 @@ public class SpigotSocketClient extends ISocket {
                                     if ( p.getOpenInventory( ).getTopInventory( ).getHolder( ) instanceof WorldManagerMenu ) {
                                         WorldManagerMenu menu = ( WorldManagerMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( );
                                         menu.checkSomething( p , item_slot , menu.getInventory( ).getItem( item_slot ) , "&cSin permisos" , "&cNo tienes permisos" );
-                                        sendFormattedSendMSGToPlayer( owner_uuid , "error.world.not-allowed-to-join-world" );
+                                        sendMSGToPlayer( owner_uuid , "error.world.not-allowed-to-join-world" );
                                     }
                                 } catch ( Exception ignored ) {
                                 }
@@ -499,7 +527,7 @@ public class SpigotSocketClient extends ISocket {
                                 final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
                                 if ( server_target.equalsIgnoreCase( currentServer ) ) {
                                     if ( owner_uuid.equals( target_uuid ) ) {
-                                        sendFormattedSendMSGToPlayer( owner_uuid , "world.cant-kick-own" );
+                                        sendMSGToPlayer( owner_uuid , "world.cant-kick-own" );
                                         continue;
                                     }
                                 }
@@ -521,7 +549,7 @@ public class SpigotSocketClient extends ISocket {
                                     final HashMap < String, String > replace = new HashMap <>( );
                                     replace.put( "world" , world_uuid.toString( ) );
                                     replace.put( "player" , getPlayers( ).getPlayer( target_uuid ).getName( ) );
-                                    sendFormattedSendMSGToPlayer( owner_uuid , "world.kick-success" , replace );
+                                    sendMSGToPlayer( owner_uuid , "world.kick-success" , replace );
                                 } catch ( NullPointerException ignored ) {
                                 }
                             }
@@ -535,22 +563,22 @@ public class SpigotSocketClient extends ISocket {
                                 
                                 try {
                                     final Player player = Bukkit.getPlayer( target_uuid );
-                                    if ( player == null ) return;
+                                    if ( player == null ) continue;
                                     if ( hasReplacements ) {
                                         final JsonObject replacements = json.get( "replacements" ).getAsJsonObject( );
                                         final HashMap < String, String > replace = new HashMap <>( );
                                         
                                         for ( Map.Entry < String, JsonElement > entry : replacements.entrySet( ) ) {
-                                            Main.getInstance( ).debug( "Replacement: " + entry.getKey( ) + " = " + entry.getValue( ).getAsString( ) );
                                             replace.put( entry.getKey( ) , entry.getValue( ).getAsString( ) );
                                         }
-                                        Main.getLang( ).sendMsg( player , key , replace );
+                                        Main.getInstance( ).debug( "Replacements: " + replace );
+                                        player.sendMessage( Main.getLang( ).getMSG( key , replace ) );
                                     } else {
                                         player.sendMessage( Main.getLang( ).getMSG( key ) );
                                     }
                                     
-                                } catch ( NullPointerException ignored ) {
-                                    
+                                } catch ( NullPointerException e ) {
+                                    e.printStackTrace( );
                                 }
                                 
                                 
@@ -583,12 +611,78 @@ public class SpigotSocketClient extends ISocket {
                                             
                                         } ) );
                             }
-                            case "VISIT_REQUEST_PREV":{
-                                //TODO VISIT_REQUEST_PREV
+                            case "VISIT_REQUEST_PREV": {
+                                if ( !json.has( "current_server" ) ) continue;
+                                if ( !json.has( "owner_uuid" ) ) continue;
+                                if ( !json.has( "target_uuid" ) ) continue;
+                                final String currentServer = json.get( "current_server" ).getAsString( );
+                                final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
+                                final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
+                                
+                                final User targetUser = getPlayers( ).getPlayer( target_uuid );
+                                if ( targetUser == null ) {
+                                    sendMSGToPlayer( owner_uuid , "error.player-not-found" );
+                                    continue;
+                                }
+                                if ( !targetUser.getOption( "allow-visit-world-requests" ) && !targetUser.getOption( "allow-visit-plot-requests" ) ) {
+                                    sendMSGToPlayer( owner_uuid , "error.player.not-available-to-be-visited" , "player" , targetUser.getName( ) );
+                                    continue;
+                                }
+                                switch ( Settings.SERVER_TYPE ) {
+                                    case LOBBY: {
+                                        sendMSGToPlayer( owner_uuid , "error.player.in-lobby" , "player" , targetUser.getName( ) );
+                                        continue;
+                                    }
+                                    case PLOT: {
+                                        if ( !targetUser.getOption( "allow-visit-plot-requests" ) ) {
+                                            sendMSGToPlayer( owner_uuid , "error.player.not-available-to-be-visited" , "player" , targetUser.getName( ) );
+                                            continue;
+                                        } else {
+                                            vs.getPlotManager( ).manageVisitJoinPlot( owner_uuid , targetUser , currentServer , Settings.PROXY_SERVER_NAME );
+                                        }
+                                        continue;
+                                    }
+                                    case WORLDS: {
+                                        //TODO VISIT_REQUEST_PREV - WORLDS
+                                    }
+                                }
+                                
+                                
                             }
                             
-                            case "VISIT_REQUEST_DENY":{
-                                //TODO VISIT_REQUEST_DENY
+                            case "JOIN_HOME_PREV": {
+                                
+                                if ( !json.has( "current_server" ) ) continue;
+                                if ( !json.has( "server_target" ) ) continue;
+                                if ( !json.has( "home_uuid" ) ) continue;
+                                if ( !json.has( "owner_uuid" ) ) continue;
+                                try {
+                                    final String currentServer = json.get( "current_server" ).getAsString( );
+                                    final String targetServer = json.get( "server_target" ).getAsString( );
+                                    final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
+                                    final Home home = getHomes( ).getHome( UUID.fromString( json.get( "home_uuid" ).getAsString( ) ) );
+                                    if ( currentServer.equalsIgnoreCase( targetServer ) ) {
+                                        Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
+                                            final Loc homeLoc = home.getLocation( );
+                                            final Player player = Bukkit.getPlayer( owner_uuid );
+                                            player.teleport( Transformer.toLocation( homeLoc ) );
+                                            Main.getLang( ).sendMsg( player , "home.tp-to-home" , "home" , home.getName( ) );
+                                        } );
+                                    } else {
+                                        getHomes( ).addPlayerToTP( owner_uuid , home );
+                                        json.remove( "type" );
+                                        json.addProperty( "type" , "JOIN_HOME_POST" );
+                                        json.addProperty( "tp" , true );
+                                        sendMessage( json );
+                                    }
+                                    continue;
+                                } catch ( Exception e ) {
+                                    json.remove( "type" );
+                                    json.addProperty( "type" , "JOIN_HOME_POST" );
+                                    json.addProperty( "tp" , false );
+                                    sendMessage( json );
+                                    continue;
+                                }
                             }
                             case "ERROR": {
                                 if ( !json.has( "error" ) ) continue;
@@ -600,7 +694,7 @@ public class SpigotSocketClient extends ISocket {
                                         if ( !json.has( "server_target" ) ) continue;
                                         final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                                         final String server_target = json.get( "server_target" ).getAsString( );
-                                        sendFormattedSendMSGToPlayer( owner_uuid , "error.server.not-online" , "server" , server_target );
+                                        sendMSGToPlayer( owner_uuid , "error.server.not-online" , "server" , server_target );
                                     }
                                     case "WORLD_DELETE_FAILED": {
                                         if ( !json.has( "owner_uuid" ) ) continue;
@@ -614,7 +708,7 @@ public class SpigotSocketClient extends ISocket {
                                             final HashMap < String, String > replace = new HashMap <>( );
                                             replace.put( "server" , server_target );
                                             replace.put( "world" , world_uuid );
-                                            sendFormattedSendMSGToPlayer( owner_uuid , "error.world.delete-failed" , replace );
+                                            sendMSGToPlayer( owner_uuid , "error.world.delete-failed" , replace );
                                             
                                         } catch ( NullPointerException ignored ) {
                                         }
@@ -667,7 +761,7 @@ public class SpigotSocketClient extends ISocket {
         
         public void reconnect( String msg ){
             try {
-                init( );
+                init( "localhost" , 5555 );
             } catch ( Exception e ) {
                 disable( msg );
             }

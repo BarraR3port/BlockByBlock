@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public final class MenuCommand implements ILyCommand {
+public final class Menu implements ILyCommand {
     
     @Command(name = "menu", permission = "blockbyblock.menu", usage = "menu", description = "Menu", aliases = {"m"})
     public boolean command( SCommandContext context ){
@@ -40,7 +40,7 @@ public final class MenuCommand implements ILyCommand {
         final ArrayList < String > list = new ArrayList <>( );
         
         if ( context.getArgs( ).length == 1 ) {
-            return Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) );
+            return Main.getInstance( ).getPlayers( ).getPlayersName( );
         }
         
         return list;
