@@ -26,6 +26,7 @@ error:
     trust-no-permission: "&cNo tienes permiso para hacele trust a &e%player%&c."
     un-trust-no-permission: "&cNo tienes permiso para hacele untrust a &e%player%&c."
     not-in-server: "&cNo estás en un server de &eMundos"
+    not-in-world: "&cNo estás en un mundo tuyo o en uno donde seas miembro."
   player:
     not-found: "&cNo se encontró al jugador &e%player%&c."
     not-available-to-be-visited: "&cEl jugador &e%player%&c no está disponible para ser visitado."
@@ -45,6 +46,7 @@ error:
     error-deleting: "&cError al eliminar la casa &e%home%&c."
   visit:
     cant-visit-lobby: "&cEl jugador está en el lobby."
+    expired: "&cVisita expirada."
     plot:
       not-trusted: "&cNo tienes permiso para acceder la plot de &e%player%&c."
   warp:
@@ -52,6 +54,7 @@ error:
     no-permission-to-delete: "&cNo tienes permiso para eliminar este warp."
     invalid-name: "&cEl nombre del warp es inválido."
     no-permission-to-go: "&cNo tienes permiso para ir a este warp."
+    not-in-world-of-warps: "&cNo estás en el mundo de warps."
 
 world:
   unloaded: "&cEl mundo &e%world%&c ha sido eliminado."
@@ -62,6 +65,10 @@ world:
   join: "&aHas entrado al mundo &e%world%&a."
   trust: "&aHas añadido &e%player% &aal mundo &e%world%&a."
   un-trust: "&aHas eliminado a &e%player% &adel mundo &e%world%&a."
+  visit-request-to-owner: "&aEl jugador &e%player% &aquiere visitar tu mundo &e%world%&a."
+  visit-join-to-owner: "&aEl jugador &e%player% &aha entrado al mundo &e%world%&a."
+  visit-join-to-visitor: "&aHas entrado al mundo de &e%player%&a."
+
 plot:
   join: "&aEntrando a la plot &e%plot%&a."
 home:

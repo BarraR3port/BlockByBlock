@@ -29,21 +29,6 @@ public class WarpCmd implements ILyCommand {
             return true;
         }
         switch ( context.getArgs( ).length ) {
-            case 0: {
-                Utils.sendMessage( p , "&e&lWarps" );
-                Utils.sendMessage( p , " " );
-                Utils.sendMessage( p , "&aCommands: " );
-                Utils.sendMessage( p , " " );
-                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/warp list" , Arrays.asList( "&7Con este comando se muestran todas" , "&7las warps disponibles." ) , "/warp list" ) );
-                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/warp create <nombre>" , Collections.singletonList( "&7Con este comando puedes crear una warp" ) , "/warp create " ) );
-                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/warp delete <nombre>" , Collections.singletonList( "&7Con este comando puedes borrar una warp" ) , "/warp delete " ) );
-                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/warp goto <nombre>" , Collections.singletonList( "&7Con este comando puedes ir a una warp" ) , "/warp goto " ) );
-                if ( p.hasPermission( "blockbyblock.warp.gotoworld" ) || user.getRank( ).isBuilder( ) ) {
-                    Utils.sendMessage( p , Utils.formatTC( "&e> &b" ) , Utils.hoverOverMessageRunCommand( "&b/warp gotoworld" , Collections.singletonList( "&7Con este comando puedes ir al mundo de warps" ) , "/warp gotoworld" ) );
-                }
-                
-                return true;
-            }
             case 1: {
                 switch ( context.getArg( 0 ) ) {
                     case "list": {
@@ -52,7 +37,6 @@ public class WarpCmd implements ILyCommand {
                             Main.getLang( ).sendErrorMsg( context.getSender( ) , "warp.no-warps" );
                             return true;
                         }
-                        //todo improve this system and maybe make an GUI of it
                         int warpsPerPage = 7;
                         int warpsIHave = warps.size( );
                         
@@ -97,9 +81,6 @@ public class WarpCmd implements ILyCommand {
                         return true;
                     }
                 }
-                
-                
-                return true;
             }
             case 2: {
                 switch ( context.getArg( 0 ) ) {
@@ -135,6 +116,10 @@ public class WarpCmd implements ILyCommand {
                         return true;
                     }
                     case "create": {
+                        if ( !p.getWorld( ).getName( ).equals( "warp" ) ) {
+                            Main.getLang( ).sendErrorMsg( p , "warp.not-in-world-of-warps" );
+                            return true;
+                        }
                         final String warpName = context.getArg( 1 );
                         final Warp warp = new Warp( warpName , Transformer.toLoc( p.getLocation( ) , null , null ) , p.getUniqueId( ) , Settings.VERSION );
                         Main.getInstance( ).getWarps( ).createWarp( warp );
@@ -151,15 +136,28 @@ public class WarpCmd implements ILyCommand {
                             );
                         }
                         text.addExtra( Utils.hoverOverMessageRunCommand( "&a" + warp.getName( ) , replaced , "/warp goto" + warp.getUUID( ) ) );
-                        
+    
                         Main.getLang( ).sendMsg( p , "warp.created" , "warp" , text );
+                        return true;
                     }
                 }
-                
+    
+            }
+            default: {
+                Utils.sendMessage( p , "&e&lWarps" );
+                Utils.sendMessage( p , " " );
+                Utils.sendMessage( p , "&aCommands: " );
+                Utils.sendMessage( p , " " );
+                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/warp list" , Arrays.asList( "&7Con este comando se muestran todas" , "&7las warps disponibles." ) , "/warp list" ) );
+                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/warp create <nombre>" , Collections.singletonList( "&7Con este comando puedes crear una warp" ) , "/warp create " ) );
+                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/warp delete <nombre>" , Collections.singletonList( "&7Con este comando puedes borrar una warp" ) , "/warp delete " ) );
+                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/warp goto <nombre>" , Collections.singletonList( "&7Con este comando puedes ir a una warp" ) , "/warp goto " ) );
+                if ( p.hasPermission( "blockbyblock.warp.gotoworld" ) || user.getRank( ).isBuilder( ) ) {
+                    Utils.sendMessage( p , Utils.formatTC( "&e> &b" ) , Utils.hoverOverMessageRunCommand( "&b/warp gotoworld" , Collections.singletonList( "&7Con este comando puedes ir al mundo de warps" ) , "/warp gotoworld" ) );
+                }
+                return true;
             }
         }
-        
-        return true;
     }
     
     @Tab

@@ -8,10 +8,11 @@ import java.util.ArrayList;
 
 public class Settings {
     
+    public static String SOCKET_IP = "51.161.86.217";
     
+    public static int SOCKET_PORT = 5555;
     public static boolean BREAK_BLOCKS = false;
     public static boolean PLACE_BLOCKS = false;
-    
     public static boolean PLAYER_INTERACT_AT_ENTITY = false;
     public static boolean PLAYER_INTERACT_ENTITY = false;
     

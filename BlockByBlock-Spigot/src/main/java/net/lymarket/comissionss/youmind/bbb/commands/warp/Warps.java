@@ -31,7 +31,6 @@ public class Warps implements ILyCommand {
                 Main.getLang( ).sendErrorMsg( context.getSender( ) , "warp.no-warps" );
                 return true;
             }
-            //todo improve this system and maybe make an GUI of it
             int warpsPerPage = 7;
             int warpsIHave = warps.size( );
             

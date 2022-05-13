@@ -35,6 +35,8 @@ perms:
     - astools.use
     - models.use
     - builders.util.*
+    - headdb.*
+    - astools.use
   when-joining-world:
     - fawe.bypass
     - arceon.*
@@ -45,3 +47,4 @@ perms:
     - astools.use
     - models.use
     - builders.util.*
+  when-joining-as-visitor-to-world:

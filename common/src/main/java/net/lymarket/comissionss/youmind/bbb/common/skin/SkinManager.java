@@ -1,6 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.common.skin;
 
-import net.lymarket.common.Api;
+import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -42,7 +42,7 @@ public class SkinManager {
             rd.close( );
             
             /*JsonElement jElement = new JsonParser( ).parse( resultado.toString( ) );*/
-            Response res = Api.getGson( ).fromJson( resultado.toString( ) , Response.class );
+            Response res = (new GsonBuilder( )).setDateFormat( "MMM dd, yyyy HH:mm:ss a" ).serializeNulls( ).create( ).fromJson( resultado.toString( ) , Response.class );
             
             if ( res.getName( ).equalsIgnoreCase( username ) ) {
                 StringBuilder skinResultado = new StringBuilder( );
@@ -65,7 +65,7 @@ public class SkinManager {
                     rd.close( );
                     
                     /*JsonElement jElement = new JsonParser( ).parse( resultado.toString( ) );*/
-                    SkinResponse skinRes = Api.getGson( ).fromJson( skinResultado.toString( ) , SkinResponse.class );
+                    SkinResponse skinRes = (new GsonBuilder( )).setDateFormat( "MMM dd, yyyy HH:mm:ss a" ).serializeNulls( ).create( ).fromJson( skinResultado.toString( ) , SkinResponse.class );
                     if ( skinRes.getProperty( ).size( ) > 0 ) {
                         final String skin = skinRes.getProperty( ).get( 0 ).getValue( );
                         skins.put( username , skin );

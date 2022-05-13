@@ -71,7 +71,6 @@ public class PlotManager extends IPlotManager < Plot > {
     
     @Override
     public void manageVisitJoinPlot( UUID owner_uuid , User targetUser , String fromServer , String currentServer ){
-        
         final Plot plot = api.wrapPlayer( targetUser.getUUID( ) ).getCurrentPlot( );
         final JsonObject json = new JsonObject( );
         if ( fromServer.equals( currentServer ) ) {

@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.grinderwolf.swm.api.world.SlimeWorld;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
@@ -11,6 +12,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
+import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocket;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocketClient;
 import net.lymarket.comissionss.youmind.bbb.event.PrevCreateWorld;
@@ -34,7 +36,7 @@ import java.net.Socket;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SpigotSocketClient extends ISocket {
+public class SpigotSocketClient extends ISocket < SlimeWorld > {
     
     private final VersionSupport vs;
     private ProxySocket mainSocket;
@@ -216,13 +218,22 @@ public class SpigotSocketClient extends ISocket {
     
     @Override
     public void sendJoinWarp( UUID owner , Warp warp ){
+    
+    }
+    
+    @Override
+    public void sendWorldVisitResponse( WorldVisitRequest request ){
         JsonObject js = new JsonObject( );
-        /*js.addProperty( "type" , "JOIN_HOME" );
-        js.addProperty( "current_server" , Settings.PROXY_SERVER_NAME );
-        js.addProperty( "server_target" , home.getLocation( ).getServer( ) );
-        js.addProperty( "home_uuid" , home.getUUID( ).toString( ) );
-        js.addProperty( "owner_uuid" , owner.toString( ) );
-        sendMessage( js.toString( ) );*/
+        js.addProperty( "type" , "VISIT_WORLD_REQUEST_POST" );
+        js.addProperty( "guest_server" , request.getGuest_server( ) );
+        js.addProperty( "response" , request.isAccepted( ) );
+        if ( request.isAccepted( ) ) {
+            js.addProperty( "target_uuid" , request.getTarget_uuid( ).toString( ) );
+            js.addProperty( "target_server" , request.getTarget_server( ) );
+            js.addProperty( "guest" , request.getGuest( ).toString( ) );
+            
+        }
+        sendMessage( js.toString( ) );
     }
     
     
@@ -234,8 +245,8 @@ public class SpigotSocketClient extends ISocket {
         sendMessage( js.toString( ) );
     }
     
-    public SpigotSocketClient init( String host , int port ) throws IOException{
-        Socket socket = new Socket( host , port );
+    public SpigotSocketClient init( ) throws IOException{
+        Socket socket = new Socket( Settings.SOCKET_IP , Settings.SOCKET_PORT );
         mainSocket = new ProxySocket( socket );
         return this;
     }
@@ -246,7 +257,7 @@ public class SpigotSocketClient extends ISocket {
         
         if ( mainSocket == null ) {
             try {
-                Socket socket = new Socket( "localhost" , 5555 );
+                Socket socket = new Socket( Settings.SOCKET_IP , Settings.SOCKET_PORT );
                 mainSocket = new ProxySocket( socket );
                 mainSocket.sendMessage( message );
                 
@@ -325,8 +336,6 @@ public class SpigotSocketClient extends ISocket {
                         if ( !json.has( "type" ) ) continue;
                         Main.getInstance( ).debug( "Received message: \n" + json );
                         switch ( json.get( "type" ).getAsString( ).toUpperCase( ) ) {
-                            //pre load data
-                            //pld,worldIdentifier,uuidUser,languageIso,uuidPartyOwner
                             case "INIT_CREATE_WORLD": {
                                 if ( !json.has( "server_name" ) ) continue;
                                 if ( !json.has( "world_name" ) ) continue;
@@ -352,9 +361,7 @@ public class SpigotSocketClient extends ISocket {
                                     final Player p = Bukkit.getPlayer( owner );
                                     final boolean teleport = p == null;
                                     getWorlds( ).addPlayerToTP( owner , world );
-                                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
-                                        Main.getInstance( ).managePermissions( owner , world_uuid , false );
-                                    } );
+                                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> Main.getInstance( ).managePermissions( owner , world_uuid , false ) );
                                     
                                     json.remove( "type" );
                                     json.addProperty( "type" , "INIT_CREATE_WORLD_SUCCESS" );
@@ -618,7 +625,7 @@ public class SpigotSocketClient extends ISocket {
                                 final String currentServer = json.get( "current_server" ).getAsString( );
                                 final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                                 final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
-                                
+        
                                 final User targetUser = getPlayers( ).getPlayer( target_uuid );
                                 if ( targetUser == null ) {
                                     sendMSGToPlayer( owner_uuid , "error.player-not-found" );
@@ -643,15 +650,35 @@ public class SpigotSocketClient extends ISocket {
                                         continue;
                                     }
                                     case WORLDS: {
-                                        //TODO VISIT_REQUEST_PREV - WORLDS
+                                        if ( !targetUser.getOption( "allow-visit-world-requests" ) ) {
+                                            sendMSGToPlayer( owner_uuid , "error.player.not-available-to-be-visited" , "player" , targetUser.getName( ) );
+                                            continue;
+                                        } else {
+                                            final WorldVisitRequest request = new WorldVisitRequest( owner_uuid , target_uuid , null , currentServer , Settings.PROXY_SERVER_NAME );
+                                            getWorlds( ).manageVisitJoinWorld( request );
+                                        }
+                                        continue;
                                     }
                                 }
-                                
-                                
+        
+        
                             }
-                            
+                            case "VISIT_REQUEST_DENY": {
+                                if ( !json.has( "current_server" ) ) continue;
+                                if ( !json.has( "owner_uuid" ) ) continue;
+                                if ( !json.has( "reason" ) ) continue;
+                                final Player p = Bukkit.getPlayer( UUID.fromString( json.get( "owner_uuid" ).getAsString( ) ) );
+                                if ( p != null ) {
+                                    final String reason = json.get( "reason" ).getAsString( );
+                                    Main.getInstance( ).debug( reason );
+                                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
+                                        Main.getLang( ).sendErrorMsg( p , reason );
+                                    } );
+                                }
+                            }
+    
                             case "JOIN_HOME_PREV": {
-                                
+        
                                 if ( !json.has( "current_server" ) ) continue;
                                 if ( !json.has( "server_target" ) ) continue;
                                 if ( !json.has( "home_uuid" ) ) continue;
@@ -761,7 +788,7 @@ public class SpigotSocketClient extends ISocket {
         
         public void reconnect( String msg ){
             try {
-                init( "localhost" , 5555 );
+                init( );
             } catch ( Exception e ) {
                 disable( msg );
             }

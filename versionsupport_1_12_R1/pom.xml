@@ -78,6 +78,24 @@
             <version>2.1.2</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.lymarket.lyapi</groupId>
+            <artifactId>common</artifactId>
+            <version>1.2.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.lymarket.lyapi</groupId>
+            <artifactId>lyapi-spigot</artifactId>
+            <version>1.1.5</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

@@ -61,6 +61,7 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( this.world_uuid );
         if ( world.getOwner( ).equals( getOwner( ).getUniqueId( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || Main.getInstance( ).getPlayers( ).getPlayer( target_uuid ).getRank( ) == Rank.ADMIN ) {
             world.addMember( target_uuid );
+            Main.getInstance( ).managePermissions( target_uuid , world.getUUID( ) , false );
             return Main.getInstance( ).getWorlds( ).saveWorld( world );
         }
         return false;

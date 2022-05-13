@@ -6,9 +6,10 @@ import java.util.UUID;
 public class BWorld {
     
     private final UUID uuid;
-    private ArrayList < UUID > members = new ArrayList <>( );
+    private final ArrayList < UUID > members = new ArrayList <>( );
     private ArrayList < UUID > online_members = new ArrayList <>( );
-    private ArrayList < String > description = new ArrayList <>( );
+    private final ArrayList < String > description = new ArrayList <>( );
+    private final ArrayList < WorldVisitRequest > visitors = new ArrayList <>( );
     private String name;
     private UUID owner;
     private String server;
@@ -81,10 +82,6 @@ public class BWorld {
         return members;
     }
     
-    public void setMembers( ArrayList < UUID > members ){
-        this.members.clear( );
-        this.members = members;
-    }
     
     public void addMember( UUID member ){
         if ( !members.contains( member ) ) {
@@ -96,17 +93,12 @@ public class BWorld {
         members.remove( member );
     }
     
-    public boolean hasMember( UUID member ){
+    public boolean isMember( UUID member ){
         return members.contains( member );
     }
     
     public ArrayList < String > getDescription( ){
         return description;
-    }
-    
-    public void setDescription( ArrayList < String > description ){
-        this.description.clear( );
-        this.description = description;
     }
     
     public void addDescription( String description ){
@@ -125,6 +117,30 @@ public class BWorld {
         this.online_members.clear( );
         this.online_members = online_members;
     }
+    
+    public ArrayList < WorldVisitRequest > getVisitors( ){
+        return visitors;
+    }
+    
+    public WorldVisitRequest getVisitor( UUID uuid ){
+        return visitors.stream( ).filter( visitor -> visitor.getGuest( ).equals( uuid ) ).findFirst( ).orElse( null );
+        
+    }
+    
+    public void addVisitor( WorldVisitRequest visitor ){
+        if ( !visitors.contains( visitor ) ) {
+            visitors.add( visitor );
+        }
+    }
+    
+    public void removeVisitor( UUID visitor ){
+        visitors.removeIf( v -> v.getGuest( ).equals( visitor ) );
+    }
+    
+    public boolean isVisitor( UUID visitor ){
+        return visitors.stream( ).map( WorldVisitRequest::getGuest ).anyMatch( visitor::equals );
+    }
+    
     
     public void addOnlineMember( UUID member ){
         if ( !online_members.contains( member ) ) {

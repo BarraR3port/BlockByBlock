@@ -85,6 +85,7 @@ public class MainMenu extends Menu {
                 .addLoreLine( "&aTiempo Jugado: " + stats.getFormattedTimePlayed( ) )
                 .addLoreLine( "&aBloques destruidos: " + stats.getBLOCKS_BROKEN( ) )
                 .addLoreLine( "&aBloques Colocados: " + stats.getBLOCKS_PLACED( ) )
+                .addLoreLine( "&aElo: " + (stats.getELO( ) > 0 ? "&a" + stats.getELO( ) : "&c" + stats.getELO( )) )
                 .addTag( "stats" , "stats" )
                 .build( ) );
         

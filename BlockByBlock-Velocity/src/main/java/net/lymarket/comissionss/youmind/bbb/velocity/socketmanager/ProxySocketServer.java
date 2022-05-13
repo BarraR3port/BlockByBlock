@@ -377,6 +377,21 @@ public class ProxySocketServer implements Runnable {
                         VMain.getInstance( ).getProxy( ).getPlayer( target_uuid ).ifPresent( ( p ) -> VMain.getInstance( ).getProxy( ).getServer( server_target ).ifPresent( server -> p.createConnectionRequest( server ).fireAndForget( ) ) );
                         continue;
                     }
+                    case "VISIT_WORLD_REQUEST_POST": {
+                        if ( !json.has( "guest_server" ) ) continue;
+                        if ( !json.has( "response" ) ) continue;
+                        final boolean response = json.get( "response" ).getAsBoolean( );
+                        if ( response ) {
+                            final String target_server = json.get( "target_server" ).getAsString( );
+                            final String guest_server = json.get( "guest_server" ).getAsString( );
+                            final UUID guest = UUID.fromString( json.get( "guest" ).getAsString( ) );
+                            if ( !target_server.equals( guest_server ) ) {
+                                VMain.getInstance( ).getProxy( ).getPlayer( guest ).ifPresent( ( p ) -> VMain.getInstance( ).getProxy( ).getServer( target_server ).ifPresent( server -> p.createConnectionRequest( server ).fireAndForget( ) ) );
+                            }
+            
+                        }
+                        continue;
+                    }
     
                     case "JOIN_HOME": {
                         if ( !json.has( "current_server" ) ) continue;

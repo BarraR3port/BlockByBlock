@@ -10,12 +10,23 @@ public class Stats {
     
     private long ELO;
     
+    private int MAX_PLOTS_31;
+    
+    private int MAX_PLOTS_101;
+    
+    private int MAX_PLOTS_501;
+    
+    private int MAX_PLOTS_1001;
+    
     public Stats( ){
         BLOCKS_PLACED = 0;
         BLOCKS_BROKEN = 0;
         TIME_PLAYED = 0;
         ELO = 0;
-        
+        MAX_PLOTS_31 = 0;
+        MAX_PLOTS_101 = 0;
+        MAX_PLOTS_501 = 0;
+        MAX_PLOTS_1001 = 0;
     }
     
     public long getBLOCKS_PLACED( ){
@@ -52,6 +63,54 @@ public class Stats {
     
     public void removeELO( long ELO ){
         this.ELO = this.ELO - ELO;
+    }
+    
+    public int getMAX_PLOTS_31( ){
+        return MAX_PLOTS_31;
+    }
+    
+    public void addMAX_PLOTS_31( int MAX_PLOTS_31 ){
+        this.MAX_PLOTS_31 = this.MAX_PLOTS_31 + MAX_PLOTS_31;
+    }
+    
+    public void removeMAX_PLOTS_31( int MAX_PLOTS_31 ){
+        this.MAX_PLOTS_31 = this.MAX_PLOTS_31 - MAX_PLOTS_31;
+    }
+    
+    public int getMAX_PLOTS_101( ){
+        return MAX_PLOTS_101;
+    }
+    
+    public void addMAX_PLOTS_101( int MAX_PLOTS_101 ){
+        this.MAX_PLOTS_101 = this.MAX_PLOTS_101 + MAX_PLOTS_101;
+    }
+    
+    public void removeMAX_PLOTS_101( int MAX_PLOTS_101 ){
+        this.MAX_PLOTS_101 = this.MAX_PLOTS_101 - MAX_PLOTS_101;
+    }
+    
+    public int getMAX_PLOTS_501( ){
+        return MAX_PLOTS_501;
+    }
+    
+    public void addMAX_PLOTS_501( int MAX_PLOTS_501 ){
+        this.MAX_PLOTS_501 = this.MAX_PLOTS_501 + MAX_PLOTS_501;
+    }
+    
+    public void removeMAX_PLOTS_501( int MAX_PLOTS_501 ){
+        this.MAX_PLOTS_501 = this.MAX_PLOTS_501 - MAX_PLOTS_501;
+    }
+    
+    public int getMAX_PLOTS_1001( ){
+        return MAX_PLOTS_1001;
+    }
+    
+    public void addMAX_PLOTS_1001( int MAX_PLOTS_1001 ){
+        this.MAX_PLOTS_1001 = this.MAX_PLOTS_1001 + MAX_PLOTS_1001;
+    }
+    
+    public void removeMAX_PLOTS_1001( int MAX_PLOTS_1001 ){
+        this.MAX_PLOTS_1001 = this.MAX_PLOTS_1001 - MAX_PLOTS_1001;
     }
     
     public String getFormattedTimePlayed( ){

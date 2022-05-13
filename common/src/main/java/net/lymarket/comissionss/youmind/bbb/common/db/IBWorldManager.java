@@ -2,13 +2,14 @@ package net.lymarket.comissionss.youmind.bbb.common.db;
 
 import com.google.gson.JsonObject;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
+import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
 import net.lymarket.common.db.MongoDBClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public abstract class IBWorldManager extends MongoDB < UUID, BWorld > {
+public abstract class IBWorldManager< V > extends MongoDB < UUID, BWorld > {
     
     private final HashMap < UUID, BWorld > playersToTP = new HashMap <>( );
     
@@ -17,14 +18,16 @@ public abstract class IBWorldManager extends MongoDB < UUID, BWorld > {
     }
     
     public static BWorld getWorldFormatted( UUID ownerUUID , String versionTarget ){
-        ArrayList < String > list = new ArrayList <>( );
+        /*ArrayList < String > list = new ArrayList <>( );
         String versionFormatted = versionTarget.replace( "." , "" ).replace( "_" , "" );
         list.add( "PW-" + versionFormatted + "-1" );
         list.add( "PW-" + versionFormatted + "-2" );
         
         String server = list.get( ( int ) (Math.random( ) * list.size( )) );
         
-        return new BWorld( ownerUUID , server , versionTarget );
+        return new BWorld( ownerUUID , server , versionTarget );*/
+        final String versionFormatted = versionTarget.replace( "." , "" ).replace( "_" , "" );
+        return new BWorld( ownerUUID , "PW-" + versionFormatted + "-1" , versionTarget );
     }
     
     public void addPlayerToTP( UUID uuid , BWorld world ){
@@ -54,9 +57,9 @@ public abstract class IBWorldManager extends MongoDB < UUID, BWorld > {
     
     public abstract ArrayList < BWorld > getWorldsByServer( );
     
-    public abstract Object createWorldSlimeWorld( BWorld world );
+    public abstract V createWorldSlimeWorld( BWorld world );
     
-    public abstract Object createCustomLayerWorld( BWorld world , String material );
+    public abstract V createCustomLayerWorld( BWorld world , String material );
     
     
     public abstract void createWorld( BWorld world );
@@ -87,7 +90,7 @@ public abstract class IBWorldManager extends MongoDB < UUID, BWorld > {
             }
         }
         return true;
-        
+    
     }
     
     public ArrayList < BWorld > getWorlds( ){
@@ -97,4 +100,6 @@ public abstract class IBWorldManager extends MongoDB < UUID, BWorld > {
     public abstract boolean saveWorld( BWorld world );
     
     public abstract BWorld getWorld( UUID uuid );
+    
+    public abstract boolean manageVisitJoinWorld( WorldVisitRequest request );
 }

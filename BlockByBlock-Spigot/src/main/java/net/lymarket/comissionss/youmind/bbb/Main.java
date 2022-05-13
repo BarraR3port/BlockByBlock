@@ -142,21 +142,8 @@ public final class Main extends JavaPlugin implements BBBApi {
         if ( Bukkit.getPluginManager( ).getPlugin( "PlaceholderAPI" ) != null ) {
             new Placeholders( this ).register( );
         }
-        switch ( Settings.SERVER_TYPE ) {
-            case LOBBY: {
-                getServer( ).getPluginManager( ).registerEvents( new LobbyPlayerEvents( ) , this );
-                break;
-            }
-            case WORLDS: {
-                getServer( ).getPluginManager( ).registerEvents( new WorldPlayerEvents( ) , this );
-                break;
-            }
-            case PLOT: {
-                getServer( ).getPluginManager( ).registerEvents( new PlotsPlayerEvent( ) , this );
-                break;
-            }
-        }
-        
+    
+    
         getServer( ).getPluginManager( ).registerEvents( new ProxyMSGManager( ) , this );
         api.getCommandService( ).registerCommands( new MainCommand( ) );
         api.getCommandService( ).registerCommands( new WorldManagement( ) );
@@ -181,24 +168,45 @@ public final class Main extends JavaPlugin implements BBBApi {
         homes = new HomeManager( mongo , "homes" );
         warps = new WarpManager( mongo , "warps" );
         try {
-            socket = new SpigotSocketClient( players , worlds , homes , warps , nms ).init( "51.161.86.217" , 5555 );
+            socket = new SpigotSocketClient( players , worlds , homes , warps , nms ).init( );
         } catch ( IOException | IllegalArgumentException e ) {
             e.printStackTrace( );
             getServer( ).shutdown( );
         }
         socket.sendUpdate( );
-        
+    
+        switch ( Settings.SERVER_TYPE ) {
+            case LOBBY: {
+                getServer( ).getPluginManager( ).registerEvents( new LobbyPlayerEvents( ) , this );
+                break;
+            }
+            case WORLDS: {
+                getServer( ).getPluginManager( ).registerEvents( new WorldPlayerEvents( ) , this );
+                break;
+            }
+            case PLOT: {
+                getServer( ).getPluginManager( ).registerEvents( new PlotsPlayerEvent( ) , this );
+                break;
+            }
+        }
+    
         getServer( ).getScheduler( ).runTaskTimer( this , ( ) -> {
-            
+        
             for ( Player p : Bukkit.getOnlinePlayers( ) ) {
                 if ( p.getOpenInventory( ).getTopInventory( ).getHolder( ) instanceof IUpdatableMenu ) {
                     (( IUpdatableMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( )).reOpen( );
                 }
             }
-            
+        
         } , 10 , 20L );
         //new PacketManager( this );
-        
+    
+    }
+    
+    @Override
+    public void onDisable( ){
+        socket.disable( );
+        getServer( ).getScheduler( ).cancelTasks( this );
     }
     
     @Override
@@ -253,8 +261,11 @@ public final class Main extends JavaPlugin implements BBBApi {
                     user.data( ).remove( Node.builder( perm ).context( MutableContextSet.of( "world" , world.getUUID( ).toString( ) ).mutableCopy( ) ).build( ) );
                 }
             }
-            if ( delete ) return;
+            for ( final BWorld world : worlds.getWorlds( ) ) {
+                user.data( ).remove( Node.builder( "blockbyblock.visit" ).context( MutableContextSet.of( "world" , world.getUUID( ).toString( ) ).mutableCopy( ) ).build( ) );
+            }
             Main.getInstance( ).debug( "[Permission Manager] Removed all permissions from worlds." );
+            if ( delete ) return;
             Main.getInstance( ).debug( "[Permission Manager] Adding all permissions to world=" + world_uuid );
             for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
                 user.data( ).add( Node.builder( perm ).context( MutableContextSet.of( "world" , world_uuid.toString( ) ).mutableCopy( ) ).build( ) );
@@ -262,11 +273,25 @@ public final class Main extends JavaPlugin implements BBBApi {
         } );
     }
     
-    public CompletableFuture < Void > removePermissionsInOneWorld( UUID player_uuid , UUID world_uuid ){
+    public CompletableFuture < Void > manageVisitorPermissions( UUID player_uuid , UUID world_uuid , boolean delete ){
         if ( Settings.SERVER_TYPE != ServerType.WORLDS ) return CompletableFuture.completedFuture( null );
+        return lpApi.getUserManager( ).modifyUser( player_uuid , user -> {
+            for ( final BWorld world : worlds.getWorlds( ) ) {
+                user.data( ).remove( Node.builder( "blockbyblock.visit" ).context( MutableContextSet.of( "world" , world.getUUID( ).toString( ) ).mutableCopy( ) ).build( ) );
+            }
+            Main.getInstance( ).debug( "[Permission Manager] Removed blockbyblock.visit to world=" + world_uuid );
+            if ( delete ) return;
+            Main.getInstance( ).debug( "[Permission Manager] Adding blockbyblock.visit to world=" + world_uuid );
+            user.data( ).add( Node.builder( "blockbyblock.visit" ).context( MutableContextSet.of( "world" , world_uuid.toString( ) ).mutableCopy( ) ).build( ) );
+            
+        } );
+    }
+    
+    public void removePermissionsInOneWorld( UUID player_uuid , UUID world_uuid ){
+        if ( Settings.SERVER_TYPE != ServerType.WORLDS ) return;
         Main.getInstance( ).debug( "[Permission Manager] Updating permissions to " + player_uuid + " in world " + world_uuid );
         Main.getInstance( ).debug( "[Permission Manager] Removing all permissions from worlds." );
-        return lpApi.getUserManager( ).modifyUser( player_uuid , user -> {
+        lpApi.getUserManager( ).modifyUser( player_uuid , user -> {
             for ( String perm : Settings.PERMS_WHEN_CREATING_WORLD ) {
                 user.data( ).remove( Node.builder( perm ).context( MutableContextSet.of( "world" , world_uuid.toString( ) ).mutableCopy( ) ).build( ) );
             }

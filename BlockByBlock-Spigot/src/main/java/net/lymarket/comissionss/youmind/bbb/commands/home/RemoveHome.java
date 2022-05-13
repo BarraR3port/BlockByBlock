@@ -20,18 +20,19 @@ public class RemoveHome implements ILyCommand {
             return true;
         }
         
-        if ( context.getArgs( ).length == 0 ) {
-            Main.getLang( ).sendErrorMsg( context.getSender( ) , "wrong-command" , "command" , "/removehome <nombre>&c." );
-            return true;
-        } else if ( context.getArgs( ).length == 1 ) {
-            final Player p = ( Player ) context.getSender( );
-            final String homeName = context.getArg( 0 );
-            final Home home = Main.getInstance( ).getHomes( ).getUserHomeByName( p.getUniqueId( ) , homeName );
-            if ( home.getOwner( ).equals( p.getUniqueId( ) ) || p.hasPermission( "bbb.admin.home.remove" ) ) {
-                Main.getLang( ).sendMsg( p , (Main.getInstance( ).getHomes( ).deleteHome( home ) ? "home.deleted-successfully" : "error.home.error-deleting")
-                        , "home" , homeName );
-            }
-        }
+         if ( context.getArgs( ).length == 1 ) {
+             final Player p = ( Player ) context.getSender( );
+             final String homeName = context.getArg( 0 );
+             final Home home = Main.getInstance( ).getHomes( ).getUserHomeByName( p.getUniqueId( ) , homeName );
+             if ( home.getOwner( ).equals( p.getUniqueId( ) ) || p.hasPermission( "bbb.admin.home.remove" ) ) {
+                 Main.getLang( ).sendMsg( p , (Main.getInstance( ).getHomes( ).deleteHome( home ) ? "home.deleted-successfully" : "error.home.error-deleting") , "home" , homeName );
+                 return true;
+             } else {
+                 Main.getLang( ).sendMsg( p , "error.home.error-deleting" , "home" , homeName );
+             }
+         } else {
+             Main.getLang( ).sendErrorMsg( context.getSender( ) , "wrong-command" , "command" , "/removehome <nombre>" );
+         }
         return true;
     }
     

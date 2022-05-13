@@ -104,6 +104,7 @@ public class Admin implements ILyCommand {
                         return true;
                     }
                     new AdminMenu( LyApi.getPlayerMenuUtility( p ) , target ).open( );
+                    return true;
                 }
             }
         }
@@ -121,9 +122,9 @@ public class Admin implements ILyCommand {
                 list.add( "worlds" );
                 list.add( "homes" );
                 list.add( "debug" );
-                //list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( ) );
+                list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( ) );
             }
-            if ( context.getArgs( ).length == 1 ) {
+            if ( context.getArgs( ).length == 2 ) {
                 if ( context.getArg( 0 ).equalsIgnoreCase( "menu" ) ) {
                     list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
                 }

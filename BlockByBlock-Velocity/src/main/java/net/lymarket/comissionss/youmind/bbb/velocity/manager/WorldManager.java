@@ -3,6 +3,7 @@ package net.lymarket.comissionss.youmind.bbb.velocity.manager;
 import com.google.gson.JsonObject;
 import com.mongodb.client.model.Filters;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
+import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
 import net.lymarket.comissionss.youmind.bbb.common.db.IBWorldManager;
 import net.lymarket.common.Api;
 import net.lymarket.common.db.MongoDBClient;
@@ -11,7 +12,7 @@ import org.bson.Document;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class WorldManager extends IBWorldManager {
+public class WorldManager extends IBWorldManager < Void > {
     
     
     public WorldManager( MongoDBClient database , String tableName ){
@@ -32,11 +33,11 @@ public class WorldManager extends IBWorldManager {
         return null;
     }
     
-    public Object createWorldSlimeWorld( BWorld world ){
+    public Void createWorldSlimeWorld( BWorld world ){
         return null;
     }
     
-    public Object createCustomLayerWorld( BWorld world , String material ){
+    public Void createCustomLayerWorld( BWorld world , String material ){
         return null;
     }
     
@@ -56,6 +57,11 @@ public class WorldManager extends IBWorldManager {
     public BWorld getWorld( UUID uuid ){
         Document doc = database.findOneFast( TABLE_NAME , Filters.eq( "uuid" , uuid.toString( ) ) );
         return Api.getGson( ).fromJson( doc.toJson( ) , BWorld.class );
+    }
+    
+    @Override
+    public boolean manageVisitJoinWorld( WorldVisitRequest request ){
+        return false;
     }
     
     public void saveWorld( Object world ){

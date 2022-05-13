@@ -8,29 +8,34 @@ import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.mongodb.client.model.Filters;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
+import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
+import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
 import net.lymarket.comissionss.youmind.bbb.common.db.IBWorldManager;
 import net.lymarket.comissionss.youmind.bbb.common.error.WorldNotFoundError;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.Api;
 import net.lymarket.common.db.MongoDBClient;
+import net.lymarket.lyapi.spigot.utils.Utils;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
-public class WorldManager extends IBWorldManager {
+public class WorldManager extends IBWorldManager < SlimeWorld > {
     
     private final SlimeLoader loader = Main.getSlimePlugin( ).getLoader( "file" );
+    
+    private final HashMap < UUID, BWorld > guestToVisitWorlds = new HashMap <>( );
     
     public WorldManager( MongoDBClient database , String tableName ){
         super( database , tableName );
@@ -259,6 +264,59 @@ public class WorldManager extends IBWorldManager {
             throw new WorldNotFoundError( uuid );
         }
         return world;
+    }
+    
+    @Override
+    public boolean manageVisitJoinWorld( WorldVisitRequest request ){
+        final Player p = Bukkit.getPlayer( request.getTarget_uuid( ) );
+        final boolean isInWorld = !p.getWorld( ).getName( ).equals( "warp" );
+        if ( isInWorld ) {
+            final BWorld world = getWorld( UUID.fromString( p.getWorld( ).getName( ) ) );
+            final User guest = Main.getInstance( ).getPlayers( ).getPlayer( request.getGuest( ) );
+            if ( world.getOwner( ).equals( request.getGuest( ) ) || world.isMember( request.getGuest( ) ) || guest.getRank( ).isAdmin( ) || request.isAccepted( ) ) {
+                if ( request.getGuest_server( ).equals( request.getTarget_server( ) ) ) {
+                    final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
+                    world.addOnlineMember( request.getGuest( ) );
+                    world.removeVisitor( request.getGuest( ) );
+                    Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( request.getGuest( ) , world );
+                    Main.getInstance( ).manageVisitorPermissions( request.getGuest( ) , world.getUUID( ) , false );
+                    final Player guestPlayer = Bukkit.getPlayer( request.getGuest( ) );
+                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> guestPlayer.teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) );
+                } else {
+                    request.accept( );
+                    Main.getInstance( ).getSocket( ).sendWorldVisitResponse( request );
+                }
+                return true;
+            } else {
+                final HashMap < String, String > replace = new HashMap <>( );
+                replace.put( "player" , guest.getName( ) );
+                replace.put( "world" , world.getName( ).split( "-" )[0] );
+                world.addVisitor( request );
+                Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( request.getGuest( ) , world );
+                
+                Utils.sendMessage( p , Utils.hoverOverMessageRunCommand( Main.getLang( ).getMSG( "world.visit-request-to-owner" , replace ) ,
+                        Collections.singletonList( "&7Click para &aACEPTAR" ) , "/visit accept world " + request.getGuest( ) + " " + world.getUUID( ) ) );
+                return false;
+            }
+        } else {
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( request.getGuest( ) , "error.visit.world.player-in-warp" , "player" , request.getGuest_name( ) );
+            return false;
+        }
+        
+    }
+    
+    public void addGuestToVisitWorldList( UUID guest , BWorld world ){
+        guestToVisitWorlds.put( guest , world );
+        saveWorld( world );
+        
+    }
+    
+    public BWorld getWorldByVisitor( UUID visitor ){
+        return guestToVisitWorlds.getOrDefault( visitor , null );
+    }
+    
+    public void removeGuestFromVisitWorldList( UUID guest ){
+        guestToVisitWorlds.remove( guest );
     }
     
     @Override

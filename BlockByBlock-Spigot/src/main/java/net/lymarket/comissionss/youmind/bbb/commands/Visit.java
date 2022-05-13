@@ -2,10 +2,17 @@ package net.lymarket.comissionss.youmind.bbb.commands;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
+import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
+import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
+import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Visit implements ILyCommand {
     
@@ -20,6 +27,43 @@ public class Visit implements ILyCommand {
                     Main.getLang( ).sendErrorMsg( context.getSender( ) , "player.not-fund" , "player" , context.getArg( 0 ) );
                 }
                 return true;
+            }
+            case 4: {
+                if ( context.getArg( 0 ).equalsIgnoreCase( "accept" ) && context.getArg( 1 ).equalsIgnoreCase( "world" ) ) {
+                    if ( !(context.getSender( ) instanceof Player) ) {
+                        return true;
+                    }
+                    final Player p = ( Player ) context.getSender( );
+                    try {
+                        UUID owner_uuid = UUID.fromString( context.getArg( 2 ) );
+                        UUID world_uuid = UUID.fromString( context.getArg( 3 ) );
+                
+                        final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
+                
+                        if ( world.isVisitor( owner_uuid ) ) {
+                            final WorldVisitRequest rq = world.getVisitor( owner_uuid );
+                            if ( rq.getGuest_server( ).equalsIgnoreCase( Settings.PROXY_SERVER_NAME ) ) {
+                                final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
+                                world.addOnlineMember( owner_uuid );
+                                world.removeVisitor( owner_uuid );
+                                Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( owner_uuid , world );
+                                Main.getInstance( ).manageVisitorPermissions( owner_uuid , world.getUUID( ) , false );
+                                final Player guest = Bukkit.getPlayer( owner_uuid );
+                                guest.teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN );
+                            } else {
+                                rq.accept( );
+                                Main.getInstance( ).getWorlds( ).manageVisitJoinWorld( rq );
+                            }
+                        } else {
+                            Main.getLang( ).sendErrorMsg( context.getSender( ) , "visit.expired" );
+                        }
+                        return true;
+                
+                    } catch ( IllegalArgumentException e ) {
+                        Main.getLang( ).sendErrorMsg( context.getSender( ) , "player.not-fund" , "player" , context.getArg( 2 ) );
+                        return true;
+                    }
+                }
             }
             default:
                 return false;

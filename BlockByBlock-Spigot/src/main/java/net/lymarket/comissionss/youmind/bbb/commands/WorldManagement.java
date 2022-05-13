@@ -175,7 +175,7 @@ public final class WorldManagement implements ILyCommand {
                 try {
                     final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( context.getArg( 1 ) ) );
                     list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
-                    list.removeIf( p -> world.hasMember( Main.getInstance( ).getPlayers( ).getPlayer( p ).getUUID( ) ) );
+                    list.removeIf( p -> world.isMember( Main.getInstance( ).getPlayers( ).getPlayer( p ).getUUID( ) ) );
                 } catch ( WorldNotFoundError | IllegalArgumentException | NullPointerException ignored ) {
                 }
             } else if ( context.getArg( 0 ).equals( "untrust" ) ) {

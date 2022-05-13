@@ -36,7 +36,6 @@ public class User {
         this.createDate = new Date( );
         stats = new Stats( );
         skin = SkinManager.getSkin( name );
-        System.out.println( skin );
         rank = Rank.VISITOR;
     }
     

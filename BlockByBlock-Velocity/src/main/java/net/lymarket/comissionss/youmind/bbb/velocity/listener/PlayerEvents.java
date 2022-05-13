@@ -19,6 +19,7 @@ import net.lymarket.comissionss.youmind.bbb.velocity.utils.Utils;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerEvents {
@@ -101,8 +102,18 @@ public class PlayerEvents {
         }
         
         if ( VMain.getInstance( ).getProxy( ).getServer( "lobby" ).isPresent( ) ) {
-            e.setResult( KickedFromServerEvent.RedirectPlayer.create( VMain.getInstance( ).getProxy( ).getServer( "lobby" ).get( ) ) );
+            RegisteredServer lobby = VMain.getInstance( ).getProxy( ).getServer( "lobby" ).get( );
+            try {
+                if ( lobby.ping( ).get( ) != null ) {
+                    e.setResult( KickedFromServerEvent.RedirectPlayer.create( lobby ) );
+                } else {
+                    e.setResult( KickedFromServerEvent.DisconnectPlayer.create( Utils.format( "&cNo hay lobbys disponibles!" ) ) );
+                }
+            } catch ( InterruptedException | ExecutionException ex ) {
+                e.setResult( KickedFromServerEvent.DisconnectPlayer.create( Utils.format( "&cNo hay lobbys disponibles!" ) ) );
+            }
             return;
+    
         }
         e.setResult( KickedFromServerEvent.DisconnectPlayer.create( Utils.format( "&cNo hay lobbys disponibles!" ) ) );
         

@@ -85,6 +85,7 @@ public abstract class IPlayerRepository extends MongoDB < UUID, User > {
         user.setOption( "allow-visit-world-requests" , true );
         user.setOption( "allow-pm" , true );
         user.setOption( "allow-friend-requests" , true );
+        user.setOption( "changed-plots" , false );
         
         database.insertOne( TABLE_NAME , user );
         list.put( uuid , user );

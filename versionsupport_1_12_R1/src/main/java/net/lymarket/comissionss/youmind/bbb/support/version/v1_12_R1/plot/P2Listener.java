@@ -59,34 +59,35 @@ public class P2Listener implements Listener {
             return;
         }
         boolean canCreate = true;
+        boolean changed = user.getOption( "changed-plots" );
         switch ( user.getRank( ) ) {
             case ADMIN:
             case DEV:
                 break;
             case BUILDER: {
                 if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                    if ( user.getPlots31( ).size( ) >= 15 ) {
+                    if ( user.getPlots31( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.BUILDER.getMAX_PLOTS_31( )) ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P31 ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
-                    if ( user.getPlots101( ).size( ) >= 10 ) {
+                    if ( user.getPlots101( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.BUILDER.getMAX_PLOTS_101( )) ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P101 ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
-                    if ( user.getPlots501( ).size( ) >= 3 ) {
+                    if ( user.getPlots501( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.BUILDER.getMAX_PLOTS_501( )) ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P501 ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
-                    if ( user.getPlots1001( ).size( ) >= 1 ) {
+                    if ( user.getPlots1001( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.BUILDER.getMAX_PLOTS_1001( )) ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P1001 ) );
                         canCreate = false;
@@ -97,31 +98,33 @@ public class P2Listener implements Listener {
             }
             case VISITOR: {
                 if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                    if ( user.getPlots31( ).size( ) >= 15 ) {
+                    if ( user.getPlots31( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.VISITOR.getMAX_PLOTS_31( )) ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P31 ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
-                    if ( user.getPlots101( ).size( ) >= 5 ) {
+                    if ( user.getPlots101( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.VISITOR.getMAX_PLOTS_101( )) ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P101 ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
-                    if ( user.getPlots501( ).size( ) >= 2 ) {
+                    if ( user.getPlots501( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.VISITOR.getMAX_PLOTS_501( )) ) {
                         e.setCancelled( true );
                         Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P501 ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
-                    e.setCancelled( true );
-                    Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P1001 ) );
-                    canCreate = false;
-                    break;
+                    if ( user.getPlots1001( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.VISITOR.getMAX_PLOTS_1001( )) ) {
+                        e.setCancelled( true );
+                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P1001 ) );
+                        canCreate = false;
+                        break;
+                    }
                 }
             }
         }
@@ -143,21 +146,9 @@ public class P2Listener implements Listener {
         } else {
             e.setCancelled( true );
         }
-        //final User user =
-        
-    }
     
-    /*@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onInteract( PlayerInteractEvent e ){
-        final Player player = e.getPlayer( );
-        final Plot plot = new PlotAPI( ).getPlot( player.getLocation( ) );
-        
-        if ( plot == null ) {
-            return;
-        }
-        
-        
-    }*/
+    
+    }
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerTeleport( PlayerTeleportEvent e ){

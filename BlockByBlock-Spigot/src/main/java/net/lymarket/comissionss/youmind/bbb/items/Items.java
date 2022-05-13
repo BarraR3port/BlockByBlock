@@ -25,6 +25,7 @@ public final class Items {
     
     public static ItemStack BUILDER_1_18;
     
+    
     public static ItemStack WORLDS;
     
     public static ItemStack PLOTS;
@@ -35,7 +36,6 @@ public final class Items {
     
     public static ItemStack CREATED_WORLD_BASE;
     
-    
     public static ItemStack PLAYERS_IN_WORLD_BASE;
     
     public static ItemStack PLOT_31_BASE;
@@ -45,6 +45,14 @@ public final class Items {
     public static ItemStack PLOT_501_BASE;
     
     public static ItemStack PLOT_1001_BASE;
+    
+    public static ItemStack RANK_VISITOR_BASE;
+    
+    public static ItemStack RANK_BUILDER_BASE;
+    
+    public static ItemStack RANK_DEV_BASE;
+    
+    public static ItemStack RANK_ADMIN_BASE;
     
     
     public Items( ){
@@ -155,6 +163,7 @@ public final class Items {
                 .addLoreLine( "&7Tamaño: &a31x31" )
                 .addTag( "plot-type" , "P31" )
                 .build( );
+        
         PLOT_101_BASE = new ItemBuilder( XMaterial.LIGHT_GRAY_WOOL.parseMaterial( ) , 8 )
                 .setDisplayName( "&7Plots &a101" )
                 .addLoreLine( "&7Click para entrar a este plot." )
@@ -176,7 +185,28 @@ public final class Items {
                 .addTag( "plot-type" , "P1001" )
                 .build( );
         
+        RANK_VISITOR_BASE = new ItemBuilder( XMaterial.LIGHT_BLUE_WOOL.parseMaterial( ) , 3 )
+                .setDisplayName( "&bVisitor" )
+                .addLoreLine( "&7Click poner este rango al jugador." )
+                .addTag( "rank" , "VISITOR" )
+                .build( );
         
+        RANK_BUILDER_BASE = new ItemBuilder( XMaterial.YELLOW_WOOL.parseMaterial( ) , 4 )
+                .setDisplayName( "&eBuilder" )
+                .addLoreLine( "&7Click poner este rango al jugador." )
+                .addTag( "rank" , "BUILDER" )
+                .build( );
+        
+        RANK_DEV_BASE = new ItemBuilder( XMaterial.PURPLE_WOOL.parseMaterial( ) , 10 )
+                .setDisplayName( "&dBuilder" )
+                .addLoreLine( "&7Click poner este rango al jugador." )
+                .addTag( "rank" , "DEV" )
+                .build( );
+        RANK_ADMIN_BASE = new ItemBuilder( XMaterial.RED_WOOL.parseMaterial( ) , 14 )
+                .setDisplayName( "&cADMIN" )
+                .addLoreLine( "&7Click poner este rango al jugador." )
+                .addTag( "rank" , "ADMIN" )
+                .build( );
     }
     
     public static void setItems( Player p ){
