@@ -67,7 +67,7 @@ public class Settings {
                 VERSION = "1.12";
                 break;
             }
-            case "v1_16_R1": {
+            case "v1_16_R3": {
                 VERSION = "1.16";
                 break;
             }

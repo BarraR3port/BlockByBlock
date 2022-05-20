@@ -2,9 +2,7 @@ package net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.plot;
 
 import com.google.common.eventbus.Subscribe;
 import com.plotsquared.core.PlotAPI;
-import com.plotsquared.core.events.PlayerClaimPlotEvent;
-import com.plotsquared.core.events.PlayerTeleportToPlotEvent;
-import com.plotsquared.core.events.Result;
+import com.plotsquared.core.events.*;
 import com.plotsquared.core.location.Location;
 import com.plotsquared.core.plot.Plot;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
@@ -27,9 +25,12 @@ public class P2Listener implements Listener {
     
     private final VersionSupport vs;
     
+    private final String version;
+    
     public P2Listener( PlotAPI api , VersionSupport vs ){
         this.vs = vs;
         api.registerListener( this );
+        this.version = vs.getBbbApi( ).getVersion( );
     }
     
     @EventHandler
@@ -69,28 +70,28 @@ public class P2Listener implements Listener {
                 break;
             case BUILDER: {
                 if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                    if ( user.getPlots31( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.BUILDER.getMAX_PLOTS_31( )) ) {
+                    if ( user.getPlots31( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.BUILDER.getMAX_PLOTS_31( )) ) {
                         e.setEventResult( Result.DENY );
                         LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
-                    if ( user.getPlots101( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.BUILDER.getMAX_PLOTS_101( )) ) {
+                    if ( user.getPlots101( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.BUILDER.getMAX_PLOTS_101( )) ) {
                         e.setEventResult( Result.DENY );
                         LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P101.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
-                    if ( user.getPlots501( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.BUILDER.getMAX_PLOTS_501( )) ) {
+                    if ( user.getPlots501( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.BUILDER.getMAX_PLOTS_501( )) ) {
                         e.setEventResult( Result.DENY );
                         LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P501.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
-                    if ( user.getPlots1001( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.BUILDER.getMAX_PLOTS_1001( )) ) {
+                    if ( user.getPlots1001( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.BUILDER.getMAX_PLOTS_1001( )) ) {
                         e.setEventResult( Result.DENY );
                         LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P1001.getFormattedName( ) );
                         canCreate = false;
@@ -101,28 +102,28 @@ public class P2Listener implements Listener {
             }
             case VISITOR: {
                 if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                    if ( user.getPlots31( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.VISITOR.getMAX_PLOTS_31( )) ) {
+                    if ( user.getPlots31( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.VISITOR.getMAX_PLOTS_31( )) ) {
                         e.setEventResult( Result.DENY );
                         LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
-                    if ( user.getPlots101( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.VISITOR.getMAX_PLOTS_101( )) ) {
+                    if ( user.getPlots101( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.VISITOR.getMAX_PLOTS_101( )) ) {
                         e.setEventResult( Result.DENY );
                         LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P101.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
-                    if ( user.getPlots501( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.VISITOR.getMAX_PLOTS_501( )) ) {
+                    if ( user.getPlots501( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.VISITOR.getMAX_PLOTS_501( )) ) {
                         e.setEventResult( Result.DENY );
                         LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P501.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
-                    if ( user.getPlots1001( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.VISITOR.getMAX_PLOTS_1001( )) ) {
+                    if ( user.getPlots1001( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.VISITOR.getMAX_PLOTS_1001( )) ) {
                         e.setEventResult( Result.DENY );
                         LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
                         canCreate = false;
@@ -134,13 +135,13 @@ public class P2Listener implements Listener {
         
         if ( canCreate ) {
             if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P31 , plot.getId( ).toString( ) )) );
+                user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P31 , plot.getId( ).toString( ) , version )) );
             } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
-                user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P101 , plot.getId( ).toString( ) )) );
+                user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P101 , plot.getId( ).toString( ) , version )) );
             } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
-                user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P501 , plot.getId( ).toString( ) ) );
+                user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P501 , plot.getId( ).toString( ) , version ) );
             } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
-                user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P1001 , plot.getId( ).toString( ) ) );
+                user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P1001 , plot.getId( ).toString( ) , version ) );
             } else {
                 e.setEventResult( Result.DENY );
                 return;
@@ -149,6 +150,122 @@ public class P2Listener implements Listener {
         } else {
             e.setEventResult( Result.DENY );
         }
+        
+        
+    }
+    
+    @Subscribe
+    public void onPlayerAutoPlotEvent( PlayerAutoPlotEvent e ){
+        
+        final Player p = Bukkit.getPlayer( e.getPlayer( ).getUUID( ) );
+        final String worldName = e.getPlayer( ).getLocation( ).getWorldName( );
+        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
+        if ( user == null ) {
+            e.setEventResult( Result.DENY );
+            LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
+            return;
+        }
+        boolean canCreate = true;
+        boolean changed = user.getOption( "changed-plots" );
+        switch ( user.getRank( ) ) {
+            case ADMIN:
+            case DEV:
+                break;
+            case BUILDER: {
+                if ( worldName.equals( PlotType.P31.getWorldName( ) ) ) {
+                    if ( user.getPlots31( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.BUILDER.getMAX_PLOTS_31( )) ) {
+                        e.setEventResult( Result.DENY );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
+                        canCreate = false;
+                        break;
+                    }
+                } else if ( worldName.equals( PlotType.P101.getWorldName( ) ) ) {
+                    if ( user.getPlots101( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.BUILDER.getMAX_PLOTS_101( )) ) {
+                        e.setEventResult( Result.DENY );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P101.getFormattedName( ) );
+                        canCreate = false;
+                        break;
+                    }
+                } else if ( worldName.equals( PlotType.P501.getWorldName( ) ) ) {
+                    if ( user.getPlots501( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.BUILDER.getMAX_PLOTS_501( )) ) {
+                        e.setEventResult( Result.DENY );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P501.getFormattedName( ) );
+                        canCreate = false;
+                        break;
+                    }
+                } else if ( worldName.equals( PlotType.P1001.getWorldName( ) ) ) {
+                    if ( user.getPlots1001( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.BUILDER.getMAX_PLOTS_1001( )) ) {
+                        e.setEventResult( Result.DENY );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P1001.getFormattedName( ) );
+                        canCreate = false;
+                        break;
+                    }
+                }
+                break;
+            }
+            case VISITOR: {
+                if ( worldName.equals( PlotType.P31.getWorldName( ) ) ) {
+                    if ( user.getPlots31( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.VISITOR.getMAX_PLOTS_31( )) ) {
+                        e.setEventResult( Result.DENY );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
+                        canCreate = false;
+                        break;
+                    }
+                } else if ( worldName.equals( PlotType.P101.getWorldName( ) ) ) {
+                    if ( user.getPlots101( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.VISITOR.getMAX_PLOTS_101( )) ) {
+                        e.setEventResult( Result.DENY );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P101.getFormattedName( ) );
+                        canCreate = false;
+                        break;
+                    }
+                } else if ( worldName.equals( PlotType.P501.getWorldName( ) ) ) {
+                    if ( user.getPlots501( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.VISITOR.getMAX_PLOTS_501( )) ) {
+                        e.setEventResult( Result.DENY );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P501.getFormattedName( ) );
+                        canCreate = false;
+                        break;
+                    }
+                } else if ( worldName.equals( PlotType.P1001.getWorldName( ) ) ) {
+                    if ( user.getPlots1001( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.VISITOR.getMAX_PLOTS_1001( )) ) {
+                        e.setEventResult( Result.DENY );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
+                        canCreate = false;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if ( !canCreate ) {
+            e.setEventResult( Result.DENY );
+        }
+        
+        
+    }
+    
+    @Subscribe
+    public void onPlayerAutoPlotsChosenEvent( PlayerAutoPlotsChosenEvent e ){
+        
+        final Player p = Bukkit.getPlayer( e.getPlotPlayer( ).getUUID( ) );
+        final Plot plot = e.getPlot( );
+        final String worldName = e.getPlotPlayer( ).getLocation( ).getWorldName( );
+        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
+        if ( user == null || plot == null ) {
+            return;
+        }
+        
+        if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
+            user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P31 , plot.getId( ).toString( ) , version )) );
+        } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
+            user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P101 , plot.getId( ).toString( ) , version )) );
+        } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
+            user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P501 , plot.getId( ).toString( ) , version ) );
+        } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
+            user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P1001 , plot.getId( ).toString( ) , version ) );
+        } else {
+            return;
+        }
+        vs.getBbbApi( ).getPlayers( ).savePlayer( user );
         
         
     }

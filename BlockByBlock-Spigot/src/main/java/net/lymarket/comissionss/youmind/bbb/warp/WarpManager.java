@@ -76,20 +76,24 @@ public class WarpManager extends IWarpManager {
     
     @Override
     public Warp getUserWarpByName( WarpType warpType , String serverName ){
-        
-        Document doc = database.findOneFast( TABLE_NAME , Filters.eq( "type" , warpType.toString( ) ) );
-        if ( doc == null ) {
+    
+        ArrayList < Document > documents = database.findManyFast( TABLE_NAME , Filters.eq( "type" , warpType.toString( ) ) );
+        if ( documents == null || documents.isEmpty( ) ) {
             throw new WarpNotFoundError( warpType.toString( ) , serverName );
         }
-        
-        final Warp warp = Api.getGson( ).fromJson( doc.toJson( ) , Warp.class );
-        if ( warp == null ) {
+        Warp foundWarp = null;
+        for ( Document doc : documents ) {
+            final Warp warp = Api.getGson( ).fromJson( doc.toJson( ) , Warp.class );
+            if ( warp == null ) continue;
+            if ( warp.getLocation( ).getServer( ).equals( serverName ) ) {
+                foundWarp = warp;
+            }
+        }
+        if ( foundWarp == null ) {
             throw new WarpNotFoundError( warpType.toString( ) , serverName );
         }
-        if ( !warp.getLocation( ).getServer( ).equals( serverName ) ) {
-            throw new WarpNotFoundError( warpType.toString( ) , serverName );
-        }
-        return warp;
+    
+        return foundWarp;
     }
     
     @Override

@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.menu.main.world.create;
 
 import com.cryptomorin.xseries.XMaterial;
+import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.event.PrevCreateWorld;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
@@ -112,7 +113,9 @@ public class WorldCreatorMenu extends UpdatableMenu {
             new WorldCreatorMenu( this.playerMenuUtility , serverVersion , targetUserUUID ).open( );
             final Material material = items.get( currentIndex ).getType( ) != XMaterial.GLASS_PANE.parseMaterial( ) ? items.get( currentIndex ).getType( ) : XMaterial.AIR.parseMaterial( );
             final BWorld world = WorldManager.getWorldFormatted( p.getUniqueId( ) , serverVersion , material.toString( ) );
-            Bukkit.getPluginManager( ).callEvent( new PrevCreateWorld( p.getUniqueId( ) , world , material ) );
+            Bukkit.getScheduler( ).runTaskAsynchronously( Main.getInstance( ) , ( ) -> {
+                Bukkit.getPluginManager( ).callEvent( new PrevCreateWorld( p.getUniqueId( ) , world , material ) );
+            } );
             new WorldManagerMenu( this.playerMenuUtility , serverVersion , targetUserUUID , 10L ).open( );
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
             new WorldManagerMenu( playerMenuUtility , serverVersion , targetUserUUID , 10L ).open( );

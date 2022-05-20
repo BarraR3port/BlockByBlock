@@ -5,7 +5,6 @@ import net.lymarket.comissionss.youmind.bbb.support.common.plot.IPlotManager;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
 import net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.plot.P2Listener;
 import net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.plot.PlotManager;
-import net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.world.WorldListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,7 +26,7 @@ public class v1_12_R1 extends VersionSupport {
     
     @Override
     public void registerWorldEvents( ){
-        Bukkit.getServer( ).getPluginManager( ).registerEvents( new WorldListener( this ) , plugin );
+        //Bukkit.getServer( ).getPluginManager( ).registerEvents( new WorldListener( this ) , plugin );
         
     }
     

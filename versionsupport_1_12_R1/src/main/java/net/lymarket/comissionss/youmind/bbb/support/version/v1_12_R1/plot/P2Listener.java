@@ -7,9 +7,8 @@ import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
-import net.lymarket.comissionss.youmind.bbb.support.common.events.PlotCreateFailed;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
-import org.bukkit.Bukkit;
+import net.lymarket.lyapi.spigot.LyApi;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -26,9 +25,11 @@ public class P2Listener implements Listener {
     
     private final VersionSupport vs;
     
+    private final String version;
     
     public P2Listener( VersionSupport vs ){
         this.vs = vs;
+        this.version = vs.getBbbApi( ).getVersion( );
     }
     
     @EventHandler
@@ -50,7 +51,7 @@ public class P2Listener implements Listener {
     }
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerEnterPlot( PlayerClaimPlotEvent e ){
+    public void onPlayerClaimPlotEvent( PlayerClaimPlotEvent e ){
         final Player p = e.getPlayer( );
         final Plot plot = e.getPlot( );
         final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
@@ -66,30 +67,30 @@ public class P2Listener implements Listener {
                 break;
             case BUILDER: {
                 if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                    if ( user.getPlots31( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.BUILDER.getMAX_PLOTS_31( )) ) {
+                    if ( user.getPlots31( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.BUILDER.getMAX_PLOTS_31( )) ) {
                         e.setCancelled( true );
-                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P31 ) );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
-                    if ( user.getPlots101( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.BUILDER.getMAX_PLOTS_101( )) ) {
+                    if ( user.getPlots101( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.BUILDER.getMAX_PLOTS_101( )) ) {
                         e.setCancelled( true );
-                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P101 ) );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P101.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
-                    if ( user.getPlots501( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.BUILDER.getMAX_PLOTS_501( )) ) {
+                    if ( user.getPlots501( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.BUILDER.getMAX_PLOTS_501( )) ) {
                         e.setCancelled( true );
-                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P501 ) );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P501.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
-                    if ( user.getPlots1001( ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.BUILDER.getMAX_PLOTS_1001( )) ) {
+                    if ( user.getPlots1001( version ).size( ) >= (changed ? Rank.BUILDER.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.BUILDER.getMAX_PLOTS_1001( )) ) {
                         e.setCancelled( true );
-                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P1001 ) );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P1001.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
@@ -98,30 +99,30 @@ public class P2Listener implements Listener {
             }
             case VISITOR: {
                 if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                    if ( user.getPlots31( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.VISITOR.getMAX_PLOTS_31( )) ) {
+                    if ( user.getPlots31( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_31( ) + user.getStats( ).getMAX_PLOTS_31( ) : Rank.VISITOR.getMAX_PLOTS_31( )) ) {
                         e.setCancelled( true );
-                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P31 ) );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
-                    if ( user.getPlots101( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.VISITOR.getMAX_PLOTS_101( )) ) {
+                    if ( user.getPlots101( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_101( ) + user.getStats( ).getMAX_PLOTS_101( ) : Rank.VISITOR.getMAX_PLOTS_101( )) ) {
                         e.setCancelled( true );
-                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P101 ) );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P101.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
-                    if ( user.getPlots501( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.VISITOR.getMAX_PLOTS_501( )) ) {
+                    if ( user.getPlots501( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_501( ) + user.getStats( ).getMAX_PLOTS_501( ) : Rank.VISITOR.getMAX_PLOTS_501( )) ) {
                         e.setCancelled( true );
-                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P501 ) );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P501.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
                 } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
-                    if ( user.getPlots1001( ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.VISITOR.getMAX_PLOTS_1001( )) ) {
+                    if ( user.getPlots1001( version ).size( ) >= (changed ? Rank.VISITOR.getMAX_PLOTS_1001( ) + user.getStats( ).getMAX_PLOTS_1001( ) : Rank.VISITOR.getMAX_PLOTS_1001( )) ) {
                         e.setCancelled( true );
-                        Bukkit.getServer( ).getPluginManager( ).callEvent( new PlotCreateFailed( p , PlotType.P1001 ) );
+                        LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P1001.getFormattedName( ) );
                         canCreate = false;
                         break;
                     }
@@ -131,13 +132,13 @@ public class P2Listener implements Listener {
         
         if ( canCreate ) {
             if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
-                user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P31 , plot.getId( ).toString( ) )) );
+                user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P31 , plot.getId( ).toString( ) , version )) );
             } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
-                user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P101 , plot.getId( ).toString( ) )) );
+                user.addPlot( (new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P101 , plot.getId( ).toString( ) , version )) );
             } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
-                user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P501 , plot.getId( ).toString( ) ) );
+                user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P501 , plot.getId( ).toString( ) , version ) );
             } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
-                user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P1001 , plot.getId( ).toString( ) ) );
+                user.addPlot( new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.P1001 , plot.getId( ).toString( ) , version ) );
             } else {
                 e.setCancelled( true );
                 return;
@@ -146,8 +147,8 @@ public class P2Listener implements Listener {
         } else {
             e.setCancelled( true );
         }
-    
-    
+        
+        
     }
     
     @EventHandler(ignoreCancelled = true)

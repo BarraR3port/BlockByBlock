@@ -6,10 +6,12 @@ public class Plot {
     
     private String PlotID;
     
+    private final String version;
     
-    public Plot( PlotType type , String plotID ){
+    public Plot( PlotType type , String plotID , String version ){
         this.type = type;
         this.PlotID = plotID;
+        this.version = version;
         
     }
     
@@ -23,6 +25,10 @@ public class Plot {
     
     public PlotType getType( ){
         return type;
+    }
+    
+    public String getVersion( ){
+        return version;
     }
 }
 

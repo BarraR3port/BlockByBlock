@@ -7,6 +7,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.user.Stats;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.admin.rank.RankEditor;
+import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.UpdatableMenu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
@@ -35,7 +36,7 @@ public class AdminMenu extends UpdatableMenu {
     }
     
     public void setMenuItems( ){
-        
+        final String version = Settings.VERSION;
         final boolean changed = target.getOption( "changed-plots" );
         final Rank rank = target.getRank( );
         final Stats stats = target.getStats( );
@@ -54,7 +55,7 @@ public class AdminMenu extends UpdatableMenu {
                 new ItemBuilder( Items.PLOT_31_BASE.clone( ) )
                         .setLore( Collections.singletonList( "" ) )
                         .addLoreLine( "&7Plots actuales de 31x31:" )
-                        .addLoreLine( " &b> &a" + target.getPlots31( ).size( ) )
+                        .addLoreLine( " &b> &a" + target.getPlots31( version ).size( ) )
                         .addLoreLine( "&7Máximo de plots: " )
                         .addLoreLine( " &b> &a" + (changed ? rank.getMAX_PLOTS_31( ) + stats.getMAX_PLOTS_31( ) : rank.getMAX_PLOTS_31( )) )
                         .build( ) );
@@ -67,7 +68,7 @@ public class AdminMenu extends UpdatableMenu {
                 new ItemBuilder( Items.PLOT_101_BASE.clone( ) )
                         .setLore( Collections.singletonList( "" ) )
                         .addLoreLine( "&7Plots actuales de 101x101:" )
-                        .addLoreLine( " &b> &a" + target.getPlots101( ).size( ) )
+                        .addLoreLine( " &b> &a" + target.getPlots101( version ).size( ) )
                         .addLoreLine( "&7Máximo de plots: " )
                         .addLoreLine( " &b> &a" + (changed ? rank.getMAX_PLOTS_101( ) + stats.getMAX_PLOTS_101( ) : rank.getMAX_PLOTS_101( )) )
                         .build( ) );
@@ -90,7 +91,7 @@ public class AdminMenu extends UpdatableMenu {
                 new ItemBuilder( Items.PLOT_501_BASE.clone( ) )
                         .setLore( Collections.singletonList( "" ) )
                         .addLoreLine( "&7Plots actuales de 501x501:" )
-                        .addLoreLine( " &b> &a" + target.getPlots501( ).size( ) )
+                        .addLoreLine( " &b> &a" + target.getPlots501( version ).size( ) )
                         .addLoreLine( "&7Máximo de plots: " )
                         .addLoreLine( " &b> &a" + (changed ? rank.getMAX_PLOTS_501( ) + stats.getMAX_PLOTS_501( ) : rank.getMAX_PLOTS_501( )) )
                         .build( ) );
@@ -103,7 +104,7 @@ public class AdminMenu extends UpdatableMenu {
                 new ItemBuilder( Items.PLOT_1001_BASE.clone( ) )
                         .setLore( Collections.singletonList( "" ) )
                         .addLoreLine( "&7Plots actuales de 1001x1001:" )
-                        .addLoreLine( " &b> &a" + target.getPlots1001( ).size( ) )
+                        .addLoreLine( " &b> &a" + target.getPlots1001( version ).size( ) )
                         .addLoreLine( "&7Máximo de plots: " )
                         .addLoreLine( " &b> &a" + (changed ? rank.getMAX_PLOTS_1001( ) + stats.getMAX_PLOTS_1001( ) : rank.getMAX_PLOTS_1001( )) )
                         .build( ) );

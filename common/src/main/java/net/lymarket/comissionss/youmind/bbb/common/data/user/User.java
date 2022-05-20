@@ -109,20 +109,20 @@ public class User {
         return plots;
     }
     
-    public ArrayList < Plot > getPlots31( ){
-        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P31 ) ).collect( Collectors.toCollection( ArrayList::new ) );
+    public ArrayList < Plot > getPlots31( String version ){
+        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P31 ) && plot.getVersion( ).equals( version ) ).collect( Collectors.toCollection( ArrayList::new ) );
     }
     
-    public ArrayList < Plot > getPlots101( ){
-        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P101 ) ).collect( Collectors.toCollection( ArrayList::new ) );
+    public ArrayList < Plot > getPlots101( String version ){
+        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P101 ) && plot.getVersion( ).equals( version ) ).collect( Collectors.toCollection( ArrayList::new ) );
     }
     
-    public ArrayList < Plot > getPlots501( ){
-        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P501 ) ).collect( Collectors.toCollection( ArrayList::new ) );
+    public ArrayList < Plot > getPlots501( String version ){
+        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P501 ) && plot.getVersion( ).equals( version ) ).collect( Collectors.toCollection( ArrayList::new ) );
     }
     
-    public ArrayList < Plot > getPlots1001( ){
-        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P1001 ) ).collect( Collectors.toCollection( ArrayList::new ) );
+    public ArrayList < Plot > getPlots1001( String version ){
+        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P1001 ) && plot.getVersion( ).equals( version ) ).collect( Collectors.toCollection( ArrayList::new ) );
     }
     
     public void addPlot( Plot plot ){
