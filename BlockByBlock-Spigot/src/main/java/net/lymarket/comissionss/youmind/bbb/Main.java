@@ -15,6 +15,7 @@ import net.lymarket.comissionss.youmind.bbb.commands.spawn.Spawn;
 import net.lymarket.comissionss.youmind.bbb.commands.warp.WarpCmd;
 import net.lymarket.comissionss.youmind.bbb.commands.warp.Warps;
 import net.lymarket.comissionss.youmind.bbb.common.BBBApi;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.config.ConfigManager;
 import net.lymarket.comissionss.youmind.bbb.home.HomeManager;
@@ -25,7 +26,6 @@ import net.lymarket.comissionss.youmind.bbb.listener.plot.PlotsPlayerEvent;
 import net.lymarket.comissionss.youmind.bbb.listener.plugin.PluginMessage;
 import net.lymarket.comissionss.youmind.bbb.listener.world.WorldPlayerEvents;
 import net.lymarket.comissionss.youmind.bbb.papi.Placeholders;
-import net.lymarket.comissionss.youmind.bbb.settings.ServerType;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.socket.ProxyMSGManager;
 import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
@@ -41,6 +41,7 @@ import net.lymarket.lyapi.spigot.LyApi;
 import net.lymarket.lyapi.spigot.config.Config;
 import net.lymarket.lyapi.spigot.menu.IUpdatableMenu;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -90,7 +91,14 @@ public final class Main extends JavaPlugin implements BBBApi {
     @Override
     public void debug( String message ){
         if ( Settings.DEBUG ) {
-            instance.getLogger( ).info( "DEBUG: " + message );
+            instance.getLogger( ).info( ChatColor.RED + "[DEBUG] " + ChatColor.LIGHT_PURPLE + message );
+        }
+    }
+    
+    @Override
+    public void error( String message ){
+        if ( Settings.DEBUG ) {
+            instance.getLogger( ).severe( ChatColor.RED + "[ERROR] " + ChatColor.GRAY + message );
         }
     }
     
@@ -189,18 +197,18 @@ public final class Main extends JavaPlugin implements BBBApi {
                 break;
             }
         }
-    
-        getServer( ).getScheduler( ).runTaskTimer( this , ( ) -> {
         
+        getServer( ).getScheduler( ).runTaskTimer( this , ( ) -> {
+            
             for ( Player p : Bukkit.getOnlinePlayers( ) ) {
                 if ( p.getOpenInventory( ).getTopInventory( ).getHolder( ) instanceof IUpdatableMenu ) {
                     (( IUpdatableMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( )).reOpen( );
                 }
             }
-        
-        } , 10 , 20L );
+            
+        } , 20L , 20L );
         //new PacketManager( this );
-    
+        
     }
     
     @Override
@@ -248,7 +256,7 @@ public final class Main extends JavaPlugin implements BBBApi {
     
     @Override
     public String getProxyServerName( ){
-        return Settings.PROXY_SERVER_NAME;
+        return Settings.SERVER_NAME;
     }
     
     public CompletableFuture < Void > managePermissions( UUID player_uuid , UUID world_uuid , boolean delete ){
@@ -298,4 +306,8 @@ public final class Main extends JavaPlugin implements BBBApi {
         } );
     }
     
+    @Override
+    public ServerType getServerType( ){
+        return Settings.SERVER_TYPE;
+    }
 }

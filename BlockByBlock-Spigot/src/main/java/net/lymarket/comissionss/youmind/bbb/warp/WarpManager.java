@@ -2,6 +2,7 @@ package net.lymarket.comissionss.youmind.bbb.warp;
 
 import com.mongodb.client.model.Filters;
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
+import net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType;
 import net.lymarket.comissionss.youmind.bbb.common.db.IWarpManager;
 import net.lymarket.comissionss.youmind.bbb.common.error.WarpNotFoundError;
 import net.lymarket.common.Api;
@@ -20,7 +21,7 @@ public class WarpManager extends IWarpManager {
     
     @Override
     public ArrayList < Warp > getWarpsByUser( UUID uuid ){
-        return database.findMany( TABLE_NAME , warp -> warp.getOwner( ).equals( uuid ) , Warp.class );
+        return database.findMany( TABLE_NAME , warp -> warp.getMembers( ).contains( uuid ) , Warp.class );
     }
     
     @Override
@@ -50,8 +51,12 @@ public class WarpManager extends IWarpManager {
     
     @Override
     public void createWarp( Warp warp ){
-        database.insertOne( TABLE_NAME , warp );
-        
+        try {
+            getUserWarpByName( warp.getType( ) , warp.getLocation( ).getServer( ) );
+        } catch ( WarpNotFoundError e ) {
+            database.insertOne( TABLE_NAME , warp );
+        }
+    
     }
     
     @Override
@@ -70,8 +75,21 @@ public class WarpManager extends IWarpManager {
     }
     
     @Override
-    public Warp getUserWarpByName( UUID uuid , String warpName ){
-        return null;
+    public Warp getUserWarpByName( WarpType warpType , String serverName ){
+        
+        Document doc = database.findOneFast( TABLE_NAME , Filters.eq( "type" , warpType.toString( ) ) );
+        if ( doc == null ) {
+            throw new WarpNotFoundError( warpType.toString( ) , serverName );
+        }
+        
+        final Warp warp = Api.getGson( ).fromJson( doc.toJson( ) , Warp.class );
+        if ( warp == null ) {
+            throw new WarpNotFoundError( warpType.toString( ) , serverName );
+        }
+        if ( !warp.getLocation( ).getServer( ).equals( serverName ) ) {
+            throw new WarpNotFoundError( warpType.toString( ) , serverName );
+        }
+        return warp;
     }
     
     @Override

@@ -6,6 +6,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
+import net.lymarket.comissionss.youmind.bbb.menu.main.warp.WarpMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.create.version.VersionChooser;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.edit.WorldEditorMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.PlayersInWorldMenu;
@@ -23,6 +24,16 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class WorldManagerMenu extends UpdatableMenu {
+    
+    @Override
+    public String getMenuName( ){
+        return targetUserUUID.equals( ownerUUID ) ? "&bTus mundos" : "&bMundos de " + Main.getInstance( ).getPlayers( ).getPlayer( targetUserUUID ).getName( );
+    }
+    
+    @Override
+    public int getSlots( ){
+        return 27;
+    }
     
     private final UUID targetUserUUID;
     
@@ -52,8 +63,9 @@ public class WorldManagerMenu extends UpdatableMenu {
     public void handleMenu( InventoryClickEvent e ){
         final ItemStack item = e.getCurrentItem( );
         final Player p = ( Player ) e.getWhoClicked( );
-        
-        if ( NBTItem.hasTag( item , "world-uuid" ) ) {
+        if ( NBTItem.hasTag( item , "type" ) ) {
+            new WarpMenu( playerMenuUtility ).open( );
+        } else if ( NBTItem.hasTag( item , "world-uuid" ) ) {
             final String server_target = NBTItem.getTag( item , "world-server" );
             final UUID world_uuid = UUID.fromString( NBTItem.getTag( item , "world-uuid" ) );
             final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
@@ -133,19 +145,9 @@ public class WorldManagerMenu extends UpdatableMenu {
         inventory.setItem( 18 , super.CLOSE_ITEM );
     }
     
-    @Override
-    public String getMenuName( ){
-        return targetUserUUID.equals( ownerUUID ) ? "&bTus mundos" : "&bMundos de " + Main.getInstance( ).getPlayers( ).getPlayer( targetUserUUID ).getName( );
-    }
-    
     
     @Override
-    public int getSlots( ){
-        return 27;
-    }
-    
-    @Override
-    public void checkSomething( Player p , int slot , ItemStack item , String name , String lore ){
+    public void checkSomething( Player p , int slot , ItemStack item , String name , String lore , UUID menu_uuid ){
         
         if ( isOnSchedule ) return;
         
@@ -156,7 +158,13 @@ public class WorldManagerMenu extends UpdatableMenu {
                 .addLoreLine( lore )
                 .setDisplayName( name )
                 .build( ) );
-        setOnSchedule( p , slot , item );
+        setOnSchedule( p , slot , item , menu_uuid );
+        inventory.setItem( 18 , super.CLOSE_ITEM.clone( ) );
+        
+        inventory.setItem( 26 , new ItemBuilder( XMaterial.ENDER_PEARL.parseItem( ) )
+                .setDisplayName( "&bWarps" )
+                .addTag( "type" , "warps" )
+                .build( ) );
         
     }
     

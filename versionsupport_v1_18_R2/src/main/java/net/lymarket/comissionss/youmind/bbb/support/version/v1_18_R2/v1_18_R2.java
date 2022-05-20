@@ -169,7 +169,7 @@ public class v1_18_R2 extends VersionSupport {
 //        Field profileField;
 //        try {
 //            //noinspection ConstantConditions
-//            profileField = headMeta.getClass().getDeclaredField("profile");
+//            profileField = headMeta.getMenuUUID().getDeclaredField("profile");
 //            profileField.setAccessible(true);
 //            profileField.set(headMeta, ((CraftPlayer) player).getProfile());
 //        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {

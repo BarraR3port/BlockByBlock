@@ -35,19 +35,19 @@ public class WorldCreatorMenu extends UpdatableMenu {
         this.serverVersion = serverVersion;
         this.targetUserUUID = targetUserUUID;
         
-        items.add( new ItemBuilder( Material.GRASS )
+        items.add( new ItemBuilder( XMaterial.GRASS_BLOCK.parseMaterial( ) )
                 .setDisplayName( "&7Selecciona el material base de tu mundo" )
                 .addLoreLine( "" )
                 .addLoreLine( "&7Material seleccionado: &a" )
-                .addLoreLine( " &7> &a" + Material.GRASS )
+                .addLoreLine( " &7> &a" + XMaterial.GRASS_BLOCK )
                 .addLoreLine( "" )
                 .build( ) );
-        
-        items.add( new ItemBuilder( Material.BEDROCK )
+    
+        items.add( new ItemBuilder( XMaterial.BEDROCK.parseMaterial( ) )
                 .setDisplayName( "&7Selecciona el material base de tu mundo" )
                 .addLoreLine( "" )
                 .addLoreLine( "&7Material seleccionado: &a" )
-                .addLoreLine( " &7> &a" + Material.BEDROCK )
+                .addLoreLine( " &7> &a" + XMaterial.BEDROCK )
                 .addLoreLine( "" )
                 .build( ) );
         
@@ -69,8 +69,8 @@ public class WorldCreatorMenu extends UpdatableMenu {
     }
     
     public void setMenuItems( ){
-        
-        inventory.setItem( 7 , new ItemBuilder( Material.STAINED_GLASS_PANE , 5 ).setDisplayName( "&7Click para cambiar de material" ).build( ) );
+    
+        inventory.setItem( 7 , new ItemBuilder( XMaterial.GLASS_PANE.parseMaterial( ) , 5 ).setDisplayName( "&7Click para cambiar de material" ).build( ) );
         
         inventory.setItem( 13 , new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
                 .setHeadSkin( "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjgwZDMyOTVkM2Q5YWJkNjI3NzZhYmNiOGRhNzU2ZjI5OGE1NDVmZWU5NDk4YzRmNjlhMWMyYzc4NTI0YzgyNCJ9fX0=" )
@@ -81,8 +81,8 @@ public class WorldCreatorMenu extends UpdatableMenu {
         inventory.setItem( 16 , items.get( currentIndex ) );
         
         inventory.setItem( 18 , super.CLOSE_ITEM );
-        
-        inventory.setItem( 25 , new ItemBuilder( Material.STAINED_GLASS_PANE , 14 ).setDisplayName( "&7Click para cambiar de material" ).build( ) );
+    
+        inventory.setItem( 25 , new ItemBuilder( XMaterial.GLASS_PANE.parseMaterial( ) , 14 ).setDisplayName( "&7Click para cambiar de material" ).build( ) );
         
         
     }
@@ -110,8 +110,8 @@ public class WorldCreatorMenu extends UpdatableMenu {
         }
         if ( NBTItem.hasTag( item , "world" ) ) {
             new WorldCreatorMenu( this.playerMenuUtility , serverVersion , targetUserUUID ).open( );
-            final BWorld world = WorldManager.getWorldFormatted( p.getUniqueId( ) , serverVersion );
-            final Material material = items.get( currentIndex ).getType( ) != Material.STAINED_GLASS_PANE ? items.get( currentIndex ).getType( ) : Material.AIR;
+            final Material material = items.get( currentIndex ).getType( ) != XMaterial.GLASS_PANE.parseMaterial( ) ? items.get( currentIndex ).getType( ) : XMaterial.AIR.parseMaterial( );
+            final BWorld world = WorldManager.getWorldFormatted( p.getUniqueId( ) , serverVersion , material.toString( ) );
             Bukkit.getPluginManager( ).callEvent( new PrevCreateWorld( p.getUniqueId( ) , world , material ) );
             new WorldManagerMenu( this.playerMenuUtility , serverVersion , targetUserUUID , 10L ).open( );
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {

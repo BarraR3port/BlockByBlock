@@ -2,8 +2,8 @@ package net.lymarket.comissionss.youmind.bbb.commands.home;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
-import net.lymarket.comissionss.youmind.bbb.settings.ServerType;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
 import net.lymarket.lyapi.spigot.utils.Utils;

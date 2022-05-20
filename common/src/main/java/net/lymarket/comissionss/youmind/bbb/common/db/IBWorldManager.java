@@ -17,7 +17,7 @@ public abstract class IBWorldManager< V > extends MongoDB < UUID, BWorld > {
         super( database , tableName );
     }
     
-    public static BWorld getWorldFormatted( UUID ownerUUID , String versionTarget ){
+    public static BWorld getWorldFormatted( UUID ownerUUID , String versionTarget , String material ){
         /*ArrayList < String > list = new ArrayList <>( );
         String versionFormatted = versionTarget.replace( "." , "" ).replace( "_" , "" );
         list.add( "PW-" + versionFormatted + "-1" );
@@ -27,7 +27,7 @@ public abstract class IBWorldManager< V > extends MongoDB < UUID, BWorld > {
         
         return new BWorld( ownerUUID , server , versionTarget );*/
         final String versionFormatted = versionTarget.replace( "." , "" ).replace( "_" , "" );
-        return new BWorld( ownerUUID , "PW-" + versionFormatted + "-1" , versionTarget );
+        return new BWorld( ownerUUID , "PW-" + versionFormatted + "-1" , versionTarget , material );
     }
     
     public void addPlayerToTP( UUID uuid , BWorld world ){

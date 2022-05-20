@@ -98,7 +98,7 @@ public class Placeholders extends PlaceholderExpansion {
         
         switch ( identifier ) {
             case "server": {
-                return Settings.PROXY_SERVER_NAME;
+                return Settings.SERVER_NAME;
             }
             case "health": {
                 return String.valueOf( player.getHealth( ) );

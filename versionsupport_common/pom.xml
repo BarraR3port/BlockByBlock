@@ -12,7 +12,7 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.1-ALPHA</version>
+        <version>0.2-ALPHA</version>
     </parent>
     <properties>
         <java.version>8</java.version>

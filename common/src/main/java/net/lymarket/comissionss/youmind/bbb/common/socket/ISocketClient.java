@@ -6,8 +6,6 @@ public interface ISocketClient {
     
     boolean sendMessage( JsonObject message );
     
-    boolean sendMessage( String message );
-    
     void reconnect( String msg );
     
     void disable( String reason );

@@ -13,10 +13,24 @@ public abstract class VersionSupport {
     public VersionSupport( JavaPlugin plugin ){
         this.plugin = plugin;
         this.bbbApi = ( BBBApi ) plugin;
-        if ( Bukkit.getPluginManager( ).getPlugin( "PlotSquared" ) != null ) {
-            registerPlotEvents( );
-        }
+        switch ( bbbApi.getServerType( ) ) {
+            case LOBBY: {
+                break;
+            }
+            case PLOT: {
+                if ( Bukkit.getPluginManager( ).getPlugin( "PlotSquared" ) != null ) {
+                    registerPlotEvents( );
+                }
+                break;
+            }
+            case WORLDS: {
+                registerWorldEvents( );
+                break;
+            }
         
+        }
+    
+    
     }
     
     public BBBApi getBbbApi( ){
@@ -24,6 +38,8 @@ public abstract class VersionSupport {
     }
     
     public abstract void registerPlotEvents( );
+    
+    public abstract void registerWorldEvents( );
     
     public abstract IPlotManager getPlotManager( );
 }

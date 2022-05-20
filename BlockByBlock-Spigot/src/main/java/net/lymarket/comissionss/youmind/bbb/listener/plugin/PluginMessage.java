@@ -29,11 +29,11 @@ public class PluginMessage implements PluginMessageListener {
                 }
                 case "GetServer": {
                     String servername = in.readUTF( );
-                    if ( Settings.PROXY_SERVER_NAME == null || Settings.PROXY_SERVER_NAME.equals( "" ) ) {
+                    if ( Settings.SERVER_NAME == null || Settings.SERVER_NAME.equals( "" ) ) {
                         Main.getInstance( ).getConfig( ).set( "global.proxy-server-name" , servername );
                         Main.getInstance( ).getConfig( ).saveData( );
                     }
-                    Settings.PROXY_SERVER_NAME = servername;
+                    Settings.SERVER_NAME = servername;
                     return;
                     
                 }

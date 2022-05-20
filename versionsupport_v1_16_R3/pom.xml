@@ -5,14 +5,14 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.1-ALPHA</version>
+        <version>0.2-ALPHA</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>versionsupport_v1_16_R3</artifactId>
 
     <properties>
-        <java.version>8</java.version>
+        <java.version>16</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -49,10 +49,52 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+
+        <!--<dependency>
+            <artifactId>plotsquared</artifactId>
+            <groupId>plotsquared-api-12</groupId>
+            <version>12</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/libs/PlotSquared-Bukkit-6.6.1-Premium.jar</systemPath>
+        </dependency>-->
+        <dependency>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>PlotSquared-core</artifactId>
+            <version>6.6.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>PlotSquared-Bukkit</artifactId>
+            <version>6.6.1</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>PlotSquared-Core</artifactId>
+                    <groupId>*</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.papermc</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.EngineHub</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lymarket.lyapi</groupId>
+            <artifactId>lyapi-spigot</artifactId>
+            <version>1.2.4</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

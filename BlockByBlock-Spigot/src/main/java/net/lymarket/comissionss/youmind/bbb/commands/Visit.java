@@ -37,12 +37,12 @@ public class Visit implements ILyCommand {
                     try {
                         UUID owner_uuid = UUID.fromString( context.getArg( 2 ) );
                         UUID world_uuid = UUID.fromString( context.getArg( 3 ) );
-                
+    
                         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
-                
+    
                         if ( world.isVisitor( owner_uuid ) ) {
                             final WorldVisitRequest rq = world.getVisitor( owner_uuid );
-                            if ( rq.getGuest_server( ).equalsIgnoreCase( Settings.PROXY_SERVER_NAME ) ) {
+                            if ( rq.getGuest_server( ).equalsIgnoreCase( Settings.SERVER_NAME ) ) {
                                 final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
                                 world.addOnlineMember( owner_uuid );
                                 world.removeVisitor( owner_uuid );
@@ -58,7 +58,7 @@ public class Visit implements ILyCommand {
                             Main.getLang( ).sendErrorMsg( context.getSender( ) , "visit.expired" );
                         }
                         return true;
-                
+    
                     } catch ( IllegalArgumentException e ) {
                         Main.getLang( ).sendErrorMsg( context.getSender( ) , "player.not-fund" , "player" , context.getArg( 2 ) );
                         return true;

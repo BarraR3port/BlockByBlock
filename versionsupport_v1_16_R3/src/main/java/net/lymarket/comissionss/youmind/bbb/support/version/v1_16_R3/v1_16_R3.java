@@ -13,13 +13,19 @@
 
 package net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3;
 
+import com.plotsquared.core.PlotAPI;
+import com.plotsquared.core.plot.Plot;
 import net.lymarket.comissionss.youmind.bbb.support.common.plot.IPlotManager;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
+import net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.plot.P2Listener;
+import net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.plot.PlotManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @SuppressWarnings("unused")
 public class v1_16_R3 extends VersionSupport {
+    
+    private IPlotManager < Plot > plotManager;
     
     public v1_16_R3( JavaPlugin plugin ){
         super( plugin );
@@ -27,11 +33,18 @@ public class v1_16_R3 extends VersionSupport {
     
     @Override
     public void registerPlotEvents( ){
-        Bukkit.getServer( ).getPluginManager( ).registerEvents( new Events( ) , plugin );
+        PlotAPI api = new PlotAPI( );
+        plotManager = new PlotManager( plugin , this );
+        Bukkit.getServer( ).getPluginManager( ).registerEvents( new P2Listener( api , this ) , plugin );
     }
     
     @Override
-    public IPlotManager getPlotManager( ){
-        return null;
+    public void registerWorldEvents( ){
+    
+    }
+    
+    @Override
+    public IPlotManager < Plot > getPlotManager( ){
+        return plotManager;
     }
 }

@@ -3,12 +3,12 @@ package net.lymarket.comissionss.youmind.bbb.commands;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.error.HomeNotFoundError;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.admin.AdminMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
-import net.lymarket.comissionss.youmind.bbb.settings.ServerType;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.transformers.Transformer;
 import net.lymarket.common.commands.*;
@@ -26,37 +26,23 @@ public class Admin implements ILyCommand {
     public boolean command( SCommandContext context ){
         if ( context.getSender( ) instanceof Player ) {
             Player p = ( Player ) context.getSender( );
-            if ( context.getArgs( ).length == 0 ) {
-                Utils.sendMessage( p , "&c&lBlockByBlock &7- &a&lV" + Main.getInstance( ).getDescription( ).getVersion( ) );
-                Utils.sendMessage( p , " " );
-                Utils.sendMessage( p , "&aCommands: " );
-                Utils.sendMessage( p , " " );
-                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/admin reload" , Arrays.asList( "&7Con este comando se recarga" , "&7la información de la config." ) , "/admin reload" ) );
-                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageRunCommand( "&b/admin debug" , Arrays.asList( "&7Con este comando activas o desactivas" , "&7el modo debug." ) , "/admin debug" ) );
-                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/admin worlds <usuario>" , Arrays.asList( "&7Con este comando ves los mundos de" , "&7un usuario específico." ) , "/admin worlds " ) );
-                Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/admin homes <usuario>" , Arrays.asList( "&7Con este comando ves los homes de" , "&7un usuario específico." ) , "/admin homes " ) );
-                return true;
-            } else if ( context.getArgs( ).length == 1 ) {
+            if ( context.getArgs( ).length == 1 ) {
                 if ( context.getArg( 0 ).equalsIgnoreCase( "reload" ) ) {
-                    Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlockHub &7- Reloading" );
-        
+                    Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlock &7- Reloading" );
+            
                     Main.getInstance( ).getConfig( ).reloadConfig( );
                     Main.getInstance( ).getItems( ).reloadConfig( );
                     Main.getLang( ).reloadLang( );
-        
-                    Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlockHub reloaded Successfully!" );
+            
+                    Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlock reloaded Successfully!" );
                     Settings.init( Main.getInstance( ).getConfig( ) );
                     Items.init( Main.getInstance( ).getItems( ) );
                 } else if ( context.getArg( 0 ).equalsIgnoreCase( "debug" ) ) {
-                    Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlockHub &7- Reloading" );
-        
-                    Main.getInstance( ).getConfig( ).reloadConfig( );
-                    Main.getInstance( ).getItems( ).reloadConfig( );
-                    Main.getLang( ).reloadLang( );
-        
-                    Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlockHub reloaded Successfully!" );
-                    Settings.init( Main.getInstance( ).getConfig( ) );
-                    Items.init( Main.getInstance( ).getItems( ) );
+                    Settings.DEBUG = !Settings.DEBUG;
+                    Main.getInstance( ).getConfig( ).set( "global.debug" , Settings.DEBUG );
+                    Main.getInstance( ).getConfig( ).saveData( );
+            
+                    Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlock &dDEBUG " + (Settings.DEBUG ? "&aEnabled" : "&cDisabled") );
                 }
                 return true;
             } else if ( context.getArgs( ).length == 2 ) {
@@ -64,7 +50,7 @@ public class Admin implements ILyCommand {
                     final User user = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 1 ) );
                     if ( !(user == null) ) {
                         new WorldManagerMenu( LyApi.getPlayerMenuUtility( p ) , user.getUUID( ) ).open( );
-            
+    
                     } else {
                         Utils.sendMessage( context.getSender( ) , "&cPlayer not found!" );
                     }
@@ -81,7 +67,7 @@ public class Admin implements ILyCommand {
                         if ( home != null ) {
                             Main.getLang( ).sendMsg( context.getSender( ) , "home.tp-to-home" , "home" , home.getName( ) );
                             final Loc homeLoc = home.getLocation( );
-                            if ( Settings.PROXY_SERVER_NAME.equals( homeLoc.getServer( ) ) ) {
+                            if ( Settings.SERVER_NAME.equals( homeLoc.getServer( ) ) ) {
                                 (( Player ) context.getSender( )).teleport( Transformer.toLocation( homeLoc ) );
                             } else {
                                 final HashMap < String, String > replace = new HashMap <>( );
@@ -107,9 +93,17 @@ public class Admin implements ILyCommand {
                     return true;
                 }
             }
+    
+            Utils.sendMessage( p , "&c&lBlockByBlock &7- &a&lV" + Main.getInstance( ).getDescription( ).getVersion( ) );
+            Utils.sendMessage( p , " " );
+            Utils.sendMessage( p , "&aCommands: " );
+            Utils.sendMessage( p , " " );
+            Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/admin reload" , Arrays.asList( "&7Con este comando se recarga" , "&7la información de la config." ) , "/admin reload" ) );
+            Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageRunCommand( "&b/admin debug" , Arrays.asList( "&7Con este comando activas o desactivas" , "&7el modo debug." ) , "/admin debug" ) );
+            Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/admin worlds <usuario>" , Arrays.asList( "&7Con este comando ves los mundos de" , "&7un usuario específico." ) , "/admin worlds " ) );
+            Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/admin homes <usuario>" , Arrays.asList( "&7Con este comando ves los homes de" , "&7un usuario específico." ) , "/admin homes " ) );
+            return true;
         }
-        
-        
         return false;
     }
     
@@ -121,11 +115,15 @@ public class Admin implements ILyCommand {
                 list.add( "reload" );
                 list.add( "worlds" );
                 list.add( "homes" );
+                list.add( "worlds" );
                 list.add( "debug" );
-                list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( ) );
+                list.add( "menu" );
+                return list;
             }
-            if ( context.getArgs( ).length == 2 ) {
-                if ( context.getArg( 0 ).equalsIgnoreCase( "menu" ) ) {
+            if ( context.getArgs( ).length == 1 ) {
+                if ( context.getArg( 0 ).equalsIgnoreCase( "menu" ) ||
+                        context.getArg( 0 ).equalsIgnoreCase( "worlds" ) ||
+                        context.getArg( 0 ).equalsIgnoreCase( "homes" ) ) {
                     list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
                 }
             }

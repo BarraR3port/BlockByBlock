@@ -11,4 +11,8 @@ public class WarpNotFoundError extends RuntimeException {
     public WarpNotFoundError( String warp ){
         super( "Warp " + warp + " not found" );
     }
+    
+    public WarpNotFoundError( String warp , String servername ){
+        super( "Warp " + warp + " not found in " + servername );
+    }
 }

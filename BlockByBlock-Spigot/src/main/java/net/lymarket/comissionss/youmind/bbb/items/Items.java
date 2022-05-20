@@ -54,6 +54,12 @@ public final class Items {
     
     public static ItemStack RANK_ADMIN_BASE;
     
+    public static ItemStack WARP_CASAS_BASE;
+    
+    public static ItemStack WARP_ARBOLES_BASE;
+    
+    public static ItemStack WARP_VARIOS_BASE;
+    
     
     public Items( ){
     
@@ -202,11 +208,31 @@ public final class Items {
                 .addLoreLine( "&7Click poner este rango al jugador." )
                 .addTag( "rank" , "DEV" )
                 .build( );
+        
         RANK_ADMIN_BASE = new ItemBuilder( XMaterial.RED_WOOL.parseMaterial( ) , 14 )
                 .setDisplayName( "&cADMIN" )
                 .addLoreLine( "&7Click poner este rango al jugador." )
                 .addTag( "rank" , "ADMIN" )
                 .build( );
+        
+        WARP_CASAS_BASE = new ItemBuilder( XMaterial.BRICKS.parseItem( ) )
+                .setDisplayName( "&aCasas" )
+                .addLoreLine( "&7Click para ir a la warp de Casas." )
+                .addTag( "warp" , "CASAS" )
+                .build( );
+        
+        WARP_ARBOLES_BASE = new ItemBuilder( XMaterial.JUNGLE_SAPLING.parseItem( ) )
+                .setDisplayName( "&aArboles" )
+                .addLoreLine( "&7Click para ir a la warp de Arboles" )
+                .addTag( "warp" , "ARBOLES" )
+                .build( );
+        
+        WARP_VARIOS_BASE = new ItemBuilder( XMaterial.CHEST.parseItem( ) )
+                .setDisplayName( "&aVarios" )
+                .addLoreLine( "&7Click para ir a las otras warps" )
+                .addTag( "warp" , "VARIOS" )
+                .build( );
+        
     }
     
     public static void setItems( Player p ){

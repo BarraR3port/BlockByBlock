@@ -1,9 +1,10 @@
 package net.lymarket.comissionss.youmind.bbb.commands.warp;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
-import net.lymarket.comissionss.youmind.bbb.settings.ServerType;
+import net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.transformers.Transformer;
 import net.lymarket.common.commands.*;
@@ -53,18 +54,18 @@ public class WarpCmd implements ILyCommand {
                             
                             for ( int a = min; a < max; a++ ) {
                                 List < String > args = Main.getLang( ).getConfig( ).getStringList( "warp.warps-of-description" );
-                                Warp h = warps.get( a );
+                                final Warp w = warps.get( a );
                                 List < String > replaced = new ArrayList <>( );
                                 for ( String arg : args ) {
-                                    replaced.add( arg.replace( "%warp%" , h.getName( ) )
-                                            .replace( "%world_name%" , (h.getLocation( ).getWorld( ).contains( "-" ) ? h.getLocation( ).getWorld( ).split( "-" )[0] : h.getLocation( ).getWorld( )) )
-                                            .replace( "%x_location%" , String.valueOf( h.getLocation( ).getX( ) ) )
-                                            .replace( "%y_location%" , String.valueOf( h.getLocation( ).getY( ) ) )
-                                            .replace( "%z_location%" , String.valueOf( h.getLocation( ).getZ( ) ) )
-                                            .replace( "%server%" , String.valueOf( h.getLocation( ).getServer( ) ) )
+                                    replaced.add( arg.replace( "%warp%" , w.getType( ).getName( ) )
+                                            .replace( "%world_name%" , (w.getLocation( ).getWorld( ).contains( "-" ) ? w.getLocation( ).getWorld( ).split( "-" )[0] : w.getLocation( ).getWorld( )) )
+                                            .replace( "%x_location%" , String.valueOf( w.getLocation( ).getX( ) ) )
+                                            .replace( "%y_location%" , String.valueOf( w.getLocation( ).getY( ) ) )
+                                            .replace( "%z_location%" , String.valueOf( w.getLocation( ).getZ( ) ) )
+                                            .replace( "%server%" , String.valueOf( w.getLocation( ).getServer( ) ) )
                                     );
                                 }
-                                text.addExtra( Utils.hoverOverMessageRunCommand( "&a" + h.getName( ) , replaced , "/warp goto " + h.getUUID( ) ) );
+                                text.addExtra( Utils.hoverOverMessageRunCommand( "&a" + w.getType( ).getName( ) , replaced , "/warp goto " + w.getUUID( ) ) );
                                 text.addExtra( Utils.formatTC( (a < max - 1) ? "&7, " : "" ) );
                             }
                             Utils.sendMessage( p , text );
@@ -86,15 +87,16 @@ public class WarpCmd implements ILyCommand {
                 switch ( context.getArg( 0 ) ) {
                     case "delete": {
                         try {
-                            final UUID uuid = UUID.fromString( context.getArg( 1 ) );
-                            Warp warp = Main.getInstance( ).getWarps( ).getWarp( uuid );
-                            if ( warp.getOwner( ).equals( p.getUniqueId( ) ) || p.hasPermission( "blockbyblock.warp.delete.other" ) || user.getRank( ).isBuilder( ) ) {
+                            if ( p.hasPermission( "blockbyblock.warp.delete.other" ) || user.getRank( ).isAdmin( ) ) {
+                                final WarpType type = WarpType.valueOf( context.getArg( 1 ) );
+                                Warp warp = Main.getInstance( ).getWarps( ).getUserWarpByName( type , Settings.SERVER_NAME );
                                 Main.getInstance( ).getWarps( ).deleteWarp( warp );
-                                Main.getLang( ).sendMsg( p , "warp.deleted" , "warp" , warp.getName( ) );
+                                Main.getLang( ).sendMsg( p , "warp.deleted" , "warp" , warp.getType( ).getName( ) );
+                                return true;
                             } else {
                                 Main.getLang( ).sendErrorMsg( p , "warp.no-permission-to-delete" );
+                                return false;
                             }
-                            return true;
                         } catch ( IllegalArgumentException e ) {
                             Main.getLang( ).sendErrorMsg( p , "warp.invalid-name" );
                         }
@@ -104,7 +106,7 @@ public class WarpCmd implements ILyCommand {
                         try {
                             final UUID uuid = UUID.fromString( context.getArg( 1 ) );
                             Warp warp = Main.getInstance( ).getWarps( ).getWarp( uuid );
-                            if ( warp.isPublic( ) || warp.isMember( p.getUniqueId( ) ) || warp.getOwner( ).equals( p.getUniqueId( ) ) || p.hasPermission( "blockbyblock.warp.goto" ) || user.getRank( ).isBuilder( ) ) {
+                            if ( warp.isPublic( ) || warp.isMember( p.getUniqueId( ) ) || p.hasPermission( "blockbyblock.warp.goto" ) || user.getRank( ).isBuilder( ) ) {
                                 p.teleport( Transformer.toLocation( warp.getLocation( ) ) );
                             } else {
                                 Main.getLang( ).sendErrorMsg( p , "warp.no-permission-to-go" );
@@ -120,25 +122,32 @@ public class WarpCmd implements ILyCommand {
                             Main.getLang( ).sendErrorMsg( p , "warp.not-in-world-of-warps" );
                             return true;
                         }
-                        final String warpName = context.getArg( 1 );
-                        final Warp warp = new Warp( warpName , Transformer.toLoc( p.getLocation( ) , null , null ) , p.getUniqueId( ) , Settings.VERSION );
-                        Main.getInstance( ).getWarps( ).createWarp( warp );
-                        TextComponent text = new TextComponent( "" );
-                        List < String > args = Main.getLang( ).getConfig( ).getStringList( "warp.warps-of-description" );
-                        List < String > replaced = new ArrayList <>( );
-                        for ( String arg : args ) {
-                            replaced.add( arg.replace( "%warp%" , warp.getName( ) )
-                                    .replace( "%world_name%" , (warp.getLocation( ).getWorld( ).contains( "-" ) ? warp.getLocation( ).getWorld( ).split( "-" )[0] : warp.getLocation( ).getWorld( )) )
-                                    .replace( "%x_location%" , String.valueOf( warp.getLocation( ).getX( ) ) )
-                                    .replace( "%y_location%" , String.valueOf( warp.getLocation( ).getY( ) ) )
-                                    .replace( "%z_location%" , String.valueOf( warp.getLocation( ).getZ( ) ) )
-                                    .replace( "%server%" , String.valueOf( warp.getLocation( ).getServer( ) ) )
-                            );
+                        if ( p.hasPermission( "blockbyblock.warp.create" ) || user.getRank( ).isAdmin( ) ) {
+                            try {
+                                final WarpType warpType = WarpType.valueOf( context.getArg( 1 ) );
+                                final Warp warp = new Warp( Transformer.toLoc( p.getLocation( ) , null , null ) , Settings.VERSION , warpType );
+                                Main.getInstance( ).getWarps( ).createWarp( warp );
+                                TextComponent text = new TextComponent( "" );
+                                List < String > args = Main.getLang( ).getConfig( ).getStringList( "warp.warps-of-description" );
+                                List < String > replaced = new ArrayList <>( );
+                                for ( String arg : args ) {
+                                    replaced.add( arg.replace( "%warp%" , warp.getType( ).getName( ) )
+                                            .replace( "%world_name%" , (warp.getLocation( ).getWorld( ).contains( "-" ) ? warp.getLocation( ).getWorld( ).split( "-" )[0] : warp.getLocation( ).getWorld( )) )
+                                            .replace( "%x_location%" , String.valueOf( warp.getLocation( ).getX( ) ) )
+                                            .replace( "%y_location%" , String.valueOf( warp.getLocation( ).getY( ) ) )
+                                            .replace( "%z_location%" , String.valueOf( warp.getLocation( ).getZ( ) ) )
+                                            .replace( "%server%" , String.valueOf( warp.getLocation( ).getServer( ) ) )
+                                    );
+                                }
+                                text.addExtra( Utils.hoverOverMessageRunCommand( "&a" + warp.getType( ).getName( ) , replaced , "/warp goto" + warp.getUUID( ) ) );
+            
+                                Main.getLang( ).sendMsg( p , "warp.created" , "warp" , text );
+                                return true;
+                            } catch ( IllegalArgumentException e ) {
+                                Main.getLang( ).sendErrorMsg( p , "warp.invalid-type" );
+                            }
                         }
-                        text.addExtra( Utils.hoverOverMessageRunCommand( "&a" + warp.getName( ) , replaced , "/warp goto" + warp.getUUID( ) ) );
-    
-                        Main.getLang( ).sendMsg( p , "warp.created" , "warp" , text );
-                        return true;
+                        return false;
                     }
                 }
     
@@ -163,6 +172,20 @@ public class WarpCmd implements ILyCommand {
     @Tab
     public ArrayList < String > tabComplete( STabContext context ){
         final ArrayList < String > list = new ArrayList <>( );
+        if ( context.getArgs( ).length == 1 ) {
+            list.add( "list" );
+            list.add( "create" );
+            list.add( "delete" );
+            list.add( "goto" );
+            list.add( "gotoworld" );
+        }
+        if ( context.getArgs( ).length == 2 ) {
+            if ( context.getArg( 0 ).equals( "create" ) || context.getArg( 0 ).equals( "delete" ) || context.getArg( 0 ).equals( "goto" ) ) {
+                for ( WarpType warpType : WarpType.values( ) ) {
+                    list.add( warpType.getName( ) );
+                }
+            }
+        }
         return list;
     }
 }

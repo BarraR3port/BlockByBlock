@@ -134,7 +134,7 @@ public class WorldEditorMenu extends UpdatableMenu {
             if ( world.getOwner( ).equals( ownerUUID ) || Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID ).getRank( ) == Rank.ADMIN ) {
                 new DeleteWorldSelector( playerMenuUtility , world.getUUID( ) , this , p.getUniqueId( ) ).open( );
             } else {
-                checkSomething( getOwner( ) , e.getSlot( ) , item , "&cNo puedes borrar este mundo" , "" );
+                checkSomething( getOwner( ) , e.getSlot( ) , item , "&cNo puedes borrar este mundo" , "" , getMenuUUID( ) );
             }
             
         } else if ( NBTItem.hasTag( item , "add-members-to-world" ) ) {
@@ -143,7 +143,7 @@ public class WorldEditorMenu extends UpdatableMenu {
                 p.spigot( ).sendMessage( Utils.formatTC( "&7Agrega miembros al mundo dándole " ) , Utils.hoverOverMessageSuggestCommand( "&aCLICK AQUÍ." , Collections.singletonList( "&e/worlds trust " + world.getUUID( ) + " < El nombre >" ) , "/worlds trust " + world.getUUID( ) + " " ) );
                 p.closeInventory( );
             } else {
-                checkSomething( getOwner( ) , e.getSlot( ) , item , "&cNo tienes permisos o no eres el Dueño del mundo" , "" );
+                checkSomething( getOwner( ) , e.getSlot( ) , item , "&cNo tienes permisos o no eres el Dueño del mundo" , "" , getMenuUUID( ) );
             }
             
         } else if ( NBTItem.hasTag( item , "players-in-world" ) ) {

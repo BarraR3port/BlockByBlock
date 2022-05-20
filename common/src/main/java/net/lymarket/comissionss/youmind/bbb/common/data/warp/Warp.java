@@ -8,60 +8,38 @@ import java.util.UUID;
 
 public class Warp {
     private final UUID uuid;
-    private String name;
-    private Loc location;
     private final String version;
-    private UUID owner;
+    private final WarpType type;
+    private Loc location;
     private boolean isPublic = false;
     private ArrayList < UUID > members = new ArrayList <>( );
     
-    public Warp( String name , Loc location , UUID owner , String version ){
+    public Warp( Loc location , String version , WarpType type ){
         this.uuid = UUID.randomUUID( );
-        this.name = name;
         this.location = location;
-        this.owner = owner;
-        this.members.add( owner );
         this.version = version;
+        this.type = type;
     }
     
-    public Warp( String name , Loc location , UUID owner , String version , boolean isPublic ){
+    public Warp( Loc location , String version , WarpType type , boolean isPublic ){
         this.uuid = UUID.randomUUID( );
-        this.name = name;
         this.location = location;
-        this.owner = owner;
-        this.members.add( owner );
+        this.version = version;
+        this.type = type;
         this.isPublic = isPublic;
-        this.version = version;
     }
     
-    public Warp( String uuid , String name , Loc location , UUID owner , String version , boolean isPublic , List < UUID > members ){
+    public Warp( String uuid , Loc location , String version , WarpType type , boolean isPublic , List < UUID > members ){
         this.uuid = UUID.fromString( uuid );
-        this.name = name;
         this.location = location;
-        this.owner = owner;
         this.members.addAll( members );
-        this.isPublic = isPublic;
         this.version = version;
+        this.isPublic = isPublic;
+        this.type = type;
     }
     
     public UUID getUUID( ){
         return uuid;
-    }
-    
-    public String getName( ){
-        return name;
-    }
-    
-    public void setName( String name ){
-        this.name = name;
-    }
-    
-    public UUID getOwner( ){
-        return owner;
-    }
-    
-    public void setOwner( UUID owner ){
-        this.owner = owner;
     }
     
     public Loc getLocation( ){
@@ -104,5 +82,7 @@ public class Warp {
         return version;
     }
     
-    
+    public WarpType getType( ){
+        return type;
+    }
 }

@@ -9,6 +9,8 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
+import net.lymarket.comissionss.youmind.bbb.common.log.Slf4jPluginLogger;
+import net.lymarket.comissionss.youmind.bbb.velocity.commands.Lobby;
 import net.lymarket.comissionss.youmind.bbb.velocity.config.Config;
 import net.lymarket.comissionss.youmind.bbb.velocity.listener.PlayerEvents;
 import net.lymarket.comissionss.youmind.bbb.velocity.listener.onPluginMessage;
@@ -17,13 +19,14 @@ import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerManager;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.WorldManager;
 import net.lymarket.comissionss.youmind.bbb.velocity.socketmanager.ServerSocketTask;
+import net.lymarket.comissionss.youmind.bbb.velocity.utils.ChatColor;
 import net.lymarket.common.db.MongoDBClient;
 import net.lymarket.lyapi.velocity.LyApiVelocity;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 @Plugin(id = "blockbyblock", name = "BlockByBlock", version = "1.0", authors = {"BarraR3port" , "LyMarket Development Team"}, url = "https://lymarket.net/")
 public final class VMain extends LyApiVelocity {
@@ -33,7 +36,7 @@ public final class VMain extends LyApiVelocity {
     private final ServerSocketManager serverSocketManager = new ServerSocketManager( );
     private final ServerManager serverManager = new ServerManager( );
     private final ProxyServer proxy;
-    private final Logger logger;
+    private final Slf4jPluginLogger logger;
     private final Path path;
     private PlayersRepository playersRepository;
     private WorldManager worldManager;
@@ -52,7 +55,7 @@ public final class VMain extends LyApiVelocity {
         super( server , "&cSin permisos" );
         this.proxy = server;
         this.path = path;
-        this.logger = logger;
+        this.logger = new Slf4jPluginLogger( logger );
     }
     
     @Internal
@@ -63,7 +66,7 @@ public final class VMain extends LyApiVelocity {
     @Internal
     public static void debug( String msg ){
         if ( config.isDebug( ) ) {
-            instance.getLogger( ).info( "[DEBUG] " + msg );
+            instance.getLogger( ).info( ChatColor.RED + "[DEBUG] " + ChatColor.LIGHT_PURPLE + msg );
         }
     }
     
@@ -92,7 +95,7 @@ public final class VMain extends LyApiVelocity {
         playersRepository = new PlayersRepository( mongo , "players" );
         worldManager = new WorldManager( mongo , "worlds" );
         proxy.getScheduler( ).buildTask( this , this::sendInfoToServers ).repeat( 10 , TimeUnit.SECONDS ).schedule( );
-        
+        new Lobby( proxy.getCommandManager( ) );
     }
     
     @Subscribe
@@ -128,7 +131,7 @@ public final class VMain extends LyApiVelocity {
     }
     
     @Internal
-    public Logger getLogger( ){
+    public Slf4jPluginLogger getLogger( ){
         return logger;
     }
     

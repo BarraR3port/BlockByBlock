@@ -12,7 +12,7 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.1-ALPHA</version>
+        <version>0.2-ALPHA</version>
     </parent>
     <properties>
         <java.version>8</java.version>
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>net.lymarket.lyapi</groupId>
             <artifactId>common</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -95,6 +95,19 @@
             <artifactId>lyapi-spigot</artifactId>
             <version>1.1.5</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.grinderwolf.swm</groupId>
+            <artifactId>slimeworldmanager-api</artifactId>
+            <version>2.7.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.flowpowered</groupId>
+                    <artifactId>flow-nbt</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

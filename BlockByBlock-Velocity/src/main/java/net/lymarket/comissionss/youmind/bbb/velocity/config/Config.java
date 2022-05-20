@@ -29,7 +29,7 @@ public class Config {
             node.set( MainConfig.class , config );
             loader.save( node );
         } catch ( ConfigurateException exception ) {
-            VMain.getInstance( ).debug( "Could not load config.yml file, error: " + exception.getMessage( ) );
+            VMain.debug( "Could not load config.yml file, error: " + exception.getMessage( ) );
         }
     }
     
@@ -51,10 +51,10 @@ public class Config {
         @Comment("Mongodb port")
         @Setting(value = "port")
         private int db_port = 27017;
-        
+    
         @Comment("Mongodb database")
         @Setting(value = "database")
-        private String db_database = "blockbyblock";
+        private String db_database = "bbb";
         
         @Comment("Mongodb urli")
         @Setting(value = "urli")

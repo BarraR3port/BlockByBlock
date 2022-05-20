@@ -16,11 +16,11 @@ public class Transformer {
     
     public static Loc toLoc( Location location , UUID world , String plot ){
         if ( world != null ) {
-            return new Loc( Settings.PROXY_SERVER_NAME , location.getWorld( ).getName( ) , location.getX( ) , location.getY( ) , location.getZ( ) , world );
+            return new Loc( Settings.SERVER_NAME , location.getWorld( ).getName( ) , location.getX( ) , location.getY( ) , location.getZ( ) , world );
         } else if ( plot != null ) {
-            return new Loc( Settings.PROXY_SERVER_NAME , location.getWorld( ).getName( ) , location.getX( ) , location.getY( ) , location.getZ( ) , plot );
+            return new Loc( Settings.SERVER_NAME , location.getWorld( ).getName( ) , location.getX( ) , location.getY( ) , location.getZ( ) , plot );
         } else {
-            return new Loc( Settings.PROXY_SERVER_NAME , location.getWorld( ).getName( ) , location.getX( ) , location.getY( ) , location.getZ( ) );
+            return new Loc( Settings.SERVER_NAME , location.getWorld( ).getName( ) , location.getX( ) , location.getY( ) , location.getZ( ) );
         }
         
     }

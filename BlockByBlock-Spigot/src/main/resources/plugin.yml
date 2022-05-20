@@ -8,3 +8,4 @@ softdepend:
   - PlotSquared
   - PlaceholderAPI
 load: POSTWORLD
+api-version: 1.13

@@ -7,39 +7,43 @@ public class BWorld {
     
     private final UUID uuid;
     private final ArrayList < UUID > members = new ArrayList <>( );
-    private ArrayList < UUID > online_members = new ArrayList <>( );
     private final ArrayList < String > description = new ArrayList <>( );
     private final ArrayList < WorldVisitRequest > visitors = new ArrayList <>( );
+    private final String block_base;
+    private ArrayList < UUID > online_members = new ArrayList <>( );
     private String name;
     private UUID owner;
     private String server;
     private String version;
     
-    public BWorld( UUID owner , String name , String server , String version ){
+    public BWorld( UUID owner , String name , String server , String version , String block_base ){
         this.owner = owner;
         this.name = name;
         this.server = server;
         this.version = version;
         this.uuid = UUID.randomUUID( );
         this.members.add( owner );
+        this.block_base = block_base;
     }
     
-    public BWorld( UUID owner , String server , String version ){
+    public BWorld( UUID owner , String server , String version , String block_base ){
         this.owner = owner;
         this.uuid = UUID.randomUUID( );
         this.name = uuid.toString( );
         this.server = server;
         this.version = version;
         this.members.add( owner );
+        this.block_base = block_base;
     }
     
-    public BWorld( UUID owner , String name , String server , String version , UUID uuid ){
+    public BWorld( UUID owner , String name , String server , String version , UUID uuid , String block_base ){
         this.owner = owner;
         this.name = name;
         this.server = server;
         this.version = version;
         this.uuid = uuid;
         this.members.add( owner );
+        this.block_base = block_base;
     }
     
     public UUID getOwner( ){
@@ -156,5 +160,7 @@ public class BWorld {
         return online_members.contains( member );
     }
     
-    
+    public String getBlock_base( ){
+        return block_base;
+    }
 }

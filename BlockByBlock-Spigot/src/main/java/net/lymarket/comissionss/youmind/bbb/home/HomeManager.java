@@ -35,7 +35,7 @@ public class HomeManager extends IHomeManager {
     
     @Override
     public ArrayList < Home > getHomesByServer( ){
-        return database.findMany( TABLE_NAME , home -> home.getLocation( ).getServer( ).equalsIgnoreCase( Settings.PROXY_SERVER_NAME ) , Home.class );
+        return database.findMany( TABLE_NAME , home -> home.getLocation( ).getServer( ).equalsIgnoreCase( Settings.SERVER_NAME ) , Home.class );
     }
     
     @Override

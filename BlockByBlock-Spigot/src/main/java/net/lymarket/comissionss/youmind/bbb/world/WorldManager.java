@@ -1,5 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.world;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.google.gson.JsonObject;
 import com.grinderwolf.swm.api.exceptions.*;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
@@ -39,7 +40,7 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
     
     public WorldManager( MongoDBClient database , String tableName ){
         super( database , tableName );
-        
+    
         try {
             WorldData worldData = new WorldData( );
             worldData.setSpawn( "0, 64, 0" );
@@ -50,11 +51,16 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
             worldData.setPvp( false );
             SlimePropertyMap propertyMap = worldData.toPropertyMap( );
             for ( String sw : loader.listWorlds( ) ) {
-                SlimeWorld world = Main.getSlimePlugin( ).loadWorld( loader , sw , true , propertyMap );
-                Main.getSlimePlugin( ).generateWorld( world );
+                final SlimeWorld world = Main.getSlimePlugin( ).loadWorld( loader , sw , true , propertyMap );
+                try {
+                    final BWorld bWorld = getWorld( UUID.fromString( world.getName( ) ) );
+                    Main.getSlimePlugin( ).generateWorld( world , Material.valueOf( bWorld.getBlock_base( ) ) );
+                } catch ( IllegalArgumentException | IndexOutOfBoundsException e ) {
+                    Main.getSlimePlugin( ).generateWorld( world );
+                }
             }
         } catch ( IOException | CorruptedWorldException | NewerFormatException | WorldInUseException |
-                  UnknownWorldException e ) {
+                  UnknownWorldException | IndexOutOfBoundsException e ) {
             e.printStackTrace( );
         }
         
@@ -72,7 +78,7 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
     
     @Override
     public ArrayList < BWorld > getWorldsByServer( ){
-        return database.findMany( TABLE_NAME , world -> world.getServer( ).equalsIgnoreCase( Settings.PROXY_SERVER_NAME ) , BWorld.class );
+        return database.findMany( TABLE_NAME , world -> world.getServer( ).equalsIgnoreCase( Settings.SERVER_NAME ) , BWorld.class );
     }
     
     @Override
@@ -113,8 +119,8 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
             slimeWorld = Main.getSlimePlugin( ).createEmptyWorld( loader , world.getUUID( ).toString( ) , false , propertyMap );
             
             final Material mat = Material.valueOf( material );
-            
-            boolean empty = mat == Material.AIR;
+    
+            boolean empty = mat == XMaterial.AIR.parseMaterial( );
             if ( empty ) {
                 Main.getSlimePlugin( ).generateEmptyWorld( slimeWorld , true );
             } else {

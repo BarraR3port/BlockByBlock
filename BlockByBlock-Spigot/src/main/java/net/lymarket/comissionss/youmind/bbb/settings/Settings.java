@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.settings;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.lyapi.spigot.config.Config;
 import org.bukkit.Location;
 
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 
 public class Settings {
     
-    public static String SOCKET_IP = "51.161.86.217";
+    public static String SOCKET_IP = "localhost";
     
     public static int SOCKET_PORT = 5555;
     public static boolean BREAK_BLOCKS = false;
@@ -26,7 +27,7 @@ public class Settings {
     
     public static Location SPAWN_LOCATION;
     
-    public static String PROXY_SERVER_NAME;
+    public static String SERVER_NAME;
     
     public static boolean DEBUG;
     
@@ -56,7 +57,7 @@ public class Settings {
             SPAWN_LOCATION = ( Location ) config.get( "spawn.location" , Location.class );
         } catch ( NullPointerException | ClassCastException ignored ) {
         }
-        PROXY_SERVER_NAME = config.getString( "global.proxy-server-name" );
+        SERVER_NAME = config.getString( "global.proxy-server-name" );
         DEBUG = config.getBoolean( "global.debug" );
         PERMS_WHEN_CREATING_WORLD = new ArrayList <>( config.getStringList( "perms.when-creating-world" ) );
         PERMS_WHEN_JOINING_WORLD = new ArrayList <>( config.getStringList( "perms.when-joining-world" ) );

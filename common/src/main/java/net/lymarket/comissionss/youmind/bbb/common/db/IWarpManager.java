@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.common.db;
 
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
+import net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType;
 import net.lymarket.common.db.MongoDBClient;
 
 import java.util.ArrayList;
@@ -36,8 +37,6 @@ public abstract class IWarpManager extends MongoDB < UUID, Warp > {
     
     public abstract Warp getWarp( UUID uuid );
     
-    public abstract Warp getUserWarpByName( UUID uuid , String homeName );
-    
     public void addPlayerToTP( UUID uuid , Warp home ){
         playersToTP.put( uuid , home );
     }
@@ -57,6 +56,9 @@ public abstract class IWarpManager extends MongoDB < UUID, Warp > {
     public HashMap < UUID, Warp > getPlayersToTP( ){
         return playersToTP;
     }
+    
+    
+    public abstract Warp getUserWarpByName( WarpType warpType , String serverName );
     
     public abstract boolean deleteWarp( Warp home );
 }

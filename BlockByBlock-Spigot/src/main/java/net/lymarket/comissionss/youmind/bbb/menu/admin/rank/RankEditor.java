@@ -55,7 +55,7 @@ public class RankEditor extends UpdatableMenu {
                 Main.getInstance( ).getPlayers( ).savePlayer( user );
                 reOpen( );
             } else {
-                this.checkSomething( getOwner( ) , e.getSlot( ) , item , "&cEste usuario ya tiene este rango" , "" );
+                this.checkSomething( getOwner( ) , e.getSlot( ) , item , "&cEste usuario ya tiene este rango" , "" , getMenuUUID( ) );
             }
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
             new AdminMenu( this.playerMenuUtility , user ).open( );

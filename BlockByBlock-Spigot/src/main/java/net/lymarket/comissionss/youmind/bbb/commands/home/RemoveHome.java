@@ -14,25 +14,25 @@ public class RemoveHome implements ILyCommand {
     
     @Command(name = "removehome", permission = "bbb.home.remove", aliases = {"rmhome" , "removeh" , "rmh"}, usage = "/removehome <home>")
     public boolean command( SCommandContext context ){
-        
+    
         if ( !(context.getSender( ) instanceof Player) ) {
             Main.getLang( ).sendErrorMsg( context.getSender( ) , "cant-execute-commands-from-console" );
             return true;
         }
-        
-         if ( context.getArgs( ).length == 1 ) {
-             final Player p = ( Player ) context.getSender( );
-             final String homeName = context.getArg( 0 );
-             final Home home = Main.getInstance( ).getHomes( ).getUserHomeByName( p.getUniqueId( ) , homeName );
-             if ( home.getOwner( ).equals( p.getUniqueId( ) ) || p.hasPermission( "bbb.admin.home.remove" ) ) {
-                 Main.getLang( ).sendMsg( p , (Main.getInstance( ).getHomes( ).deleteHome( home ) ? "home.deleted-successfully" : "error.home.error-deleting") , "home" , homeName );
-                 return true;
-             } else {
-                 Main.getLang( ).sendMsg( p , "error.home.error-deleting" , "home" , homeName );
-             }
-         } else {
-             Main.getLang( ).sendErrorMsg( context.getSender( ) , "wrong-command" , "command" , "/removehome <nombre>" );
-         }
+    
+        if ( context.getArgs( ).length == 1 ) {
+            final Player p = ( Player ) context.getSender( );
+            final String homeName = context.getArg( 0 );
+            final Home home = Main.getInstance( ).getHomes( ).getUserHomeByName( p.getUniqueId( ) , homeName );
+            if ( home.getOwner( ).equals( p.getUniqueId( ) ) || p.hasPermission( "bbb.admin.home.remove" ) ) {
+                Main.getLang( ).sendMsg( p , (Main.getInstance( ).getHomes( ).deleteHome( home ) ? "home.deleted-successfully" : "error.home.error-deleting") , "home" , homeName );
+                return true;
+            } else {
+                Main.getLang( ).sendMsg( p , "error.home.error-deleting" , "home" , homeName );
+            }
+        } else {
+            Main.getLang( ).sendErrorMsg( context.getSender( ) , "wrong-command" , "command" , "/removehome <nombre>" );
+        }
         return true;
     }
     

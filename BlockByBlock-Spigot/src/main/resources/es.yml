@@ -55,7 +55,7 @@ error:
     invalid-name: "&cEl nombre del warp es inválido."
     no-permission-to-go: "&cNo tienes permiso para ir a este warp."
     not-in-world-of-warps: "&cNo estás en el mundo de warps."
-
+    invalid-type: "&cEl tipo de warp es inválido."
 world:
   unloaded: "&cEl mundo &e%world%&c ha sido eliminado."
   set-name: "&aEl nombre del mundo ha sido cambiado a &e%name%&a."
