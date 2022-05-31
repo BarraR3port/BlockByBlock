@@ -275,18 +275,20 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
     public boolean manageVisitJoinWorld( WorldVisitRequest request ){
         final Player p = Bukkit.getPlayer( request.getTarget_uuid( ) );
         final boolean isInWorld = !p.getWorld( ).getName( ).equals( "warp" );
+        Main.getInstance( ).debug( "WorldVisitRequest" );
         if ( isInWorld ) {
             final BWorld world = getWorld( UUID.fromString( p.getWorld( ).getName( ) ) );
             final User guest = Main.getInstance( ).getPlayers( ).getPlayer( request.getGuest( ) );
-            if ( world.getOwner( ).equals( request.getGuest( ) ) || world.isMember( request.getGuest( ) ) || guest.getRank( ).isAdmin( ) || request.isAccepted( ) ) {
+            if ( request.isAccepted( ) || world.getOwner( ).equals( request.getGuest( ) ) || world.isMember( request.getGuest( ) ) || guest.getRank( ).isAdmin( ) ) {
                 if ( request.getGuest_server( ).equals( request.getTarget_server( ) ) ) {
                     final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
                     world.addOnlineMember( request.getGuest( ) );
                     world.removeVisitor( request.getGuest( ) );
-                    Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( request.getGuest( ) , world );
-                    Main.getInstance( ).manageVisitorPermissions( request.getGuest( ) , world.getUUID( ) , false );
                     final Player guestPlayer = Bukkit.getPlayer( request.getGuest( ) );
-                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> guestPlayer.teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) );
+                    Main.getInstance( ).manageVisitorPermissions( request.getGuest( ) , world.getUUID( ) , false ).thenAccept( a -> {
+                        Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( request.getGuest( ) , world );
+                        Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> guestPlayer.teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) );
+                    } );
                 } else {
                     request.accept( );
                     Main.getInstance( ).getSocket( ).sendWorldVisitResponse( request );
@@ -313,7 +315,6 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
     public void addGuestToVisitWorldList( UUID guest , BWorld world ){
         guestToVisitWorlds.put( guest , world );
         saveWorld( world );
-        
     }
     
     public BWorld getWorldByVisitor( UUID visitor ){

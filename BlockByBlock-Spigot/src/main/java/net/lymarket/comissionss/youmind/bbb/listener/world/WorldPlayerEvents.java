@@ -1,6 +1,9 @@
 package net.lymarket.comissionss.youmind.bbb.listener.world;
 
 
+import net.luckperms.api.cacheddata.CachedPermissionData;
+import net.luckperms.api.context.MutableContextSet;
+import net.luckperms.api.query.QueryOptions;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 import net.lymarket.comissionss.youmind.bbb.common.data.msg.WorldMsg;
@@ -20,6 +23,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class WorldPlayerEvents extends MainEvents {
@@ -59,11 +63,15 @@ public final class WorldPlayerEvents extends MainEvents {
                 replace.put( "world" , visitWorld.getName( ).split( "-" )[0] );
                 Main.getLang( ).sendMsg( p , "world.visit-join-to-owner" , replace );
             }
-            if ( e.getPlayer( ).teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) ) {
-                Main.getLang( ).sendMsg( e.getPlayer( ) , "world.visit-join-to-visitor" , "player" , p != null ? p.getName( ) : "&atu amigo" );
-                Main.getInstance( ).manageVisitorPermissions( uuid , visitWorld.getUUID( ) , false );
+            Main.getInstance( ).manageVisitorPermissions( uuid , visitWorld.getUUID( ) , false ).thenAccept( a -> {
                 Main.getInstance( ).getWorlds( ).removeGuestFromVisitWorldList( uuid );
-            }
+                Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
+                    if ( e.getPlayer( ).teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) ) {
+                        Main.getLang( ).sendMsg( e.getPlayer( ) , "world.visit-join-to-visitor" , "player" , p != null ? p.getName( ).split( "-" )[0] : "&atu amigo" );
+                    }
+                } );
+            } );
+        
         
         } else if ( tpToWorld ) {
             final BWorld world = Main.getInstance( ).getWorlds( ).getPlayerToTP( uuid );
@@ -116,12 +124,14 @@ public final class WorldPlayerEvents extends MainEvents {
         
         if ( !world.getMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID ) && !player.hasPermission( "blockbyblock.admin.block.place.other" ) ) {
             e.setCancelled( true );
-            if ( e.getPlayer( ).hasPermission( "blockbyblock.visit" ) ) return;
-            world.removeOnlineMember( playerUUID );
-            Main.getInstance( ).getWorlds( ).saveWorld( world );
-            Main.getInstance( ).debug( "Player " + player.getName( ) + " is in world " + world.getName( ) + " and is not owner and not allowed to place blocks" );
-            Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
-            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            CachedPermissionData cachedPermissionData = Objects.requireNonNull( Main.getLuckPerms( ).getUserManager( ).getUser( playerUUID ) ).getCachedData( ).getPermissionData( QueryOptions.contextual( MutableContextSet.of( "world" , world.getUUID( ).toString( ) ) ) );
+            if ( !cachedPermissionData.checkPermission( "blockbyblock.visit" ).asBoolean( ) ) {
+                world.removeOnlineMember( playerUUID );
+                Main.getInstance( ).getWorlds( ).saveWorld( world );
+                Main.getInstance( ).debug( "Player " + player.getName( ) + " is in world " + world.getName( ) + " and is not owner and not allowed to place blocks" );
+                Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
+                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            }
         }
         
         
@@ -154,12 +164,14 @@ public final class WorldPlayerEvents extends MainEvents {
         
         if ( !world.getMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID ) && !player.hasPermission( "blockbyblock.admin.block.place.other" ) ) {
             e.setCancelled( true );
-            if ( e.getPlayer( ).hasPermission( "blockbyblock.visit" ) ) return;
-            world.removeOnlineMember( playerUUID );
-            Main.getInstance( ).getWorlds( ).saveWorld( world );
-            Main.getInstance( ).debug( "Player " + player.getName( ) + " is in world " + world.getName( ) + " and is not owner and not allowed to place blocks" );
-            Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
-            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            CachedPermissionData cachedPermissionData = Objects.requireNonNull( Main.getLuckPerms( ).getUserManager( ).getUser( playerUUID ) ).getCachedData( ).getPermissionData( QueryOptions.contextual( MutableContextSet.of( "world" , world.getUUID( ).toString( ) ) ) );
+            if ( !cachedPermissionData.checkPermission( "blockbyblock.visit" ).asBoolean( ) ) {
+                world.removeOnlineMember( playerUUID );
+                Main.getInstance( ).getWorlds( ).saveWorld( world );
+                Main.getInstance( ).debug( "Player " + player.getName( ) + " is in world " + world.getName( ) + " and is not owner and not allowed to place blocks" );
+                Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
+                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            }
         }
     }
     
@@ -185,6 +197,17 @@ public final class WorldPlayerEvents extends MainEvents {
         final SpigotUser user = Main.getInstance( ).getPlayers( ).getPlayer( playerUUID );
         if ( !e.getFrom( ).getWorld( ).equals( e.getTo( ).getWorld( ) ) ) {
     
+    
+            final BWorld prevWorld = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getFrom( ).getWorld( ).getName( ) ) );
+            final BWorld postWorld = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getTo( ).getWorld( ).getName( ) ) );
+    
+            if ( prevWorld == null || postWorld == null ) {
+                e.setCancelled( true );
+                Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.SERVER_NAME , playerUUID );
+                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+                return;
+            }
+    
             final BWorld visitWorld = Main.getInstance( ).getWorlds( ).getWorldByVisitor( playerUUID );
     
             if ( visitWorld != null ) {
@@ -197,36 +220,33 @@ public final class WorldPlayerEvents extends MainEvents {
                     replace.put( "world" , visitWorld.getName( ).split( "-" )[0] );
                     Main.getLang( ).sendMsg( p , "world.visit-join-to-owner" , replace );
                 }*/
-                Main.getInstance( ).manageVisitorPermissions( playerUUID , visitWorld.getUUID( ) , false ).thenAccept( a -> Main.getLang( ).sendMsg( e.getPlayer( ) , "world.visit-visit-join-to-visitor" , "player" , /*p != null ? p.getName( ) :*/ "&atu amigo" ) );
-        
+                Main.getInstance( ).debug( "visitWorld != null" );
+                Main.getInstance( ).debug( "removeGuestFromVisitWorldList" );
+                Main.getInstance( ).managePermissions( playerUUID , prevWorld.getUUID( ) , true ).thenAccept( ( success ) -> Main.getInstance( ).manageVisitorPermissions( playerUUID , visitWorld.getUUID( ) , false ).thenAccept( a -> Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> Main.getLang( ).sendMsg( e.getPlayer( ) , "world.visit-join-to-visitor" , "player" , /*p != null ? p.getName( ) :*/ "&atu amigo" ) ) ) );
             }
     
-            final BWorld prevWorld = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getFrom( ).getWorld( ).getName( ) ) );
-            final BWorld postWorld = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getTo( ).getWorld( ).getName( ) ) );
-    
-            if ( prevWorld == null || postWorld == null ) {
-                e.setCancelled( true );
-                Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.SERVER_NAME , playerUUID );
-                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
-                return;
-            }
-            if ( postWorld.getMembers( ).contains( playerUUID ) || postWorld.getOwner( ).equals( playerUUID ) || user.getRank( ).isAdmin( ) ) {
+            Main.getInstance( ).debug( "Online Members: " + postWorld.getOnlineMembers( ) );
+            CachedPermissionData cachedPermissionData = Objects.requireNonNull( Main.getLuckPerms( ).getUserManager( ).getUser( playerUUID ) ).getCachedData( ).getPermissionData( QueryOptions.contextual( MutableContextSet.of( "world" , e.getTo( ).getWorld( ).getName( ) ) ) );
+            Main.getInstance( ).debug( "Has blockbyblock.visit permission: " + cachedPermissionData.checkPermission( "blockbyblock.visit" ).asBoolean( ) );
+            if ( postWorld.getMembers( ).contains( playerUUID ) || postWorld.getOwner( ).equals( playerUUID ) /*|| postWorld.getOnlineMembers( ).contains( playerUUID )*/ || user.getRank( ).isAdmin( ) ) {
+                Main.getInstance( ).debug( "Is allowedd" );
                 Main.getInstance( ).managePermissions( playerUUID , worldUUID , false );
             } else {
-                if ( e.getPlayer( ).hasPermission( "blockbyblock.visit" ) ) return;
-                e.setCancelled( true );
-                postWorld.removeOnlineMember( playerUUID );
-                Main.getInstance( ).getWorlds( ).saveWorld( postWorld );
-                Main.getInstance( ).debug( "[PlayerTeleportEvent] Player " + playerUUID + " is in world " + postWorld.getName( ) + " and is not owner and not allowed to be in this world" );
-                Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , postWorld , postWorld.getOwner( ) );
-                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+                if ( !cachedPermissionData.checkPermission( "blockbyblock.visit" ).asBoolean( ) ) {
+                    e.setCancelled( true );
+                    postWorld.removeOnlineMember( playerUUID );
+                    Main.getInstance( ).getWorlds( ).saveWorld( postWorld );
+                    Main.getInstance( ).debug( "[PlayerTeleportEvent] Player " + playerUUID + " is in world " + postWorld.getName( ) + " and is not owner and not allowed to be in this world" );
+                    Main.getInstance( ).getSocket( ).sendKickFromWorld( postWorld.getOwner( ) , postWorld , playerUUID );
+                    Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+                }
             }
         }
     
         final Location loc = e.getTo( );
         user.setLastLocation( new Loc( Settings.SERVER_NAME , worldUUID.toString( ) , loc.getX( ) , loc.getY( ) , loc.getZ( ) , worldUUID ) );
         Main.getInstance( ).getPlayers( ).savePlayer( user );
-        
+    
     }
     
     @EventHandler
@@ -246,22 +266,24 @@ public final class WorldPlayerEvents extends MainEvents {
         }
         
         final BWorld postWorld = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) ) );
-        
+    
         if ( postWorld == null ) {
             Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , e.getPlayer( ).getWorld( ).getName( ) , Settings.SERVER_NAME , playerUUID );
             Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
             return;
         }
-        if ( postWorld.getMembers( ).contains( playerUUID ) || postWorld.getOwner( ).equals( playerUUID ) ) {
+        if ( postWorld.getMembers( ).contains( playerUUID ) /*|| postWorld.getOnlineMembers( ).contains( playerUUID )*/ || postWorld.getOwner( ).equals( playerUUID ) ) {
             Main.getInstance( ).managePermissions( playerUUID , worldUUID , false );
             Main.getInstance( ).getWorlds( ).addPlayerToWorldOnlineMembers( playerUUID , postWorld );
         } else {
-            if ( e.getPlayer( ).hasPermission( "blockbyblock.visit" ) ) return;
-            postWorld.removeOnlineMember( playerUUID );
-            Main.getInstance( ).getWorlds( ).saveWorld( postWorld );
-            Main.getInstance( ).debug( "[PlayerChangedWorldEvent] Player " + playerUUID + " is in world " + postWorld.getName( ) + " and is not owner and not allowed to be in this world" );
-            Main.getInstance( ).getSocket( ).sendKickFromWorld( playerUUID , postWorld , postWorld.getOwner( ) );
-            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            CachedPermissionData cachedPermissionData = Objects.requireNonNull( Main.getLuckPerms( ).getUserManager( ).getUser( playerUUID ) ).getCachedData( ).getPermissionData( QueryOptions.contextual( MutableContextSet.of( "world" , postWorld.getUUID( ).toString( ) ) ) );
+            if ( !cachedPermissionData.checkPermission( "blockbyblock.visit" ).asBoolean( ) ) {
+                postWorld.removeOnlineMember( playerUUID );
+                Main.getInstance( ).getWorlds( ).saveWorld( postWorld );
+                Main.getInstance( ).debug( "[PlayerChangedWorldEvent] Player " + playerUUID + " is in world " + postWorld.getName( ) + " and is not owner and not allowed to be in this world" );
+                Main.getInstance( ).getSocket( ).sendKickFromWorld( postWorld.getOwner( ) , postWorld , playerUUID );
+                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            }
         }
         
     }
@@ -297,13 +319,15 @@ public final class WorldPlayerEvents extends MainEvents {
             Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-use-commands-in-this-world" );
         }
         if ( !world.getMembers( ).contains( playerUUID ) && !world.getOwner( ).equals( playerUUID ) ) {
-            if ( e.getPlayer( ).hasPermission( "blockbyblock.visit" ) ) return;
-            e.setCancelled( true );
-            world.removeOnlineMember( playerUUID );
-            Main.getInstance( ).getWorlds( ).saveWorld( world );
-            Main.getInstance( ).debug( "[PlayerCommandPreprocessEvent] Player " + playerUUID + " is in world " + world.getName( ) + " and is not owner and not allowed to be in this world" );
-            Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
-            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            CachedPermissionData cachedPermissionData = Objects.requireNonNull( Main.getLuckPerms( ).getUserManager( ).getUser( playerUUID ) ).getCachedData( ).getPermissionData( QueryOptions.contextual( MutableContextSet.of( "world" , world.getUUID( ).toString( ) ) ) );
+            if ( !cachedPermissionData.checkPermission( "blockbyblock.visit" ).asBoolean( ) ) {
+                e.setCancelled( true );
+                world.removeOnlineMember( playerUUID );
+                Main.getInstance( ).getWorlds( ).saveWorld( world );
+                Main.getInstance( ).debug( "[PlayerCommandPreprocessEvent] Player " + playerUUID + " is in world " + world.getName( ) + " and is not owner and not allowed to be in this world" );
+                Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
+                Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            }
         }
     }
     

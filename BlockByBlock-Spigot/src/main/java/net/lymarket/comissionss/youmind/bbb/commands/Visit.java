@@ -4,12 +4,8 @@ import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
-import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -48,18 +44,22 @@ public class Visit implements ILyCommand {
     
                         if ( world.isVisitor( owner_uuid ) ) {
                             final WorldVisitRequest rq = world.getVisitor( owner_uuid );
-                            if ( rq.getGuest_server( ).equalsIgnoreCase( Settings.SERVER_NAME ) ) {
+                            Main.getInstance( ).debug( "Visit Accept" );
+                            Main.getInstance( ).getWorlds( ).manageVisitJoinWorld( rq.accept( ) );
+                            /*if ( rq.getGuest_server( ).equalsIgnoreCase( Settings.SERVER_NAME ) ) {
                                 final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
                                 world.addOnlineMember( owner_uuid );
                                 world.removeVisitor( owner_uuid );
                                 Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( owner_uuid , world );
-                                Main.getInstance( ).manageVisitorPermissions( owner_uuid , world.getUUID( ) , false );
-                                final Player guest = Bukkit.getPlayer( owner_uuid );
-                                guest.teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN );
+                                Main.getInstance( ).manageVisitorPermissions( owner_uuid , world.getUUID( ) , false ).thenAccept( a -> {
+                                    final Player guest = Bukkit.getPlayer( owner_uuid );
+                                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> guest.teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) );
+                                } );
                             } else {
+                                Main.getInstance( ).debug( "Different World" );
                                 rq.accept( );
                                 Main.getInstance( ).getWorlds( ).manageVisitJoinWorld( rq );
-                            }
+                            }*/
                         } else {
                             Main.getLang( ).sendErrorMsg( p , "visit.expired" );
                         }

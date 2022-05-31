@@ -487,7 +487,8 @@ public class ProxySocketServer implements Runnable {
                                     if ( !target_server.equals( guest_server ) ) {
                                         VMain.getInstance( ).getProxy( ).getPlayer( guest ).ifPresent( ( p ) -> VMain.getInstance( ).getProxy( ).getServer( target_server ).ifPresent( server -> p.createConnectionRequest( server ).fireAndForget( ) ) );
                                     }
-                            
+                                } else {
+                                    //todo this
                                 }
                                 continue;
                             }

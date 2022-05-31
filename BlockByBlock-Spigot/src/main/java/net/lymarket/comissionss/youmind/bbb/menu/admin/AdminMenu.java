@@ -12,7 +12,6 @@ import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.UpdatableMenu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
 import net.lymarket.lyapi.spigot.utils.NBTItem;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -40,16 +39,16 @@ public class AdminMenu extends UpdatableMenu {
         final boolean changed = target.getOption( "changed-plots" );
         final Rank rank = target.getRank( );
         final Stats stats = target.getStats( );
-        final ItemStack plus = new ItemBuilder( Material.STAINED_GLASS_PANE , 5 )
+        final ItemStack plus = new ItemBuilder( XMaterial.GRAY_STAINED_GLASS_PANE.parseMaterial( ) , 5 )
                 .setDisplayName( "&a+1" )
                 .build( );
     
-        final ItemStack minus = new ItemBuilder( Material.STAINED_GLASS_PANE , 14 )
+        final ItemStack minus = new ItemBuilder( XMaterial.GRAY_STAINED_GLASS_PANE.parseMaterial( ) , 14 )
                 .setDisplayName( "&c-1" )
                 .build( );
         final int currentWorlds = Main.getInstance( ).getWorlds( ).getWorldsByUser( target.getUUID( ) ).size( );
         //---------------------------------------------------------------------------------------------------------------------//
-        
+    
         inventory.setItem( 10 , plus );
         inventory.setItem( 19 ,
                 new ItemBuilder( Items.PLOT_31_BASE.clone( ) )

@@ -462,7 +462,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         } else {
                                             Main.getInstance( ).debug( "Teleporting " + owner_uuid + " to " + world.getUUID( ).toString( ) );
                                         }
-                                        sendMSGToPlayer( owner_uuid , "world.join" , "world" , world.getName( ) );
+                                        sendMSGToPlayer( owner_uuid , "world.join" , "world" , world.getName( ).split( "-" )[0] );
                                         continue;
                                     }
     

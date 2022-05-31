@@ -31,9 +31,9 @@ public class Admin implements ILyCommand {
                 Main.getInstance( ).getConfig( ).reloadConfig( );
                 Main.getInstance( ).getItems( ).reloadConfig( );
                 Main.getLang( ).reloadLang( );
-                Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlock reloaded Successfully!" );
                 Settings.init( Main.getInstance( ).getConfig( ) );
                 Items.init( Main.getInstance( ).getItems( ) );
+                Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlock reloaded Successfully!" );
                 return true;
             } else if ( context.getArg( 0 ).equalsIgnoreCase( "debug" ) ) {
                 Settings.DEBUG = !Settings.DEBUG;

@@ -1,9 +1,9 @@
 package net.lymarket.comissionss.youmind.bbb.listener;
 
+import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -103,7 +103,7 @@ public abstract class MainEvents implements Listener {
     
     @EventHandler
     public void blockRedstoneEvent( BlockRedstoneEvent e ){
-        e.getBlock( ).setType( Material.AIR );
+        e.getBlock( ).setType( XMaterial.VOID_AIR.parseMaterial( ) );
     }
     
     @EventHandler
@@ -113,7 +113,7 @@ public abstract class MainEvents implements Listener {
     
     @EventHandler
     public void onPlayerMoveEvent( PlayerMoveEvent e ){
-        if ( e.getTo( ).getBlockY( ) <= -15 ) {
+        if ( e.getTo( ).getBlockY( ) <= -40 ) {
             e.getPlayer( ).teleport( e.getPlayer( ).getWorld( ).getSpawnLocation( ) );
         }
     }

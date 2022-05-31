@@ -2,6 +2,8 @@ package net.lymarket.comissionss.youmind.bbb.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
@@ -121,9 +123,11 @@ public class Placeholders extends PlaceholderExpansion {
             case "stats_blocks_broken": {
                 return String.valueOf( p.getStats( ).getBLOCKS_BROKEN( ) );
             }
-            
             case "stats_time_played": {
-                return String.valueOf( p.getStats( ).getTIME_PLAYED( ) );
+                return p.getStats( ).getFormattedTimePlayed( );
+            }
+            case "stats_elo": {
+                return String.valueOf( p.getStats( ).getELO( ) );
             }
             case "address": {
                 return p.getAddress( );
@@ -148,40 +152,52 @@ public class Placeholders extends PlaceholderExpansion {
                 return p.getLyCoins( ).getCoins( ) + "&eK ⛃";
             }*/
         }
-        try {
-            final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( player.getWorld( ).getName( ) ) );
-            if ( world == null ) return "Invalid World";
-            switch ( identifier ) {
-                case "world_name": {
-                    return world.getName( );
-                }
-                case "world_members": {
-                    return String.valueOf( world.getOnlineMembers( ).size( ) );
-                }
-                case "world_uuid": {
-                    return world.getUUID( ).toString( );
-                }
-                case "world_members_list": {
-                    return world.getOnlineMembers( ).stream( ).map( ( uuid ) -> Main.getInstance( ).getPlayers( ).getPlayer( uuid ).getName( ) ).collect( Collectors.joining( ", " ) );
-                }
-                case "world_version": {
-                    return world.getVersion( );
-                }
-                case "world_server": {
-                    return world.getServer( );
-                }
-                case "world_owner": {
-                    return Main.getInstance( ).getPlayers( ).getPlayer( world.getOwner( ) ).getName( );
-                }
+        if ( Settings.SERVER_TYPE.equals( ServerType.WORLDS ) ) {
+            try {
+                final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( player.getWorld( ).getName( ) ) );
+                if ( world == null ) return "Warp";
+                switch ( identifier ) {
+                    case "world_name": {
+                        return world.getName( ).split( "-" )[0];
+                    }
+                    case "world_online_members": {
+                        return String.valueOf( world.getOnlineMembers( ).size( ) );
+                    }
+                    case "world_members": {
+                        return String.valueOf( world.getMembers( ).size( ) );
+                    }
+                    case "world_uuid": {
+                        return world.getUUID( ).toString( );
+                    }
+                    case "world_online_members_list": {
+                        return world.getOnlineMembers( ).stream( ).map( ( uuid ) -> Main.getInstance( ).getPlayers( ).getPlayer( uuid ).getName( ) ).collect( Collectors.joining( ", " ) );
+                    }
+                    case "world_members_list": {
+                        return world.getMembers( ).stream( ).map( ( uuid ) -> Main.getInstance( ).getPlayers( ).getPlayer( uuid ).getName( ) ).collect( Collectors.joining( ", " ) );
+                    }
+                    case "world_version": {
+                        return world.getVersion( );
+                    }
+                    case "world_server": {
+                        return world.getServer( );
+                    }
+                    case "world_owner": {
+                        return Main.getInstance( ).getPlayers( ).getPlayer( world.getOwner( ) ).getName( );
+                    }
                 
+                }
+            } catch ( Exception e ) {
+                return "Warp";
             }
-            
-            
-        } catch ( Exception e ) {
-            return "Invalid World";
+        } else if ( Settings.SERVER_TYPE.equals( ServerType.PLOT ) ) {
+            switch ( identifier ) {
+                case "plot_world_name": {
+                    return PlotType.getPlotTypeByWorld( player.getWorld( ).getName( ) ).getFormattedName( );
+                }
+            }
         }
-        
-        
+    
+    
         // We return null if an invalid placeholder (f.e. %someplugin_placeholder3%)
         // was provided
         return null;

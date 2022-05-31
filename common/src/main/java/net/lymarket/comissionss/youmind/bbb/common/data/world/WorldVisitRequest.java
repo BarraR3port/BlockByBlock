@@ -44,8 +44,9 @@ public class WorldVisitRequest {
         return target_server;
     }
     
-    public void accept( ){
+    public WorldVisitRequest accept( ){
         this.accepted = true;
+        return this;
     }
     
     public boolean isAccepted( ){

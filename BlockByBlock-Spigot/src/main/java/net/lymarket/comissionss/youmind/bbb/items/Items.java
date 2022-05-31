@@ -5,7 +5,6 @@ import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.lyapi.spigot.config.Config;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
 import net.lymarket.lyapi.spigot.utils.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -67,9 +66,6 @@ public final class Items {
             
         }
         LOBBY_BOOK.setItemMeta( bookMeta );
-        for ( Player p : Bukkit.getOnlinePlayers( ) ) {
-            setItems( p );
-        }
         
         BUILDER_1_12 = new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
                 .setHeadSkin( "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMxOTA5NjFhODI2MDhjNDY4ZGU0Y2Q4NDJkNjBlNzUzNjRiYjRhMmUyNDdjMzUxOGYwMDU1YzdiMmMyOTBkYSJ9fX0=" )
