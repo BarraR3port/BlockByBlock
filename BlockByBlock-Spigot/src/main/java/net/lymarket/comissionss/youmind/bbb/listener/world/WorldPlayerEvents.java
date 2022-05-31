@@ -52,7 +52,11 @@ public final class WorldPlayerEvents extends MainEvents {
     
         if ( visitWorld != null ) {
             Main.getInstance( ).debug( "Player " + e.getPlayer( ).getName( ) + " is in visit world " + visitWorld.getName( ) );
-            final Location loc = Bukkit.getWorld( visitWorld.getUUID( ).toString( ) ).getSpawnLocation( );
+            Location loc = Bukkit.getWorld( visitWorld.getUUID( ).toString( ) ).getSpawnLocation( );
+            final Player worldOwner = Bukkit.getPlayer( visitWorld.getOwner( ) );
+            if ( worldOwner != null ) {
+                loc = worldOwner.getLocation( );
+            }
             visitWorld.addOnlineMember( uuid );
             final Player p = Bukkit.getPlayer( visitWorld.getVisitor( uuid ).getTarget_uuid( ) );
             visitWorld.removeVisitor( uuid );
@@ -63,10 +67,11 @@ public final class WorldPlayerEvents extends MainEvents {
                 replace.put( "world" , visitWorld.getName( ).split( "-" )[0] );
                 Main.getLang( ).sendMsg( p , "world.visit-join-to-owner" , replace );
             }
+            Location finalLoc = loc;
             Main.getInstance( ).manageVisitorPermissions( uuid , visitWorld.getUUID( ) , false ).thenAccept( a -> {
                 Main.getInstance( ).getWorlds( ).removeGuestFromVisitWorldList( uuid );
                 Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
-                    if ( e.getPlayer( ).teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) ) {
+                    if ( e.getPlayer( ).teleport( finalLoc , PlayerTeleportEvent.TeleportCause.PLUGIN ) ) {
                         Main.getLang( ).sendMsg( e.getPlayer( ) , "world.visit-join-to-visitor" , "player" , p != null ? p.getName( ).split( "-" )[0] : "&atu amigo" );
                     }
                 } );
@@ -75,7 +80,11 @@ public final class WorldPlayerEvents extends MainEvents {
         
         } else if ( tpToWorld ) {
             final BWorld world = Main.getInstance( ).getWorlds( ).getPlayerToTP( uuid );
-            final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
+            Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
+            final Player worldOwner = Bukkit.getPlayer( world.getOwner( ) );
+            if ( worldOwner != null ) {
+                loc = worldOwner.getLocation( );
+            }
             world.addOnlineMember( uuid );
             Main.getInstance( ).getWorlds( ).saveWorld( world );
             Main.getInstance( ).managePermissions( uuid , world.getUUID( ) , false );

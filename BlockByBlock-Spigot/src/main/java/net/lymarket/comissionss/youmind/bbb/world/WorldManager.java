@@ -281,13 +281,18 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
             final User guest = Main.getInstance( ).getPlayers( ).getPlayer( request.getGuest( ) );
             if ( request.isAccepted( ) || world.getOwner( ).equals( request.getGuest( ) ) || world.isMember( request.getGuest( ) ) || guest.getRank( ).isAdmin( ) ) {
                 if ( request.getGuest_server( ).equals( request.getTarget_server( ) ) ) {
-                    final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
+                    Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
+                    final Player worldOwner = Bukkit.getPlayer( world.getOwner( ) );
+                    if ( worldOwner != null ) {
+                        loc = worldOwner.getLocation( );
+                    }
                     world.addOnlineMember( request.getGuest( ) );
                     world.removeVisitor( request.getGuest( ) );
                     final Player guestPlayer = Bukkit.getPlayer( request.getGuest( ) );
+                    Location finalLoc = loc;
                     Main.getInstance( ).manageVisitorPermissions( request.getGuest( ) , world.getUUID( ) , false ).thenAccept( a -> {
                         Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( request.getGuest( ) , world );
-                        Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> guestPlayer.teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) );
+                        Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> guestPlayer.teleport( finalLoc , PlayerTeleportEvent.TeleportCause.PLUGIN ) );
                     } );
                 } else {
                     request.accept( );
