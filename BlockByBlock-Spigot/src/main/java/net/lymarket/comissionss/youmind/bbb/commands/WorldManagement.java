@@ -6,6 +6,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.error.UserNotFoundException;
 import net.lymarket.comissionss.youmind.bbb.common.error.WorldNotFoundError;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.common.commands.*;
 import net.lymarket.lyapi.spigot.LyApi;
 import org.bukkit.entity.Player;
@@ -53,14 +54,14 @@ public final class WorldManagement implements ILyCommand {
                     try {
                         final UUID uuid = UUID.fromString( context.getArg( 1 ) );
                         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( uuid );
-                        final User userTarget = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 2 ) );
+                        final SpigotUser userTarget = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 2 ) );
                         if ( world.getOwner( ) == player.getUniqueId( ) || player.hasPermission( "blockbyblock.world.edit.other" ) ) {
                             world.addMember( userTarget.getUUID( ) );
                             Main.getInstance( ).getWorlds( ).saveWorld( world );
                             final HashMap < String, String > replace = new HashMap <>( );
                             replace.put( "world" , world.getName( ) );
                             replace.put( "player" , userTarget.getName( ) );
-                            Main.getLang( ).sendMsg( player , "world.trust.add" , replace );
+                            Main.getLang( ).sendMsg( player , "world.trust" , replace );
                         } else {
                             Main.getLang( ).sendErrorMsg( player , "world.trust-no-permission" , "world" , world.getName( ) );
                         }
@@ -68,8 +69,10 @@ public final class WorldManagement implements ILyCommand {
                     } catch ( IllegalArgumentException | WorldNotFoundError e ) {
                         Main.getLang( ).sendErrorMsg( player , "world.not-found" , "world" , context.getArg( 1 ) );
                     } catch ( NullPointerException e ) {
+                        e.printStackTrace( );
+                    } catch ( UserNotFoundException e ) {
                         Main.getLang( ).sendErrorMsg( player , "player.not-found" , "player" , context.getArg( 2 ) );
-                        
+    
                     }
                     return true;
                 } else if ( context.getArg( 0 ).equalsIgnoreCase( "untrust" ) ) {
@@ -162,7 +165,6 @@ public final class WorldManagement implements ILyCommand {
                         list.addAll( Main.getInstance( ).getWorlds( ).getWorldsByUser( (( Player ) context.getSender( )).getUniqueId( ) ).stream( ).map( BWorld::getUUID ).map( UUID::toString ).collect( Collectors.toList( ) ) );
                     } else {
                         list.addAll( Main.getInstance( ).getWorlds( ).getWorlds( ).stream( ).map( BWorld::getUUID ).map( UUID::toString ).collect( Collectors.toList( ) ) );
-                        
                     }
                     break;
                 }

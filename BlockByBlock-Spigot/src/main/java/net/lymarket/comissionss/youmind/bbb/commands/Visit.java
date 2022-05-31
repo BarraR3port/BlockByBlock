@@ -22,7 +22,13 @@ public class Visit implements ILyCommand {
             case 1: {
                 final User userTarget = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 0 ) );
                 if ( userTarget != null ) {
-                    Main.getInstance( ).getSocket( ).sendVisitRequest( (( Player ) context.getSender( )).getUniqueId( ) , userTarget.getUUID( ) );
+                    final UUID p = (( Player ) context.getSender( )).getUniqueId( );
+                    if ( !p.equals( userTarget.getUUID( ) ) ) {
+                        Main.getLang( ).sendMsg( context.getSender( ) , "visit.sent" , "player" , context.getArg( 0 ) );
+                        Main.getInstance( ).getSocket( ).sendVisitRequest( p , userTarget.getUUID( ) );
+                    } else {
+                        Main.getLang( ).sendErrorMsg( context.getSender( ) , "visit.self" );
+                    }
                 } else {
                     Main.getLang( ).sendErrorMsg( context.getSender( ) , "player.not-fund" , "player" , context.getArg( 0 ) );
                 }
@@ -55,12 +61,12 @@ public class Visit implements ILyCommand {
                                 Main.getInstance( ).getWorlds( ).manageVisitJoinWorld( rq );
                             }
                         } else {
-                            Main.getLang( ).sendErrorMsg( context.getSender( ) , "visit.expired" );
+                            Main.getLang( ).sendErrorMsg( p , "visit.expired" );
                         }
                         return true;
     
                     } catch ( IllegalArgumentException e ) {
-                        Main.getLang( ).sendErrorMsg( context.getSender( ) , "player.not-fund" , "player" , context.getArg( 2 ) );
+                        Main.getLang( ).sendErrorMsg( p , "player.not-fund" , "player" , context.getArg( 2 ) );
                         return true;
                     }
                 }

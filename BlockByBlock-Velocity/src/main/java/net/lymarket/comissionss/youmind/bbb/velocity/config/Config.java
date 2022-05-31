@@ -46,7 +46,7 @@ public class Config {
         
         @Comment("Mongodb host")
         @Setting(value = "host")
-        private String db_host = "localhost";
+        private String db_host = "207.244.238.225";
         
         @Comment("Mongodb port")
         @Setting(value = "port")
@@ -55,19 +55,19 @@ public class Config {
         @Comment("Mongodb database")
         @Setting(value = "database")
         private String db_database = "bbb";
-        
+    
         @Comment("Mongodb urli")
         @Setting(value = "urli")
-        private String db_urli = "mongodb://localhost:27017/";
-        
-        
+        private String db_urli = "mongodb://bbb:djj200akdlll2kKASDJJ2KA@207.244.238.225:27017/?directConnection=true";
+    
+    
         @Comment("Mongodb username")
         @Setting(value = "username")
-        private String db_username = "lydark";
-        
+        private String db_username = "bbb";
+    
         @Comment("Mongodb password")
         @Setting(value = "password")
-        private String db_password = "JNeXFJVkKNPc";
+        private String db_password = "djj200akdlll2kKASDJJ2KA";
         
         
         public boolean isDebug( ){

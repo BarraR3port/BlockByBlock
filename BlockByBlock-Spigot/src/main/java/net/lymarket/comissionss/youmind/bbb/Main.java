@@ -1,6 +1,9 @@
 package net.lymarket.comissionss.youmind.bbb;
 
 import com.grinderwolf.swm.api.SlimePlugin;
+import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.ViaAPI;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.context.MutableContextSet;
 import net.luckperms.api.node.Node;
@@ -19,6 +22,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.config.ConfigManager;
 import net.lymarket.comissionss.youmind.bbb.home.HomeManager;
+import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.lang.ESLang;
 import net.lymarket.comissionss.youmind.bbb.listener.lobby.LobbyPlayerEvents;
@@ -31,6 +35,8 @@ import net.lymarket.comissionss.youmind.bbb.socket.ProxyMSGManager;
 import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
 import net.lymarket.comissionss.youmind.bbb.users.PlayersRepository;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
+import net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp;
 import net.lymarket.comissionss.youmind.bbb.warp.WarpManager;
 import net.lymarket.comissionss.youmind.bbb.world.WorldManager;
 import net.lymarket.common.config.ConfigGenerator;
@@ -52,7 +58,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
-public final class Main extends JavaPlugin implements BBBApi {
+public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, SpigotUser, SpigotHome, SpigotWarp > {
     
     private static LyApi api;
     private static Main instance;
@@ -62,11 +68,14 @@ public final class Main extends JavaPlugin implements BBBApi {
     public HomeManager homes;
     private Config config;
     private Config items;
-    private String version;
+    
+    private String nms_version;
     private PlayersRepository players;
     private VersionSupport nms;
     private SpigotSocketClient socket;
     private WarpManager warps;
+    
+    private ViaAPI < Player > viaVersionApi;
     
     public static LyApi getApi( ){
         return api;
@@ -117,12 +126,12 @@ public final class Main extends JavaPlugin implements BBBApi {
             e.printStackTrace( );
             getServer( ).shutdown( );
         }
-        version = Bukkit.getServer( ).getClass( ).getName( ).split( "\\." )[3];
+        this.nms_version = Bukkit.getServer( ).getClass( ).getName( ).split( "\\." )[3];
         Settings.init( config );
         Items.init( items );
         
         try {
-            Class < ? > supp = Class.forName( "net.lymarket.comissionss.youmind.bbb.support.version." + version + "." + version );
+            Class < ? > supp = Class.forName( "net.lymarket.comissionss.youmind.bbb.support.version." + nms_version + "." + nms_version );
             this.nms = ( VersionSupport ) supp.getConstructor( Class.forName( "org.bukkit.plugin.java.JavaPlugin" ) ).newInstance( this );
         } catch ( InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |
                   ClassNotFoundException e ) {
@@ -139,16 +148,20 @@ public final class Main extends JavaPlugin implements BBBApi {
                 getServer( ).shutdown( );
             }
         }
-        
+    
         try {
             slimePlugin = ( SlimePlugin ) Bukkit.getPluginManager( ).getPlugin( "SlimeWorldManager" );
         } catch ( Exception e ) {
             e.printStackTrace( );
             getServer( ).shutdown( );
         }
-        
+    
         if ( Bukkit.getPluginManager( ).getPlugin( "PlaceholderAPI" ) != null ) {
             new Placeholders( this ).register( );
+        }
+    
+        if ( Bukkit.getPluginManager( ).getPlugin( "ViaVersion" ) != null ) {
+            viaVersionApi = Via.getAPI( );
         }
     
     
@@ -160,7 +173,7 @@ public final class Main extends JavaPlugin implements BBBApi {
         api.getCommandService( ).registerCommands( new Spawn( ) );
         api.getCommandService( ).registerCommands( new Menu( ) );
         api.getCommandService( ).registerCommands( new Admin( ) );
-        api.getCommandService( ).registerCommands( new Rank( ) );
+        api.getCommandService( ).registerCommands( new RankMenu( ) );
         api.getCommandService( ).registerCommands( new Visit( ) );
         api.getCommandService( ).registerCommands( new HomeCommand( ) );
         api.getCommandService( ).registerCommands( new Homes( ) );
@@ -168,6 +181,7 @@ public final class Main extends JavaPlugin implements BBBApi {
         api.getCommandService( ).registerCommands( new SetHome( ) );
         api.getCommandService( ).registerCommands( new WarpCmd( ) );
         api.getCommandService( ).registerCommands( new Warps( ) );
+        api.getCommandService( ).registerCommands( new Undo( ) );
     
         //final MongoDBClient mongo = new MongoDBClient( "mongodb://" + config.getString( "db.host" ) + ":" + config.getString( "db.port" ) , config.getString( "db.database" ) );
         final MongoDBClient mongo = new MongoDBClient( config.getString( "db.urli" ) , "bbb" );
@@ -247,11 +261,20 @@ public final class Main extends JavaPlugin implements BBBApi {
     }
     
     public String getVersion( ){
-        return version;
+        return Settings.VERSION;
+    }
+    
+    @Override
+    public String getNMSVersion( ){
+        return nms_version;
     }
     
     public VersionSupport getNMS( ){
         return nms;
+    }
+    
+    public ViaAPI < Player > getViaVersion( ){
+        return viaVersionApi;
     }
     
     @Override

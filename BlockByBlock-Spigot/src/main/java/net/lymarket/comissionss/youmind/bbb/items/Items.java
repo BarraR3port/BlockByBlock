@@ -18,53 +18,31 @@ public final class Items {
     public static ItemStack LOBBY_MENU;
     
     public static ItemStack LOBBY_BOOK;
-    
     public static ItemStack BUILDER_1_12;
-    
     public static ItemStack BUILDER_1_16;
-    
     public static ItemStack BUILDER_1_18;
     
-    
     public static ItemStack WORLDS;
-    
     public static ItemStack PLOTS;
-    
     public static ItemStack AVAILABLE_WORLD;
-    
     public static ItemStack UNAVAILABLE_WORLD;
-    
     public static ItemStack CREATED_WORLD_BASE;
-    
     public static ItemStack PLAYERS_IN_WORLD_BASE;
-    
     public static ItemStack PLOT_31_BASE;
-    
     public static ItemStack PLOT_101_BASE;
-    
     public static ItemStack PLOT_501_BASE;
-    
     public static ItemStack PLOT_1001_BASE;
-    
     public static ItemStack RANK_VISITOR_BASE;
-    
     public static ItemStack RANK_BUILDER_BASE;
-    
     public static ItemStack RANK_DEV_BASE;
-    
     public static ItemStack RANK_ADMIN_BASE;
-    
     public static ItemStack WARP_CASAS_BASE;
-    
     public static ItemStack WARP_ARBOLES_BASE;
-    
     public static ItemStack WARP_VARIOS_BASE;
-    
     
     public Items( ){
     
     }
-    
     
     public static void init( Config config ){
         LOBBY_MENU = new ItemBuilder( config.getItem( "lobby-item" ) )
@@ -110,7 +88,7 @@ public final class Items {
                 .addLoreLine( "&7Entra a construir con bloques" )
                 .addLoreLine( "&7más nuevos." )
                 .addLoreLine( "" )
-                .addLoreLine( "&7Estado: &eEN DESARROLLO" )
+                .addLoreLine( "&7Estado: &aACTIVO" )
                 .addLoreLine( "" )
                 .addTag( "server-version" , "1.16" )
                 .build( );
@@ -121,7 +99,7 @@ public final class Items {
                 .addLoreLine( "&7Click para construir con" )
                 .addLoreLine( "&7los nuevos bloques!" )
                 .addLoreLine( "" )
-                .addLoreLine( "&7Estado: &eEN DESARROLLO" )
+                .addLoreLine( "&7Estado: &aACTIVO" )
                 .addLoreLine( "" )
                 .addTag( "server-version" , "1.18" )
                 .build( );

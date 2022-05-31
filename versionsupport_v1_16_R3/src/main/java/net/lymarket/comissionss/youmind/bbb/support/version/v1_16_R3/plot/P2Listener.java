@@ -18,7 +18,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 public class P2Listener implements Listener {
@@ -57,7 +59,7 @@ public class P2Listener implements Listener {
     public void onPlayerEnterPlot( PlayerClaimPlotEvent e ){
         final Player p = Bukkit.getPlayer( e.getPlotPlayer( ).getUUID( ) );
         final Plot plot = e.getPlot( );
-        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
+        final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
         if ( user == null ) {
             e.setEventResult( Result.DENY );
             return;
@@ -150,8 +152,32 @@ public class P2Listener implements Listener {
         } else {
             e.setEventResult( Result.DENY );
         }
-        
-        
+    
+    
+    }
+    
+    @Subscribe
+    public void onPlayerEnterPlot( PlotDeleteEvent e ){
+        final Plot plot = e.getPlot( );
+        final @NonNull HashSet < UUID > members = plot.getMembers( );
+        members.add( e.getPlot( ).getOwner( ) );
+        for ( UUID p : members ) {
+            final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( p );
+            if ( user == null ) {
+                return;
+            }
+            if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
+                user.removePlot( plot.getId( ).toString( ) , PlotType.P31 );
+            } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
+                user.removePlot( plot.getId( ).toString( ) , PlotType.P101 );
+            } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
+                user.removePlot( plot.getId( ).toString( ) , PlotType.P501 );
+            } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
+                user.removePlot( plot.getId( ).toString( ) , PlotType.P1001 );
+            }
+            
+            vs.getBbbApi( ).getPlayers( ).savePlayer( user );
+        }
     }
     
     @Subscribe
@@ -159,7 +185,7 @@ public class P2Listener implements Listener {
         
         final Player p = Bukkit.getPlayer( e.getPlayer( ).getUUID( ) );
         final String worldName = e.getPlayer( ).getLocation( ).getWorldName( );
-        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
+        final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
         if ( user == null ) {
             e.setEventResult( Result.DENY );
             LyApi.getLanguage( ).sendErrorMsg( p , "plot.create.failed" , "plot-type" , PlotType.P31.getFormattedName( ) );
@@ -249,7 +275,7 @@ public class P2Listener implements Listener {
         final Player p = Bukkit.getPlayer( e.getPlotPlayer( ).getUUID( ) );
         final Plot plot = e.getPlot( );
         final String worldName = e.getPlotPlayer( ).getLocation( ).getWorldName( );
-        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
+        final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
         if ( user == null || plot == null ) {
             return;
         }
@@ -274,7 +300,7 @@ public class P2Listener implements Listener {
     public void onPlayerTeleport( PlayerTeleportToPlotEvent e ){
         final UUID playerUUID = e.getPlotPlayer( ).getUUID( );
         final Plot plot = e.getPlot( );
-        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
+        final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
         final Location loc = plot.getCenterSynchronous( );
         final Loc location = new Loc( vs.getBbbApi( ).getProxyServerName( ) , plot.getWorldName( ) , loc.getX( ) , loc.getY( ) , loc.getZ( ) , plot.getId( ).toString( ) );
         user.setLastLocation( location );
@@ -286,8 +312,8 @@ public class P2Listener implements Listener {
         final Player player = e.getPlayer( );
         final World world = player.getWorld( );
         final UUID playerUUID = player.getUniqueId( );
-        
-        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
+    
+        final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
         if ( world.getName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
             if ( user.getRank( ).equals( Rank.VISITOR ) ) {
                 vs.getBbbApi( ).getSocket( ).sendJoinServer( playerUUID , "lobby" );

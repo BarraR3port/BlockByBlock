@@ -1,7 +1,8 @@
 package net.lymarket.comissionss.youmind.bbb.commands;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
+import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.common.commands.*;
 import net.lymarket.lyapi.spigot.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
-public class Rank implements ILyCommand {
+public class RankMenu implements ILyCommand {
     
     @Command(name = "rank", permission = "blockbyblock.rank")
     public boolean command( SCommandContext context ){
@@ -35,8 +36,8 @@ public class Rank implements ILyCommand {
             if ( context.getArgs( ).length == 3 ) {
                 final String target = context.getArg( 1 );
                 try {
-                    net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank rank = net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank.valueOf( context.getArg( 2 ).toUpperCase( Locale.ROOT ) );
-                    User user = Main.getInstance( ).getPlayers( ).getPlayer( target );
+                    Rank rank = Rank.valueOf( context.getArg( 2 ).toUpperCase( Locale.ROOT ) );
+                    SpigotUser user = Main.getInstance( ).getPlayers( ).getPlayer( target );
                     Bukkit.dispatchCommand( Bukkit.getConsoleSender( ) , "lp user " + target + " group set " + rank.getLpName( ) );
                     user.setRank( rank );
                     Main.getInstance( ).getPlayers( ).savePlayer( user );

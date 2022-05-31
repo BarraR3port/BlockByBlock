@@ -142,15 +142,20 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
     
                 }
                 if ( e.getClick( ).equals( ClickType.LEFT ) ) {
-                    if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || user.getRank( ).isAdmin( ) ) {
-                        new AddPlayersToWorldMenuSelector( playerMenuUtility , world_uuid , this , targetUUID ).open( );
+                    if ( world.isMember( targetUUID ) ) {
+                        if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || user.getRank( ).isAdmin( ) ) {
+                            new RemoveMemberFromWorld( playerMenuUtility , world_uuid , this , targetUUID ).open( );
+                        }
+                    } else {
+                        if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || user.getRank( ).isAdmin( ) ) {
+                            new AddPlayersToWorldMenuSelector( playerMenuUtility , world_uuid , this , targetUUID ).open( );
+                        }
                     }
                 }
             } else {
                 if ( e.getClick( ).equals( ClickType.LEFT ) ) {
                     if ( world.getOwner( ).equals( user.getUUID( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.kick" ) || user.getRank( ).isAdmin( ) ) {
                         new RemoveMemberFromWorld( playerMenuUtility , world_uuid , this , targetUUID ).open( );
-    
                     }
                 } else if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
                     task.cancel( );

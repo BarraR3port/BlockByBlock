@@ -1,19 +1,15 @@
 package net.lymarket.comissionss.youmind.bbb.common.data.home;
 
-
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 
 import java.util.UUID;
 
-public class Home {
-    
+public abstract class Home {
     private final UUID owner;
     private final UUID uuid;
     private String name;
     private Loc location;
-    
     private String version;
-    
     
     public Home( UUID owner , String name , Loc location , String version ){
         this.owner = owner;

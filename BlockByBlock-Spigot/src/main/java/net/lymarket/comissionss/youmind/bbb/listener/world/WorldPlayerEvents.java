@@ -2,13 +2,13 @@ package net.lymarket.comissionss.youmind.bbb.listener.world;
 
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
+import net.lymarket.comissionss.youmind.bbb.common.data.msg.WorldMsg;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
+import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.listener.MainEvents;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
-import net.lymarket.comissionss.youmind.bbb.transformers.Transformer;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -75,17 +75,17 @@ public final class WorldPlayerEvents extends MainEvents {
                 Main.getInstance( ).getWorlds( ).removePlayerToTP( uuid );
             }
         } else if ( tpToHome ) {
-            final Home home = Main.getInstance( ).getHomes( ).getPlayerToTP( uuid );
+            final SpigotHome home = Main.getInstance( ).getHomes( ).getPlayerToTP( uuid );
             final Loc homeLoc = home.getLocation( );
             final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( homeLoc.getBWorld( ) );
             world.addOnlineMember( uuid );
             Main.getInstance( ).getWorlds( ).saveWorld( world );
-            if ( e.getPlayer( ).teleport( Transformer.toLocation( homeLoc ) , PlayerTeleportEvent.TeleportCause.PLUGIN ) ) {
+            if ( e.getPlayer( ).teleport( home.getBukkitLocation( ) , PlayerTeleportEvent.TeleportCause.PLUGIN ) ) {
                 Main.getInstance( ).getHomes( ).removePlayerToTP( uuid );
                 Main.getInstance( ).managePermissions( uuid , world.getUUID( ) , false );
             }
         } else if ( isWarpWorld ) {
-        
+            //todo this
         }
     }
     
@@ -182,7 +182,7 @@ public final class WorldPlayerEvents extends MainEvents {
             }
             return;
         }
-        final User user = Main.getInstance( ).getPlayers( ).getPlayer( playerUUID );
+        final SpigotUser user = Main.getInstance( ).getPlayers( ).getPlayer( playerUUID );
         if ( !e.getFrom( ).getWorld( ).equals( e.getTo( ).getWorld( ) ) ) {
     
             final BWorld visitWorld = Main.getInstance( ).getWorlds( ).getWorldByVisitor( playerUUID );
@@ -283,7 +283,7 @@ public final class WorldPlayerEvents extends MainEvents {
             return;
         }
         final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( worldUUID );
-        
+    
         if ( world == null ) {
             // kick the player with the bukkit api
             Main.getInstance( ).getSocket( ).sendJoinServer( playerUUID , "lobby" , "&cMundo no encontrado" );
@@ -305,6 +305,37 @@ public final class WorldPlayerEvents extends MainEvents {
             Main.getInstance( ).getSocket( ).sendKickFromWorld( world.getOwner( ) , world , playerUUID );
             Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
         }
+    }
+    
+    @Override
+    public void subPlayerChatEvent( AsyncPlayerChatEvent e ){
+        final boolean isWarpWorld = e.getPlayer( ).getLocation( ).getWorld( ).getName( ).equalsIgnoreCase( "warp" );
+        if ( isWarpWorld ) {
+            final BWorld warpWorld = new BWorld( UUID.randomUUID( ) , "Warps" , Settings.SERVER_NAME , Settings.VERSION , "GRASS_BLOCK" );
+            final WorldMsg msg = new WorldMsg( e.getPlayer( ).getUniqueId( ) , e.getMessage( ) , Settings.VERSION , warpWorld );
+            Main.getInstance( ).getSocket( ).sendMsgFromPlayer( msg );
+            return;
+        }
+        final UUID playerUUID = e.getPlayer( ).getUniqueId( );
+        UUID worldUUID;
+        try {
+            worldUUID = UUID.fromString( e.getPlayer( ).getWorld( ).getName( ) );
+        } catch ( IllegalArgumentException ex ) {
+            Main.getInstance( ).getSocket( ).sendJoinServer( playerUUID , "lobby" );
+            Main.getInstance( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.world.not-allowed-to-join-world" );
+            e.setCancelled( true );
+            return;
+        }
+        final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( worldUUID );
+        
+        if ( world == null ) {
+            // kick the player with the bukkit api
+            Main.getInstance( ).getSocket( ).sendJoinServer( playerUUID , "lobby" , "&cMundo no encontrado" );
+            e.setCancelled( true );
+            return;
+        }
+        final WorldMsg msg = new WorldMsg( e.getPlayer( ).getUniqueId( ) , e.getMessage( ) , Settings.VERSION , world );
+        Main.getInstance( ).getSocket( ).sendMsgFromPlayer( msg );
         
         
     }

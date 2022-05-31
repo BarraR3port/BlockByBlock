@@ -18,6 +18,8 @@ public class Stats {
     
     private int MAX_PLOTS_1001;
     
+    private int ADDITIONAL_WORLDS;
+    
     public Stats( ){
         BLOCKS_PLACED = 0;
         BLOCKS_BROKEN = 0;
@@ -27,6 +29,7 @@ public class Stats {
         MAX_PLOTS_101 = 0;
         MAX_PLOTS_501 = 0;
         MAX_PLOTS_1001 = 0;
+        ADDITIONAL_WORLDS = 0;
     }
     
     public long getBLOCKS_PLACED( ){
@@ -62,7 +65,8 @@ public class Stats {
     }
     
     public void removeELO( long ELO ){
-        this.ELO = this.ELO - ELO;
+        final long nextValue = this.ELO - ELO;
+        this.ELO = nextValue <= 0 ? 0 : nextValue;
     }
     
     public int getMAX_PLOTS_31( ){
@@ -74,7 +78,8 @@ public class Stats {
     }
     
     public void removeMAX_PLOTS_31( int MAX_PLOTS_31 ){
-        this.MAX_PLOTS_31 = this.MAX_PLOTS_31 - MAX_PLOTS_31;
+        final int nextValue = this.MAX_PLOTS_31 - MAX_PLOTS_31;
+        this.MAX_PLOTS_31 = nextValue <= 0 ? 0 : nextValue;
     }
     
     public int getMAX_PLOTS_101( ){
@@ -86,7 +91,8 @@ public class Stats {
     }
     
     public void removeMAX_PLOTS_101( int MAX_PLOTS_101 ){
-        this.MAX_PLOTS_101 = this.MAX_PLOTS_101 - MAX_PLOTS_101;
+        final int nextValue = this.MAX_PLOTS_101 - MAX_PLOTS_101;
+        this.MAX_PLOTS_101 = nextValue <= 0 ? 0 : nextValue;
     }
     
     public int getMAX_PLOTS_501( ){
@@ -98,7 +104,8 @@ public class Stats {
     }
     
     public void removeMAX_PLOTS_501( int MAX_PLOTS_501 ){
-        this.MAX_PLOTS_501 = this.MAX_PLOTS_501 - MAX_PLOTS_501;
+        final int nextValue = this.MAX_PLOTS_501 - MAX_PLOTS_501;
+        this.MAX_PLOTS_501 = nextValue <= 0 ? 0 : nextValue;
     }
     
     public int getMAX_PLOTS_1001( ){
@@ -110,7 +117,21 @@ public class Stats {
     }
     
     public void removeMAX_PLOTS_1001( int MAX_PLOTS_1001 ){
-        this.MAX_PLOTS_1001 = this.MAX_PLOTS_1001 - MAX_PLOTS_1001;
+        final int nextValue = this.MAX_PLOTS_1001 - MAX_PLOTS_1001;
+        this.MAX_PLOTS_1001 = nextValue <= 0 ? 0 : nextValue;
+    }
+    
+    public int getADDITIONAL_WORLDS( ){
+        return this.ADDITIONAL_WORLDS;
+    }
+    
+    public void addADDITIONAL_WORLDS( int ADDITIONAL_WORLDS ){
+        this.ADDITIONAL_WORLDS = this.ADDITIONAL_WORLDS + ADDITIONAL_WORLDS;
+    }
+    
+    public void removeADDITIONAL_WORLDS( int ADDITIONAL_WORLDS ){
+        final int nextValue = this.ADDITIONAL_WORLDS - ADDITIONAL_WORLDS;
+        this.ADDITIONAL_WORLDS = nextValue <= 0 ? 0 : nextValue;
     }
     
     public String getFormattedTimePlayed( ){

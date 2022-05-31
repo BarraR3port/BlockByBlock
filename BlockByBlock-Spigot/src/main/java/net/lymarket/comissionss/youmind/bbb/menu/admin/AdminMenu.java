@@ -4,10 +4,10 @@ import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.Stats;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.admin.rank.RankEditor;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.UpdatableMenu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
@@ -20,9 +20,9 @@ import java.util.Collections;
 
 public class AdminMenu extends UpdatableMenu {
     
-    private User target;
+    private SpigotUser target;
     
-    public AdminMenu( IPlayerMenuUtility playerMenuUtility , User target ){
+    public AdminMenu( IPlayerMenuUtility playerMenuUtility , SpigotUser target ){
         super( playerMenuUtility );
         this.target = target;
     }
@@ -43,11 +43,11 @@ public class AdminMenu extends UpdatableMenu {
         final ItemStack plus = new ItemBuilder( Material.STAINED_GLASS_PANE , 5 )
                 .setDisplayName( "&a+1" )
                 .build( );
-        
+    
         final ItemStack minus = new ItemBuilder( Material.STAINED_GLASS_PANE , 14 )
                 .setDisplayName( "&c-1" )
                 .build( );
-        
+        final int currentWorlds = Main.getInstance( ).getWorlds( ).getWorldsByUser( target.getUUID( ) ).size( );
         //---------------------------------------------------------------------------------------------------------------------//
         
         inventory.setItem( 10 , plus );
@@ -56,47 +56,60 @@ public class AdminMenu extends UpdatableMenu {
                         .setLore( Collections.singletonList( "" ) )
                         .addLoreLine( "&7Plots actuales de 31x31:" )
                         .addLoreLine( " &b> &a" + target.getPlots31( version ).size( ) )
-                        .addLoreLine( "&7Máximo de plots: " )
+                        .addLoreLine( "&7Máximo de Plots: " )
                         .addLoreLine( " &b> &a" + (changed ? rank.getMAX_PLOTS_31( ) + stats.getMAX_PLOTS_31( ) : rank.getMAX_PLOTS_31( )) )
                         .build( ) );
         inventory.setItem( 28 , minus );
-        
+    
         //---------------------------------------------------------------------------------------------------------------------//
-        
-        inventory.setItem( 12 , plus );
-        inventory.setItem( 21 ,
+    
+        inventory.setItem( 11 , plus );
+        inventory.setItem( 20 ,
                 new ItemBuilder( Items.PLOT_101_BASE.clone( ) )
                         .setLore( Collections.singletonList( "" ) )
                         .addLoreLine( "&7Plots actuales de 101x101:" )
                         .addLoreLine( " &b> &a" + target.getPlots101( version ).size( ) )
-                        .addLoreLine( "&7Máximo de plots: " )
+                        .addLoreLine( "&7Máximo de Plots: " )
                         .addLoreLine( " &b> &a" + (changed ? rank.getMAX_PLOTS_101( ) + stats.getMAX_PLOTS_101( ) : rank.getMAX_PLOTS_101( )) )
                         .build( ) );
-        inventory.setItem( 30 , minus );
-        
+        inventory.setItem( 29 , minus );
+    
         //---------------------------------------------------------------------------------------------------------------------//
-        
-        inventory.setItem( 13 , plus );
-        inventory.setItem( 22 ,
+    
+        inventory.setItem( 12 , plus );
+        inventory.setItem( 21 ,
                 new ItemBuilder( XMaterial.SUNFLOWER.parseItem( ) )
-                        .setDisplayName( "&eElo: " + (stats.getELO( ) > 0 ? "&a" + stats.getELO( ) : "&c" + stats.getELO( )) )
+                        .setDisplayName( "&eElo: " + (stats.getELO( ) > 0 ? "&a" : "&c") + stats.getELO( ) )
                         .addTag( "elo" , "elo" )
                         .build( ) );
-        inventory.setItem( 31 , minus );
-        
+        inventory.setItem( 30 , minus );
+    
         //---------------------------------------------------------------------------------------------------------------------//
-        
+    
         inventory.setItem( 14 , plus );
         inventory.setItem( 23 ,
+                new ItemBuilder( Items.CREATED_WORLD_BASE.clone( ) )
+                        .setLore( Collections.singletonList( "" ) )
+                        .setDisplayName( "&eMundos actuales: " )
+                        .addLoreLine( " &b> " + (currentWorlds > 0 ? "&a" : "&c") + currentWorlds )
+                        .addLoreLine( "&7Máximo de Mundos: " )
+                        .addLoreLine( " &b> &a" + (changed ? rank.getMAX_WORLDS( ) + stats.getADDITIONAL_WORLDS( ) : rank.getMAX_WORLDS( )) )
+                        .build( ) );
+        inventory.setItem( 32 , minus );
+    
+        //---------------------------------------------------------------------------------------------------------------------//
+    
+        inventory.setItem( 15 , plus );
+        inventory.setItem( 24 ,
                 new ItemBuilder( Items.PLOT_501_BASE.clone( ) )
                         .setLore( Collections.singletonList( "" ) )
                         .addLoreLine( "&7Plots actuales de 501x501:" )
                         .addLoreLine( " &b> &a" + target.getPlots501( version ).size( ) )
-                        .addLoreLine( "&7Máximo de plots: " )
+                        .addLoreLine( "&7Máximo de Plots: " )
                         .addLoreLine( " &b> &a" + (changed ? rank.getMAX_PLOTS_501( ) + stats.getMAX_PLOTS_501( ) : rank.getMAX_PLOTS_501( )) )
                         .build( ) );
-        inventory.setItem( 32 , minus );
-        
+        inventory.setItem( 33 , minus );
+    
         //---------------------------------------------------------------------------------------------------------------------//
         
         inventory.setItem( 16 , plus );
@@ -105,7 +118,7 @@ public class AdminMenu extends UpdatableMenu {
                         .setLore( Collections.singletonList( "" ) )
                         .addLoreLine( "&7Plots actuales de 1001x1001:" )
                         .addLoreLine( " &b> &a" + target.getPlots1001( version ).size( ) )
-                        .addLoreLine( "&7Máximo de plots: " )
+                        .addLoreLine( "&7Máximo de Plots: " )
                         .addLoreLine( " &b> &a" + (changed ? rank.getMAX_PLOTS_1001( ) + stats.getMAX_PLOTS_1001( ) : rank.getMAX_PLOTS_1001( )) )
                         .build( ) );
         inventory.setItem( 34 , minus );
@@ -142,17 +155,22 @@ public class AdminMenu extends UpdatableMenu {
                 changed = true;
                 break;
             }
-            case 12: {
+            case 11: {
                 target.getStats( ).addMAX_PLOTS_101( 1 );
                 changed = true;
                 break;
             }
-            case 13: {
+            case 12: {
                 target.getStats( ).addELO( 1 );
                 changed = true;
                 break;
             }
             case 14: {
+                target.getStats( ).addADDITIONAL_WORLDS( 1 );
+                changed = true;
+                break;
+            }
+            case 15: {
                 target.getStats( ).addMAX_PLOTS_501( 1 );
                 changed = true;
                 break;
@@ -167,17 +185,22 @@ public class AdminMenu extends UpdatableMenu {
                 changed = true;
                 break;
             }
-            case 30: {
+            case 29: {
                 target.getStats( ).removeMAX_PLOTS_101( 1 );
                 changed = true;
                 break;
             }
-            case 31: {
+            case 30: {
                 target.getStats( ).removeELO( 1 );
                 changed = true;
                 break;
             }
             case 32: {
+                target.getStats( ).removeADDITIONAL_WORLDS( 1 );
+                changed = true;
+                break;
+            }
+            case 33: {
                 target.getStats( ).removeMAX_PLOTS_501( 1 );
                 changed = true;
                 break;

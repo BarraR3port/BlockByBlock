@@ -16,12 +16,12 @@ spawn:
   location:
 db:
   #MongoDB
-  host: localhost
+  host: 207.244.238.225
   port: 27017
-  user: root
-  password: root
-  database: blockbyblock
-  urli: "mongodb://bbb:luk@51.161.86.217:27017/bbb"
+  user: bbb
+  password: djj200akdlll2kKASDJJ2KA
+  database: bbb
+  urli: "mongodb://bbb:djj200akdlll2kKASDJJ2KA@207.244.238.225:27017/?directConnection=true"
 
 
 perms:

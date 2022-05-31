@@ -2,14 +2,13 @@ package net.lymarket.comissionss.youmind.bbb.menu.main.warp;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
-import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType;
 import net.lymarket.comissionss.youmind.bbb.common.error.WarpNotFoundError;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.main.plot.PlotMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
-import net.lymarket.comissionss.youmind.bbb.transformers.Transformer;
+import net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.UpdatableMenu;
 import net.lymarket.lyapi.spigot.utils.NBTItem;
@@ -56,9 +55,9 @@ public class WarpMenu extends UpdatableMenu {
             final User user = Main.getInstance( ).getPlayers( ).getPlayer( getOwner( ).getUniqueId( ) );
             try {
                 final WarpType type = WarpType.valueOf( NBTItem.getTag( item , "warp" ) );
-                final Warp warp = Main.getInstance( ).getWarps( ).getUserWarpByName( type , Settings.SERVER_NAME );
+                final SpigotWarp warp = Main.getInstance( ).getWarps( ).getUserWarpByName( type , Settings.SERVER_NAME );
                 if ( warp.isPublic( ) || warp.isMember( getOwner( ).getUniqueId( ) ) || getOwner( ).hasPermission( "blockbyblock.warp.goto" ) || user.getRank( ).isBuilder( ) ) {
-                    getOwner( ).teleport( Transformer.toLocation( warp.getLocation( ) ) );
+                    getOwner( ).teleport( warp.getBukkitLocation( ) );
                 } else {
                     Main.getLang( ).sendErrorMsg( getOwner( ) , "warp.no-permission-to-go" );
                 }

@@ -5,19 +5,20 @@ import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
+import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.skin.SkinManager;
 import net.lymarket.common.Api;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class User {
-    
-    private final Date createDate;
+public abstract class User {
+    private final Date createDate = new Date( );
     private final HashMap < String, Boolean > options = new HashMap <>( );
     private final HashMap < String, String > properties = new HashMap <>( );
     private final ArrayList < Plot > plots = new ArrayList <>( );
-    private final ArrayList < net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp > warps = new ArrayList <>( );
+    private final ArrayList < Warp > warps = new ArrayList <>( );
     private final ArrayList < Home > homes = new ArrayList <>( );
     
     private Rank rank;
@@ -26,14 +27,15 @@ public class User {
     private String name;
     private String address;
     private String skin;
-    
     private Loc lastLocation;
     
+    @TestOnly
+    public User( ){
+    }
     
     public User( String name , UUID uuid ){
         this.name = name;
         this.uuid = uuid;
-        this.createDate = new Date( );
         stats = new Stats( );
         skin = SkinManager.getSkin( name );
         rank = Rank.VISITOR;
@@ -129,8 +131,8 @@ public class User {
         plots.add( plot );
     }
     
-    public void removePlot( String plot ){
-        plots.removeIf( plot1 -> Objects.equals( plot1.getPlotID( ) , plot ) );
+    public void removePlot( String plotId , PlotType plotType ){
+        plots.removeIf( plot -> Objects.equals( plot.getPlotID( ) , plotId ) && Objects.equals( plot.getType( ) , plotType ) );
     }
     
     public Plot getPlot( String uuid ){
@@ -150,15 +152,15 @@ public class User {
         this.address = address;
     }
     
-    public ArrayList < net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp > getWarps( ){
+    public ArrayList < Warp > getWarps( ){
         return warps;
     }
     
-    public void addWarp( net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp warp ){
+    public void addWarp( Warp warp ){
         warps.add( warp );
     }
     
-    public void removeWarp( net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp warp ){
+    public void removeWarp( Warp warp ){
         warps.remove( warp );
     }
     

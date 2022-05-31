@@ -5,10 +5,10 @@ import net.lymarket.comissionss.youmind.bbb.support.common.plot.IPlotManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class VersionSupport {
+public abstract class VersionSupport< S, U, H, W > {
     
     protected final JavaPlugin plugin;
-    protected final BBBApi bbbApi;
+    protected final BBBApi < S, U, H, W > bbbApi;
     
     public VersionSupport( JavaPlugin plugin ){
         this.plugin = plugin;
@@ -27,13 +27,13 @@ public abstract class VersionSupport {
                 registerWorldEvents( );
                 break;
             }
-        
+            
         }
-    
-    
+        
+        
     }
     
-    public BBBApi getBbbApi( ){
+    public BBBApi < S, U, H, W > getBbbApi( ){
         return bbbApi;
     }
     

@@ -22,4 +22,13 @@ public enum PlotType {
     public String getWorldName( ){
         return worldName;
     }
+    
+    public static PlotType getPlotTypeByWorld( String worldName ){
+        for ( PlotType plotType : values( ) ) {
+            if ( plotType.getWorldName( ).equals( worldName ) ) {
+                return plotType;
+            }
+        }
+        return null;
+    }
 }

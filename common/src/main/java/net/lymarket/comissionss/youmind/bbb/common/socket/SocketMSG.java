@@ -33,4 +33,8 @@ public interface SocketMSG {
     void sendMSGToPlayer( UUID target , String key , HashMap < String, String > replacementsMap );
     
     void sendUpdate( );
+    
+    String encrypt( String json );
+    
+    String decrypt( String data );
 }

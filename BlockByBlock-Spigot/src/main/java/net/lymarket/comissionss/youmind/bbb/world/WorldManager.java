@@ -8,12 +8,12 @@ import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.mongodb.client.model.Filters;
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
 import net.lymarket.comissionss.youmind.bbb.common.db.IBWorldManager;
 import net.lymarket.comissionss.youmind.bbb.common.error.WorldNotFoundError;
+import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.Api;
 import net.lymarket.common.db.MongoDBClient;
@@ -117,9 +117,8 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
         SlimeWorld slimeWorld = null;
         try {
             slimeWorld = Main.getSlimePlugin( ).createEmptyWorld( loader , world.getUUID( ).toString( ) , false , propertyMap );
-            
-            final Material mat = Material.valueOf( material );
     
+            final Material mat = XMaterial.valueOf( material.equals( "GRASS" ) && !Settings.VERSION.equals( "v1_12_R1" ) ? "GRASS_BLOCK" : material ).parseMaterial( );
             boolean empty = mat == XMaterial.AIR.parseMaterial( );
             if ( empty ) {
                 Main.getSlimePlugin( ).generateEmptyWorld( slimeWorld , true );
@@ -187,9 +186,9 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
             e.printStackTrace( );
         }
     
-        final ArrayList < Home > homesByWorld = Main.getInstance( ).getHomes( ).getHomesByWorld( bworld.getUUID( ) );
+        final ArrayList < SpigotHome > homesByWorld = Main.getInstance( ).getHomes( ).getHomesByWorld( bworld.getUUID( ) );
         Main.getInstance( ).debug( "[WorldDestroyer] Deleting the " + homesByWorld.size( ) + " Homes from the world..." );
-        for ( Home home : homesByWorld ) {
+        for ( SpigotHome home : homesByWorld ) {
             Main.getInstance( ).getHomes( ).deleteHome( home );
             Main.getInstance( ).debug( "[WorldDestroyer] Deleted the home: " + home.getName( ) + " from the world" );
         }

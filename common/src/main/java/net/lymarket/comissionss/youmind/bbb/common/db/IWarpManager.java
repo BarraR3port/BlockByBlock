@@ -1,43 +1,41 @@
 package net.lymarket.comissionss.youmind.bbb.common.db;
 
-import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType;
+import net.lymarket.common.db.MongoDB;
 import net.lymarket.common.db.MongoDBClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public abstract class IWarpManager extends MongoDB < UUID, Warp > {
-    private final HashMap < UUID, Warp > playersToTP = new HashMap <>( );
+public abstract class IWarpManager< W > extends MongoDB < UUID, W > {
+    private final HashMap < UUID, W > playersToTP = new HashMap <>( );
     
     public IWarpManager( MongoDBClient database , String tableName ){
         super( database , tableName );
     }
     
-    public abstract ArrayList < Warp > getWarpsByUser( UUID uuid );
+    public abstract ArrayList < W > getWarpsByUser( UUID uuid );
     
-    public abstract ArrayList < Warp > getWarpsByUserAndVersion( UUID uuid , String version );
+    public abstract ArrayList < W > getWarpsByUserAndVersion( UUID uuid , String version );
     
-    public abstract ArrayList < Warp > getWarpsByServer( String server );
+    public abstract ArrayList < W > getWarpsByServer( String server );
     
-    public abstract ArrayList < Warp > getWarpsByVersion( String version );
+    public abstract ArrayList < W > getWarpsByVersion( String version );
     
-    public abstract ArrayList < Warp > getWarpsByServer( );
+    public abstract ArrayList < W > getWarpsByServer( );
     
-    public abstract ArrayList < Warp > getWarpsByWorld( UUID uuid );
+    public abstract ArrayList < W > getWarpsByWorld( UUID uuid );
     
-    public abstract void createWarp( Warp world );
+    public abstract void createWarp( W world );
     
-    public ArrayList < Warp > getWarps( ){
-        return database.findMany( TABLE_NAME , Warp.class );
-    }
+    public abstract ArrayList < W > getWarps( );
     
-    public abstract boolean saveWarp( Warp world );
+    public abstract boolean saveWarp( W world );
     
-    public abstract Warp getWarp( UUID uuid );
+    public abstract W getWarp( UUID uuid );
     
-    public void addPlayerToTP( UUID uuid , Warp home ){
+    public void addPlayerToTP( UUID uuid , W home ){
         playersToTP.put( uuid , home );
     }
     
@@ -49,16 +47,16 @@ public abstract class IWarpManager extends MongoDB < UUID, Warp > {
         return playersToTP.containsKey( uuid );
     }
     
-    public Warp getPlayerToTP( UUID uuid ){
+    public W getPlayerToTP( UUID uuid ){
         return playersToTP.get( uuid );
     }
     
-    public HashMap < UUID, Warp > getPlayersToTP( ){
+    public HashMap < UUID, W > getPlayersToTP( ){
         return playersToTP;
     }
     
     
-    public abstract Warp getUserWarpByName( WarpType warpType , String serverName );
+    public abstract W getUserWarpByName( WarpType warpType , String serverName );
     
-    public abstract boolean deleteWarp( Warp home );
+    public abstract boolean deleteWarp( W home );
 }

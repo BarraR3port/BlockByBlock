@@ -1,9 +1,9 @@
 package net.lymarket.comissionss.youmind.bbb.commands.home;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
+import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
 import org.bukkit.entity.Player;
@@ -33,7 +33,7 @@ public class SetHome implements ILyCommand {
         }
         if ( context.getArgs( ).length == 1 ) {
             final Loc location = new Loc( Settings.SERVER_NAME , p.getWorld( ).getName( ) , p.getLocation( ).getX( ) , p.getLocation( ).getY( ) , p.getLocation( ).getZ( ) , UUID.fromString( p.getWorld( ).getName( ) ) );
-            final Home home = new Home( p.getUniqueId( ) , context.getArg( 0 ) , location , Settings.VERSION );
+            final SpigotHome home = new SpigotHome( p.getUniqueId( ) , context.getArg( 0 ) , location , Settings.VERSION );
             Main.getInstance( ).getHomes( ).createHome( home );
             Main.getLang( ).sendMsg( context.getSender( ) , "home.created-successfully" , "home" , home.getName( ) );
         } else {

@@ -116,9 +116,9 @@ public class WorldCreatorMenu extends UpdatableMenu {
             Bukkit.getScheduler( ).runTaskAsynchronously( Main.getInstance( ) , ( ) -> {
                 Bukkit.getPluginManager( ).callEvent( new PrevCreateWorld( p.getUniqueId( ) , world , material ) );
             } );
-            new WorldManagerMenu( this.playerMenuUtility , serverVersion , targetUserUUID , 10L ).open( );
+            new WorldManagerMenu( this.playerMenuUtility , targetUserUUID , 10L ).open( );
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
-            new WorldManagerMenu( playerMenuUtility , serverVersion , targetUserUUID , 10L ).open( );
+            new WorldManagerMenu( playerMenuUtility , targetUserUUID , 10L ).open( );
         }
     }
     

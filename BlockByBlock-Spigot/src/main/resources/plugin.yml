@@ -4,6 +4,7 @@ main: net.lymarket.comissionss.youmind.bbb.Main
 depend:
   - SlimeWorldManager
   - LuckPerms
+  - ViaVersion
 softdepend:
   - PlotSquared
   - PlaceholderAPI

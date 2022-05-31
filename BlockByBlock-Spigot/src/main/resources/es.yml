@@ -46,6 +46,7 @@ error:
     error-deleting: "&cError al eliminar la casa &e%home%&c."
   visit:
     cant-visit-lobby: "&cEl jugador está en el lobby."
+    self: "&cNo puedes visitarte a ti mismo."
     expired: "&cVisita expirada."
     plot:
       not-trusted: "&cNo tienes permiso para acceder la plot de &e%player%&c."
@@ -56,6 +57,7 @@ error:
     no-permission-to-go: "&cNo tienes permiso para ir a este warp."
     not-in-world-of-warps: "&cNo estás en el mundo de warps."
     invalid-type: "&cEl tipo de warp es inválido."
+
 world:
   unloaded: "&cEl mundo &e%world%&c ha sido eliminado."
   set-name: "&aEl nombre del mundo ha sido cambiado a &e%name%&a."
@@ -106,3 +108,5 @@ warp:
     - " &8- &dX: &5%x_location%"
     - " &8- &dY: &5%y_location%"
     - " &8- &dZ: &5%z_location%"
+visit:
+  sent: "&aHas enviado una solicitud de visita a &e%player%&a."

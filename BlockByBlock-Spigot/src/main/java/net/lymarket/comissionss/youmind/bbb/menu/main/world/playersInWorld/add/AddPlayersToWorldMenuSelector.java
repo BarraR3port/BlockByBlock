@@ -34,7 +34,7 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     
     @Override
     public String getMenuName( ){
-        return "&7Añadir jugador a mundo";
+        return "Añadir jugador a mundo";
     }
     
     public void setSubMenuItems( ){

@@ -3,10 +3,8 @@ package net.lymarket.comissionss.youmind.bbb.common.data.plot;
 public class Plot {
     
     private final PlotType type;
-    
-    private String PlotID;
-    
     private final String version;
+    private String PlotID;
     
     public Plot( PlotType type , String plotID , String version ){
         this.type = type;

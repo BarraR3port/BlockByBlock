@@ -42,7 +42,7 @@ public class DeleteWorldSelector extends MenuSelector {
     }
     
     public Menu getAcceptManu( ){
-        return new WorldManagerMenu( playerMenuUtility , world.getVersion( ) , target_uuid , 10 );
+        return new WorldManagerMenu( playerMenuUtility , target_uuid , 10 );
     }
     
     public Menu getDenyManu( ){

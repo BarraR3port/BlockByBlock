@@ -8,13 +8,18 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
+import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
+import net.lymarket.comissionss.youmind.bbb.velocity.user.VelocityUser;
 import net.lymarket.comissionss.youmind.bbb.velocity.utils.Utils;
 
 import java.util.HashMap;
@@ -31,7 +36,7 @@ public class PlayerEvents {
         VMain.getInstance( ).getProxy( ).getScheduler( ).buildTask( VMain.getInstance( ) , ( ) -> {
             final long currentTime = System.currentTimeMillis( );
             VMain.getInstance( ).getProxy( ).getAllPlayers( ).forEach( player -> {
-                User user = VMain.getInstance( ).getPlayers( ).getPlayer( player.getUniqueId( ) );
+                VelocityUser user = VMain.getInstance( ).getPlayers( ).getPlayer( player.getUniqueId( ) );
                 if ( user == null ) {
                     user = VMain.getInstance( ).getPlayers( ).getPlayer( player.getUsername( ) );
                     if ( user == null ) {
@@ -51,9 +56,27 @@ public class PlayerEvents {
     
     @Subscribe
     public void onPostLoginEvent( PostLoginEvent e ){
+        VMain.debug( "onPostLoginEvent" );
+        VMain.debug( "Player Name: " + e.getPlayer( ).getUsername( ) );
+        VMain.debug( "Player UUID: " + e.getPlayer( ).getUniqueId( ).toString( ) );
         VMain.getInstance( ).getPlayers( ).getOrCreatePlayer( e.getPlayer( ).getUsername( ) , e.getPlayer( ).getUniqueId( ) , String.valueOf( e.getPlayer( ).getRemoteAddress( ).getAddress( ) ).replace( "/" , "" ) );
         
         timeOnline.put( e.getPlayer( ).getUniqueId( ) , System.currentTimeMillis( ) );
+    }
+    
+    @Subscribe
+    public void onServerPostConnectEvent( ServerPostConnectEvent e ){
+        Component firstJoinMsg = LegacyComponentSerializer.legacyAmpersand( ).deserialize( "&aBienvenido a &9Block By Block." )
+                //? Hover Message
+                .hoverEvent( LegacyComponentSerializer.legacyAmpersand( ).deserialize( "&7Click para abrir el Menu" ) )
+                .clickEvent( ClickEvent.runCommand( "/menu" ) );
+        TextComponent secondJoinMsg = LegacyComponentSerializer.legacyAmpersand( ).deserialize( "&aConstruye y disfruta!" )
+                .hoverEvent( null )
+                .clickEvent( null );
+        
+        
+        e.getPlayer( ).sendMessage( firstJoinMsg );
+        e.getPlayer( ).sendMessage( secondJoinMsg );
     }
     
     @Subscribe
@@ -67,7 +90,7 @@ public class PlayerEvents {
     public void onDisconnectEvent( DisconnectEvent e ){
         final long currentTime = System.currentTimeMillis( );
         final UUID uuid = e.getPlayer( ).getUniqueId( );
-        final User user = VMain.getInstance( ).getPlayers( ).getPlayer( uuid );
+        final VelocityUser user = VMain.getInstance( ).getPlayers( ).getPlayer( uuid );
         user.getStats( ).addTIME_PLAYED( currentTime - timeOnline.get( uuid ) );
         VMain.getInstance( ).getPlayers( ).savePlayer( user );
         timeOnline.remove( uuid );

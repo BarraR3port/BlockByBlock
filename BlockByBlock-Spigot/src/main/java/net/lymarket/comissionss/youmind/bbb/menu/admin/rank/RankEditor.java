@@ -2,9 +2,9 @@ package net.lymarket.comissionss.youmind.bbb.menu.admin.rank;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.admin.AdminMenu;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.UpdatableMenu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
@@ -15,9 +15,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class RankEditor extends UpdatableMenu {
     
-    private User user;
+    private SpigotUser user;
     
-    public RankEditor( IPlayerMenuUtility playerMenuUtility , User user ){
+    public RankEditor( IPlayerMenuUtility playerMenuUtility , SpigotUser user ){
         super( playerMenuUtility );
         this.user = user;
     }

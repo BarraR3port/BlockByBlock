@@ -1,10 +1,10 @@
 package net.lymarket.comissionss.youmind.bbb.commands.home;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
+import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.common.commands.*;
 import net.lymarket.lyapi.spigot.utils.Utils;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -31,7 +31,7 @@ public class Homes implements ILyCommand {
         }
         if ( context.getArgs( ).length == 0 ) {
             Bukkit.getScheduler( ).runTaskAsynchronously( Main.getInstance( ) , ( ) -> {
-                final List < Home > homes = Main.getInstance( ).getHomes( ).getHomesByUserAndVersion( p.getUniqueId( ) , Settings.VERSION );
+                final List < SpigotHome > homes = Main.getInstance( ).getHomes( ).getHomesByUserAndVersion( p.getUniqueId( ) , Settings.VERSION );
     
                 if ( homes == null || homes.isEmpty( ) ) {
                     Main.getLang( ).sendErrorMsg( context.getSender( ) , "home.no-homes" );
@@ -52,7 +52,7 @@ public class Homes implements ILyCommand {
                     p.spigot( ).sendMessage( Utils.formatTC( Main.getLang( ).getMSG( "home.homes-of-page" ).replace( "%currentPage%" , String.valueOf( i ) ).replace( "%pages%" , String.valueOf( pages ) ) ) );
                     for ( int a = min; a < max; a++ ) {
                         List < String > args = Main.getLang( ).getConfig( ).getStringList( "home.homes-of-description" );
-                        Home h = homes.get( a );
+                        SpigotHome h = homes.get( a );
                         List < String > replaced = new ArrayList <>( );
                         for ( String arg : args ) {
                             replaced.add( arg.replace( "%home%" , h.getName( ) )
@@ -72,10 +72,10 @@ public class Homes implements ILyCommand {
             } );
             return true;
         } else if ( context.getArgs( ).length == 1 ) {
-            final User targetUser = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 0 ) );
+            final SpigotUser targetUser = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 0 ) );
             if ( targetUser != null ) {
                 Bukkit.getScheduler( ).runTaskAsynchronously( Main.getInstance( ) , ( ) -> {
-                    ArrayList < Home > homes = Main.getInstance( ).getHomes( ).getHomesByUser( targetUser.getUUID( ) );
+                    ArrayList < SpigotHome > homes = Main.getInstance( ).getHomes( ).getHomesByUser( targetUser.getUUID( ) );
                     
                     if ( homes == null ) {
                         Main.getLang( ).sendErrorMsg( context.getSender( ) , "home.no-homes-other" );
@@ -96,7 +96,7 @@ public class Homes implements ILyCommand {
                         p.spigot( ).sendMessage( Utils.formatTC( Main.getLang( ).getMSG( "home.homes-of-page" ).replace( "%currentPage%" , String.valueOf( i ) ).replace( "%pages%" , String.valueOf( pages ) ) ) );
                         for ( int a = min; a < max; a++ ) {
                             List < String > args = Main.getLang( ).getConfig( ).getStringList( "home.homes-of-description" );
-                            Home h = homes.get( a );
+                            SpigotHome h = homes.get( a );
                             List < String > replaced = new ArrayList <>( );
                             for ( String arg : args ) {
                                 replaced.add( arg.replace( "%home%" , h.getName( ) )

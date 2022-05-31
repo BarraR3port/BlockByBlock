@@ -1,8 +1,9 @@
 package net.lymarket.comissionss.youmind.bbb.listener;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,12 +11,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 
 import java.util.UUID;
 
@@ -26,23 +26,28 @@ public abstract class MainEvents implements Listener {
     
     public abstract void subPlayerQuitEvent( PlayerQuitEvent e );
     
-    
     public abstract void subPlayerJoinEvent( PlayerJoinEvent e );
     
+    public abstract void subPlayerChatEvent( AsyncPlayerChatEvent e );
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLeft( PlayerQuitEvent e ){
         subPlayerQuitEvent( e );
     }
     
+    @EventHandler
+    public abstract void onPlayerTeleport( PlayerTeleportEvent e );
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLoginEvent( AsyncPlayerPreLoginEvent e ){
         Main.getInstance( ).getPlayers( ).getOrCreatePlayer( e.getName( ) , e.getUniqueId( ) , String.valueOf( e.getAddress( ) ).replace( "/" , "" ) );
     }
     
-    @EventHandler
-    public abstract void onPlayerTeleport( PlayerTeleportEvent e );
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerAsyncPlayerChatEvent( AsyncPlayerChatEvent e ){
+        e.setCancelled( true );
+        subPlayerChatEvent( e );
+    }
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin( PlayerJoinEvent e ){
@@ -57,14 +62,19 @@ public abstract class MainEvents implements Listener {
         p.setFlying( true );
         p.setGameMode( GameMode.CREATIVE );
         p.setInvulnerable( true );
+        e.setJoinMessage( "" );
         subPlayerJoinEvent( e );
     }
     
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerJoin( PlayerQuitEvent e ){
+        e.setQuitMessage( "" );
+    }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerPlaceBlock( BlockPlaceEvent e ){
         final UUID uuid = e.getPlayer( ).getUniqueId( );
-        final User user = Main.getInstance( ).getPlayers( ).getPlayer( uuid );
+        final SpigotUser user = Main.getInstance( ).getPlayers( ).getPlayer( uuid );
         user.getStats( ).addBLOCKS_PLACED( 1 );
         Main.getInstance( ).getPlayers( ).savePlayer( user );
     }
@@ -72,7 +82,7 @@ public abstract class MainEvents implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerBreakBlock( BlockBreakEvent e ){
         final UUID uuid = e.getPlayer( ).getUniqueId( );
-        final User user = Main.getInstance( ).getPlayers( ).getPlayer( uuid );
+        final SpigotUser user = Main.getInstance( ).getPlayers( ).getPlayer( uuid );
         user.getStats( ).addBLOCKS_BROKEN( 1 );
         Main.getInstance( ).getPlayers( ).savePlayer( user );
     }
@@ -90,4 +100,21 @@ public abstract class MainEvents implements Listener {
         e.setCancelled( true );
     }
     
+    
+    @EventHandler
+    public void blockRedstoneEvent( BlockRedstoneEvent e ){
+        e.getBlock( ).setType( Material.AIR );
+    }
+    
+    @EventHandler
+    public void onTNTExplode( EntityExplodeEvent e ){
+        e.setCancelled( true );
+    }
+    
+    @EventHandler
+    public void onPlayerMoveEvent( PlayerMoveEvent e ){
+        if ( e.getTo( ).getBlockY( ) <= -15 ) {
+            e.getPlayer( ).teleport( e.getPlayer( ).getWorld( ).getSpawnLocation( ) );
+        }
+    }
 }

@@ -33,7 +33,7 @@ public class RemoveMemberFromWorld extends MenuSelector {
     
     @Override
     public String getMenuName( ){
-        return "&7Echar al jugador";
+        return "Eliminar de los miembros del mundo";
     }
     
     public void setSubMenuItems( ){

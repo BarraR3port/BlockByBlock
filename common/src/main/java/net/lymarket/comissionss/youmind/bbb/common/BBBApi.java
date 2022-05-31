@@ -8,7 +8,7 @@ import net.lymarket.comissionss.youmind.bbb.common.db.IWarpManager;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocket;
 import net.lymarket.lyapi.spigot.config.Config;
 
-public interface BBBApi {
+public interface BBBApi< S, U, H, W > {
     
     void error( String message );
     
@@ -18,15 +18,17 @@ public interface BBBApi {
     
     String getVersion( );
     
-    IPlayerRepository getPlayers( );
+    IPlayerRepository < U > getPlayers( );
     
-    IBWorldManager getWorlds( );
+    IBWorldManager < S > getWorlds( );
     
-    IHomeManager getHomes( );
+    IHomeManager < H > getHomes( );
     
-    IWarpManager getWarps( );
+    IWarpManager < W > getWarps( );
     
-    ISocket getSocket( );
+    ISocket < S, U, H, W > getSocket( );
+    
+    String getNMSVersion( );
     
     String getProxyServerName( );
     

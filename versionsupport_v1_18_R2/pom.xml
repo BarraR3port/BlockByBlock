@@ -6,13 +6,40 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.2-ALPHA</version>
+        <version>0.6-ALPHA</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>versionsupport_v1_18_R2</artifactId>
 
+    <properties>
+        <java.version>16</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
+
+        <dependency>
+            <groupId>net.lymarket.comissionss.youmind</groupId>
+            <artifactId>versionsupport_common</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>net.lymarket.comissionss.youmind</groupId>
             <artifactId>common</artifactId>
@@ -28,19 +55,46 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>PlotSquared-core</artifactId>
+            <version>6.8.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>PlotSquared-Bukkit</artifactId>
+            <version>6.8.0</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>PlotSquared-Core</artifactId>
+                    <groupId>*</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.papermc</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.EngineHub</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.enginehub</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lymarket.lyapi</groupId>
+            <artifactId>lyapi-spigot</artifactId>
+            <version>1.2.4</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
-    <build>
-        <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>16</source>
-                    <target>16</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

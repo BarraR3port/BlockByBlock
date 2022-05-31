@@ -2,11 +2,12 @@ package net.lymarket.comissionss.youmind.bbb.listener.lobby;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
+import net.lymarket.comissionss.youmind.bbb.common.data.msg.LobbyMsg;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.listener.MainEvents;
 import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.lyapi.spigot.LyApi;
 import net.lymarket.lyapi.spigot.utils.NBTItem;
 import org.bukkit.GameMode;
@@ -38,8 +39,8 @@ public final class LobbyPlayerEvents extends MainEvents {
             
             final World world = e.getTo( ).getWorld( );
             final UUID playerUUID = e.getPlayer( ).getUniqueId( );
-            
-            final User user = Main.getInstance( ).getPlayers( ).getPlayer( playerUUID );
+    
+            final SpigotUser user = Main.getInstance( ).getPlayers( ).getPlayer( playerUUID );
             final Location loc = e.getTo( );
             user.setLastLocation( new Loc( Settings.SERVER_NAME , world.getName( ) , loc.getX( ) , loc.getY( ) , loc.getZ( ) ) );
             Main.getInstance( ).getPlayers( ).savePlayer( user );
@@ -71,8 +72,14 @@ public final class LobbyPlayerEvents extends MainEvents {
             return;
         }
         e.setCancelled( true );
-        
-        
+    
+    
+    }
+    
+    @Override
+    public void subPlayerChatEvent( AsyncPlayerChatEvent e ){
+        final LobbyMsg msg = new LobbyMsg( e.getPlayer( ).getUniqueId( ) , e.getMessage( ) , Settings.VERSION );
+        Main.getInstance( ).getSocket( ).sendMsgFromPlayer( msg );
     }
     
     @EventHandler(priority = EventPriority.HIGHEST)

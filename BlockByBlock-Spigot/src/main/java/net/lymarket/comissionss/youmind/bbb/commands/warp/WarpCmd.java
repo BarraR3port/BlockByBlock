@@ -7,6 +7,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.transformers.Transformer;
+import net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp;
 import net.lymarket.common.commands.*;
 import net.lymarket.lyapi.spigot.utils.Utils;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -33,7 +34,7 @@ public class WarpCmd implements ILyCommand {
             case 1: {
                 switch ( context.getArg( 0 ) ) {
                     case "list": {
-                        ArrayList < Warp > warps = Main.getInstance( ).getWarps( ).getWarpsByVersion( Settings.VERSION );
+                        ArrayList < SpigotWarp > warps = Main.getInstance( ).getWarps( ).getWarpsByVersion( Settings.VERSION );
                         if ( warps == null || warps.isEmpty( ) ) {
                             Main.getLang( ).sendErrorMsg( context.getSender( ) , "warp.no-warps" );
                             return true;
@@ -89,7 +90,7 @@ public class WarpCmd implements ILyCommand {
                         try {
                             if ( p.hasPermission( "blockbyblock.warp.delete.other" ) || user.getRank( ).isAdmin( ) ) {
                                 final WarpType type = WarpType.valueOf( context.getArg( 1 ) );
-                                Warp warp = Main.getInstance( ).getWarps( ).getUserWarpByName( type , Settings.SERVER_NAME );
+                                SpigotWarp warp = Main.getInstance( ).getWarps( ).getUserWarpByName( type , Settings.SERVER_NAME );
                                 Main.getInstance( ).getWarps( ).deleteWarp( warp );
                                 Main.getLang( ).sendMsg( p , "warp.deleted" , "warp" , warp.getType( ).getName( ) );
                                 return true;
@@ -105,9 +106,9 @@ public class WarpCmd implements ILyCommand {
                     case "goto": {
                         try {
                             final UUID uuid = UUID.fromString( context.getArg( 1 ) );
-                            Warp warp = Main.getInstance( ).getWarps( ).getWarp( uuid );
+                            SpigotWarp warp = Main.getInstance( ).getWarps( ).getWarp( uuid );
                             if ( warp.isPublic( ) || warp.isMember( p.getUniqueId( ) ) || p.hasPermission( "blockbyblock.warp.goto" ) || user.getRank( ).isBuilder( ) ) {
-                                p.teleport( Transformer.toLocation( warp.getLocation( ) ) );
+                                p.teleport( warp.getBukkitLocation( ) );
                             } else {
                                 Main.getLang( ).sendErrorMsg( p , "warp.no-permission-to-go" );
                             }
@@ -125,7 +126,7 @@ public class WarpCmd implements ILyCommand {
                         if ( p.hasPermission( "blockbyblock.warp.create" ) || user.getRank( ).isAdmin( ) ) {
                             try {
                                 final WarpType warpType = WarpType.valueOf( context.getArg( 1 ) );
-                                final Warp warp = new Warp( Transformer.toLoc( p.getLocation( ) , null , null ) , Settings.VERSION , warpType );
+                                final SpigotWarp warp = new SpigotWarp( Transformer.toLoc( p.getLocation( ) , null , null ) , Settings.VERSION , warpType );
                                 Main.getInstance( ).getWarps( ).createWarp( warp );
                                 TextComponent text = new TextComponent( "" );
                                 List < String > args = Main.getLang( ).getConfig( ).getStringList( "warp.warps-of-description" );
@@ -140,7 +141,7 @@ public class WarpCmd implements ILyCommand {
                                     );
                                 }
                                 text.addExtra( Utils.hoverOverMessageRunCommand( "&a" + warp.getType( ).getName( ) , replaced , "/warp goto" + warp.getUUID( ) ) );
-            
+    
                                 Main.getLang( ).sendMsg( p , "warp.created" , "warp" , text );
                                 return true;
                             } catch ( IllegalArgumentException e ) {

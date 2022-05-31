@@ -4,22 +4,26 @@ import com.google.gson.*;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
-import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
+import net.lymarket.comissionss.youmind.bbb.common.data.msg.LobbyMsg;
+import net.lymarket.comissionss.youmind.bbb.common.data.msg.Msg;
+import net.lymarket.comissionss.youmind.bbb.common.data.msg.PlotMsg;
+import net.lymarket.comissionss.youmind.bbb.common.data.msg.WorldMsg;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
-import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocket;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocketClient;
 import net.lymarket.comissionss.youmind.bbb.event.PrevCreateWorld;
 import net.lymarket.comissionss.youmind.bbb.home.HomeManager;
+import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.add.AddPlayersToWorldMenuSelector;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
-import net.lymarket.comissionss.youmind.bbb.transformers.Transformer;
 import net.lymarket.comissionss.youmind.bbb.users.PlayersRepository;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
+import net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp;
 import net.lymarket.comissionss.youmind.bbb.warp.WarpManager;
 import net.lymarket.comissionss.youmind.bbb.world.WorldManager;
 import net.lymarket.lyapi.spigot.menu.IUpdatableMenu;
@@ -33,15 +37,15 @@ import java.net.Socket;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SpigotSocketClient extends ISocket < SlimeWorld > {
+public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, SpigotHome, SpigotWarp > {
     
-    private final VersionSupport vs;
+    private final VersionSupport < SlimeWorld, SpigotUser, SpigotHome, SpigotWarp > vs;
     private final Gson gson = new GsonBuilder( ).setPrettyPrinting( ).create( );
     private ProxySocket mainSocket;
     
-    public SpigotSocketClient( PlayersRepository players , WorldManager worlds , HomeManager homes , WarpManager warps , VersionSupport plots ){
+    public SpigotSocketClient( PlayersRepository players , WorldManager worlds , HomeManager homes , WarpManager warps , VersionSupport < SlimeWorld, SpigotUser, SpigotHome, SpigotWarp > versionSupport ){
         super( players , worlds , homes , warps );
-        this.vs = plots;
+        this.vs = versionSupport;
         
     }
     
@@ -95,7 +99,6 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
         js.addProperty( "world_uuid" , world.getUUID( ).toString( ) );
         js.addProperty( "owner_uuid" , owner.toString( ) );
         js.addProperty( "target_uuid" , target.toString( ) );
-    
         sendMessage( js );
     }
     
@@ -108,7 +111,6 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
         js.addProperty( "world_uuid" , world_uuid );
         js.addProperty( "owner_uuid" , owner.toString( ) );
         js.addProperty( "target_uuid" , target.toString( ) );
-    
         sendMessage( js );
     }
     
@@ -122,7 +124,6 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
         js.addProperty( "owner_uuid" , owner.getUniqueId( ).toString( ) );
         js.addProperty( "world_uuid" , world.getUUID( ).toString( ) );
         js.addProperty( "has_permission" , owner.hasPermission( "blockbyblock.admin.world.delete.other" ) );
-    
         sendMessage( js );
     }
     
@@ -215,11 +216,6 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
     }
     
     @Override
-    public void sendJoinWarp( UUID owner , Warp warp ){
-    
-    }
-    
-    @Override
     public void sendWorldVisitResponse( WorldVisitRequest request ){
         JsonObject js = new JsonObject( );
         js.addProperty( "type" , "VISIT_WORLD_REQUEST_POST" );
@@ -229,7 +225,27 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
             js.addProperty( "target_uuid" , request.getTarget_uuid( ).toString( ) );
             js.addProperty( "target_server" , request.getTarget_server( ) );
             js.addProperty( "guest" , request.getGuest( ).toString( ) );
-            
+        
+        }
+        sendMessage( js );
+    }
+    
+    @Override
+    public void sendMsgFromPlayer( Msg msg ){
+        JsonObject js = new JsonObject( );
+        js.addProperty( "type" , "PLAYER_SENT_MSG" );
+        if ( msg instanceof PlotMsg ) {
+            js.addProperty( "msg_type" , "PlotMsg" );
+            final PlotMsg plotMsg = ( PlotMsg ) msg;
+            js.addProperty( "msg" , gson.toJson( plotMsg ) );
+        } else if ( msg instanceof WorldMsg ) {
+            js.addProperty( "msg_type" , "WorldMsg" );
+            final WorldMsg worldMsg = ( WorldMsg ) msg;
+            js.addProperty( "msg" , gson.toJson( worldMsg ) );
+        } else {
+            js.addProperty( "msg_type" , "OTHER" );
+            final LobbyMsg lobbyMsg = ( LobbyMsg ) msg;
+            js.addProperty( "msg" , gson.toJson( lobbyMsg ) );
         }
         sendMessage( js );
     }
@@ -241,6 +257,21 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
         js.addProperty( "type" , "UPDATE" );
         js.addProperty( "server_name" , Settings.SERVER_NAME );
         sendMessage( js );
+    }
+    
+    @Override
+    public String encrypt( String msg ){
+        msg = msg.replace( "\\n" , "" );
+        msg = msg.replace( "\n" , "" );
+        msg = msg.replace( "\\\"" , "\"" );
+        msg = msg.replace( "\"{" , "{" );
+        msg = msg.replace( "}\"" , "}" );
+        return Base64.getEncoder( ).encodeToString( msg.getBytes( ) );
+    }
+    
+    @Override
+    public String decrypt( String data ){
+        return new String( Base64.getDecoder( ).decode( data.getBytes( ) ) );
     }
     
     public SpigotSocketClient init( ) throws IOException{
@@ -275,23 +306,6 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
         mainSocket.disable( "Close active sockets" );
     }
     
-    private boolean isNumber( String s ){
-        try {
-            Double.parseDouble( s );
-        } catch ( Exception e ) {
-            try {
-                Integer.parseInt( s );
-            } catch ( Exception ex ) {
-                try {
-                    Long.parseLong( s );
-                } catch ( Exception exx ) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    
     private class ProxySocket implements ISocketClient {
         private final Socket socket;
         private final String name;
@@ -319,18 +333,28 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                 while (compute) {
                     try {
                         if ( in.hasNext( ) ) {
-                            String msg = in.next( );
-                            if ( msg.isEmpty( ) ) continue;
+                            final String encrypted = in.nextLine( );
+                            String decryptedMessage = decrypt( encrypted );
+                            if ( decryptedMessage == null || decryptedMessage.isEmpty( ) ) {
+                                Main.getInstance( ).debug( "Received bad data from: " + socket.getInetAddress( ).toString( ) + "\nMsg: " + encrypted );
+                                continue;
+                            }
                             final JsonObject json;
                             try {
-                                json = new JsonParser( ).parse( msg ).getAsJsonObject( );
+                                json = new JsonParser( ).parse( decryptedMessage ).getAsJsonObject( );
                             } catch ( JsonSyntaxException e ) {
                                 Main.getInstance( ).debug( "Received bad data from: " + socket.getInetAddress( ).toString( ) );
                                 continue;
                             }
                             if ( json == null ) continue;
                             if ( !json.has( "type" ) ) continue;
-                            Main.getInstance( ).debug( "Received message from " + name + ": \n" + gson.toJson( json ) );
+    
+                            if ( Settings.DEVELOPMENT_MODE ) {
+                                Main.getInstance( ).debug( "Received Encrypted from " + name + ": \n" + encrypted );
+                                Main.getInstance( ).debug( "Received message from " + name + ": \n" + gson.toJson( json ) );
+                            } else {
+                                Main.getInstance( ).debug( "Received message from " + name + ": \n" + gson.toJson( json ) );
+                            }
                             switch ( json.get( "type" ).getAsString( ).toUpperCase( ) ) {
                                 case "INIT_CREATE_WORLD": {
                                     if ( !json.has( "server_name" ) ) continue;
@@ -340,7 +364,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                     if ( !json.has( "world_version" ) ) continue;
                                     if ( !json.has( "world_server" ) ) continue;
                                     if ( !json.has( "world_layer_material" ) ) continue;
-                    
+            
                                     String world_name = json.get( "world_name" ).getAsString( );
                                     UUID owner = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                                     UUID world_uuid = UUID.fromString( json.get( "world_uuid" ).getAsString( ) );
@@ -359,14 +383,14 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                             final boolean teleport = p == null;
                                             getWorlds( ).addPlayerToTP( owner , world );
                                             Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> Main.getInstance( ).managePermissions( owner , world_uuid , false ) );
-                            
+    
                                             json.remove( "type" );
                                             json.addProperty( "type" , "INIT_CREATE_WORLD_SUCCESS" );
                                             json.addProperty( "teleport" , teleport );
                                             sendMessage( json );
                                             Main.getInstance( ).debug( "[World Creation] Sending message to Proxy: " + json );
                                         } );
-                        
+    
                                     } else {
                                         Main.getInstance( ).debug( "Received INIT_CREATE_WORLD but its meant for another server.\n " + json );
                                     }
@@ -393,8 +417,8 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                     if ( p.getInventory( ).getHolder( ) instanceof IUpdatableMenu ) {
                                         (( IUpdatableMenu ) p.getOpenInventory( ).getTopInventory( ).getHolder( )).reOpen( );
                                     }
-                    
-                    
+    
+    
                                 }
                                 case "UPDATE_INV_WORLD_DELETE_SUCCESS": {
                                     if ( !json.has( "current_server" ) ) continue;
@@ -406,16 +430,16 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                     final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                                     try {
                                         final Player p = Bukkit.getPlayer( owner_uuid );
-                        
+    
                                         if ( p.getInventory( ).getHolder( ) instanceof AddPlayersToWorldMenuSelector ) {
                                             AddPlayersToWorldMenuSelector plotMenu = ( AddPlayersToWorldMenuSelector ) p.getInventory( ).getHolder( );
                                             plotMenu.handleAccept( );
                                         }
-                        
+    
                                     } catch ( NullPointerException ignored ) {
                                     }
-                    
-                    
+    
+    
                                 }
                                 case "JOIN_WORLD_REQUEST_PREV": {
                                     if ( !json.has( "server_target" ) ) continue;
@@ -441,10 +465,10 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                         sendMSGToPlayer( owner_uuid , "world.join" , "world" , world.getName( ) );
                                         continue;
                                     }
-                    
+    
                                     json.remove( "type" );
                                     json.addProperty( "type" , "JOIN_WORLD_REQUEST_POST" );
-                    
+    
                                     if ( world.getOwner( ).equals( owner_uuid ) || world.getMembers( ).contains( owner_uuid ) ) {
                                         getWorlds( ).addPlayerToTP( owner_uuid , world );
                                         json.addProperty( "response" , true );
@@ -476,9 +500,9 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                     if ( !json.has( "plot_id" ) ) continue;
                                     if ( !json.has( "item_slot" ) ) continue;
                                     if ( !json.has( "plot_type" ) ) continue;
-                    
+    
                                     vs.getPlotManager( ).manageJoinPlot( json );
-                    
+    
                                 }
                                 case "JOIN_PLOT_REQUEST_POST_DENY": {
                                     if ( !json.has( "owner_uuid" ) ) continue;
@@ -508,7 +532,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                     final BWorld world = getWorlds( ).getWorld( world_uuid );
                                     final String server_target = json.get( "server_target" ).getAsString( );
                                     json.remove( "type" );
-                    
+    
                                     if ( world.getOwner( ).equals( owner_uuid ) || has_permission ) {
                                         Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> getWorlds( ).deleteWorldFromOutside( owner_uuid , world , server_target , json ) );
                                     } else {
@@ -517,8 +541,8 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                         sendMessage( json );
                                         continue;
                                     }
-                    
-                    
+    
+    
                                 }
                                 case "KICK_FROM_WORLD_PREV": {
                                     if ( !json.has( "server_target" ) ) continue;
@@ -537,7 +561,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                             continue;
                                         }
                                     }
-                    
+    
                                     json.remove( "type" );
                                     json.addProperty( "type" , "WORLD_KICK_SUCCESS" );
                                     sendMessage( json );
@@ -550,7 +574,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                     final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                                     final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
                                     final UUID world_uuid = UUID.fromString( json.get( "world_uuid" ).getAsString( ) );
-                    
+    
                                     try {
                                         final HashMap < String, String > replace = new HashMap <>( );
                                         replace.put( "world" , world_uuid.toString( ) );
@@ -566,14 +590,14 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                     final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
                                     final String key = json.get( "key" ).getAsString( );
                                     final boolean hasReplacements = json.get( "has-replacements" ).getAsBoolean( );
-                    
+    
                                     try {
                                         final Player player = Bukkit.getPlayer( target_uuid );
                                         if ( player == null ) continue;
                                         if ( hasReplacements ) {
                                             final JsonObject replacements = json.get( "replacements" ).getAsJsonObject( );
                                             final HashMap < String, String > replace = new HashMap <>( );
-                            
+    
                                             for ( Map.Entry < String, JsonElement > entry : replacements.entrySet( ) ) {
                                                 replace.put( entry.getKey( ) , entry.getValue( ).getAsString( ) );
                                             }
@@ -582,12 +606,12 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                         } else {
                                             player.sendMessage( Main.getLang( ).getMSG( key ) );
                                         }
-                        
+        
                                     } catch ( NullPointerException e ) {
                                         e.printStackTrace( );
                                     }
-                    
-                    
+    
+    
                                 }
                                 case "UPDATE_ONLINE_PLAYERS_IN_WORLDS": {
                                     Bukkit.getScheduler( ).runTaskAsynchronously( Main.getInstance( ) , ( ) ->
@@ -608,12 +632,12 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                                         world.setOnlineMembers( playersToAdd );
                                                         save = true;
                                                     }
-                                    
+    
                                                 }
                                                 if ( save ) {
                                                     getWorlds( ).saveWorld( world );
                                                 }
-                                
+    
                                             } ) );
                                 }
                                 case "VISIT_REQUEST_PREV": {
@@ -623,7 +647,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                     final String currentServer = json.get( "current_server" ).getAsString( );
                                     final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
                                     final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
-                    
+    
                                     final User targetUser = getPlayers( ).getPlayer( target_uuid );
                                     if ( targetUser == null ) {
                                         sendMSGToPlayer( owner_uuid , "error.player-not-found" );
@@ -658,8 +682,8 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                             continue;
                                         }
                                     }
-                    
-                    
+    
+    
                                 }
                                 case "VISIT_REQUEST_DENY": {
                                     if ( !json.has( "current_server" ) ) continue;
@@ -668,14 +692,12 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                     final Player p = Bukkit.getPlayer( UUID.fromString( json.get( "owner_uuid" ).getAsString( ) ) );
                                     if ( p != null ) {
                                         final String reason = json.get( "reason" ).getAsString( );
-                                        Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
-                                            Main.getLang( ).sendErrorMsg( p , reason );
-                                        } );
+                                        Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> Main.getLang( ).sendErrorMsg( p , reason ) );
                                     }
                                 }
-                
+        
                                 case "JOIN_HOME_PREV": {
-                    
+            
                                     if ( !json.has( "current_server" ) ) continue;
                                     if ( !json.has( "server_target" ) ) continue;
                                     if ( !json.has( "home_uuid" ) ) continue;
@@ -684,12 +706,11 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                         final String currentServer = json.get( "current_server" ).getAsString( );
                                         final String targetServer = json.get( "server_target" ).getAsString( );
                                         final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
-                                        final Home home = getHomes( ).getHome( UUID.fromString( json.get( "home_uuid" ).getAsString( ) ) );
+                                        final SpigotHome home = getHomes( ).getHome( UUID.fromString( json.get( "home_uuid" ).getAsString( ) ) );
                                         if ( currentServer.equalsIgnoreCase( targetServer ) ) {
                                             Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> {
-                                                final Loc homeLoc = home.getLocation( );
                                                 final Player player = Bukkit.getPlayer( owner_uuid );
-                                                player.teleport( Transformer.toLocation( homeLoc ) );
+                                                player.teleport( home.getBukkitLocation( ) );
                                                 Main.getLang( ).sendMsg( player , "home.tp-to-home" , "home" , home.getName( ) );
                                             } );
                                         } else {
@@ -733,7 +754,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
                                                 replace.put( "server" , server_target );
                                                 replace.put( "world" , world_uuid );
                                                 sendMSGToPlayer( owner_uuid , "error.world.delete-failed" , replace );
-                                
+    
                                             } catch ( NullPointerException ignored ) {
                                             }
                                         }
@@ -766,9 +787,14 @@ public class SpigotSocketClient extends ISocket < SlimeWorld > {
             if ( out.checkError( ) ) {
                 return false;
             }
-            Main.getInstance( ).debug( "Sending message to " + name + ": \n" + gson.toJson( message ) );
+            if ( Settings.DEVELOPMENT_MODE ) {
+                Main.getInstance( ).debug( "Sending message to " + name + ": \n" + gson.toJson( message ) );
+                Main.getInstance( ).debug( "Sending Encrypted Message to " + name + ": \n" + encrypt( gson.toJson( message ) ) );
+            } else {
+                Main.getInstance( ).debug( "Sending message to " + name + ": \n" + gson.toJson( message ) );
+            }
     
-            out.println( message );
+            out.println( encrypt( gson.toJson( message ) ) );
     
             return true;
         }

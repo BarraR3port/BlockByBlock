@@ -80,11 +80,12 @@ public class PlotManager extends IPlotManager < Plot > {
     public void manageVisitJoinPlot( UUID owner_uuid , User targetUser , String fromServer , String currentServer ){
         final Plot plot = api.wrapPlayer( targetUser.getUUID( ) ).getCurrentPlot( );
         final JsonObject json = new JsonObject( );
+        final User owner = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( owner_uuid );
         if ( fromServer.equals( currentServer ) ) {
             final Player p = Bukkit.getPlayer( owner_uuid );
             if ( p != null ) {
                 Bukkit.getScheduler( ).runTask( ( Plugin ) vs.getBbbApi( ) , ( ) -> {
-                    if ( plot != null && plot.getTrusted( ).contains( owner_uuid ) ) {
+                    if ( plot != null && (plot.getTrusted( ).contains( owner_uuid ) || owner.getRank( ).isAdmin( )) ) {
                         vs.getBbbApi( ).debug( "Teleporting " + p.getName( ) + " to " + plot.getWorldName( ) );
                         plot.teleportPlayer( api.wrapPlayer( p.getUniqueId( ) ) , ( result ) -> {
                             if ( result ) {
@@ -106,7 +107,7 @@ public class PlotManager extends IPlotManager < Plot > {
             vs.getBbbApi( ).debug( "Error " + owner_uuid + " is not online." );
             vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( owner_uuid , "error.player.not-online" , "player" , targetUser.getName( ) );
         } else {
-            if ( plot != null && plot.getTrusted( ).contains( owner_uuid ) ) {
+            if ( plot != null && (plot.getTrusted( ).contains( owner_uuid ) || owner.getRank( ).isAdmin( )) ) {
                 addPlot( owner_uuid , plot );
                 json.addProperty( "type" , "JOIN_VISIT_PLOT_REQUEST_POST" );
                 json.addProperty( "server_target" , currentServer );

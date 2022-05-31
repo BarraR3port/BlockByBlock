@@ -151,7 +151,7 @@ public class WorldEditorMenu extends UpdatableMenu {
         } else if ( NBTItem.hasTag( item , "members-in-world" ) ) {
             new PlayersInWorldMenu( playerMenuUtility , world.getUUID( ) , true , this ).open( );
         } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
-            new WorldManagerMenu( playerMenuUtility , world.getVersion( ) , targetUserUUID , 10L ).open( );
+            new WorldManagerMenu( playerMenuUtility , targetUserUUID , 10L ).open( );
         }
     }
 }

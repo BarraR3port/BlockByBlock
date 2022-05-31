@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.2-ALPHA</version>
+        <version>0.6-ALPHA</version>
     </parent>
 
     <artifactId>BlockByBlock-Spigot</artifactId>
@@ -136,6 +136,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-chat</artifactId>
+            <version>1.12-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.12.2-R0.1-SNAPSHOT</version>
@@ -207,7 +213,6 @@
             <version>3.12.0</version>
         </dependency>
 
-
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>versionsupport_common</artifactId>
@@ -225,6 +230,13 @@
             <artifactId>versionsupport_v1_16_R3</artifactId>
             <version>${parent.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>${parent.groupId}</groupId>
+            <artifactId>versionsupport_v1_18_R2</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -239,11 +251,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>${parent.groupId}</groupId>
-            <artifactId>versionsupport_v1_18_R2</artifactId>
-            <version>${parent.version}</version>
-        </dependency>-->
+        <dependency>
+            <groupId>com.viaversion</groupId>
+            <artifactId>viaversion-api</artifactId>
+            <version>LATEST</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 </project>

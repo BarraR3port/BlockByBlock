@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Warp {
+public abstract class Warp {
     private final UUID uuid;
     private final String version;
     private final WarpType type;

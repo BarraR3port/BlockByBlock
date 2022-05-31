@@ -3,22 +3,25 @@ package net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.plot;
 import com.intellectualcrafters.plot.api.PlotAPI;
 import com.intellectualcrafters.plot.object.Plot;
 import com.plotsquared.bukkit.events.PlayerClaimPlotEvent;
+import com.plotsquared.bukkit.events.PlayerLeavePlotEvent;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
+import net.lymarket.comissionss.youmind.bbb.common.data.msg.PlotMsg;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
 import net.lymarket.lyapi.spigot.LyApi;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 public class P2Listener implements Listener {
@@ -54,7 +57,7 @@ public class P2Listener implements Listener {
     public void onPlayerClaimPlotEvent( PlayerClaimPlotEvent e ){
         final Player p = e.getPlayer( );
         final Plot plot = e.getPlot( );
-        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
+        final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
         if ( user == null ) {
             e.setCancelled( true );
             return;
@@ -147,8 +150,32 @@ public class P2Listener implements Listener {
         } else {
             e.setCancelled( true );
         }
-        
-        
+    
+    
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerClaimPlotEvent( PlayerLeavePlotEvent e ){
+        final Plot plot = e.getPlot( );
+        final @NonNull HashSet < UUID > members = plot.getMembers( );
+        members.addAll( e.getPlot( ).getOwners( ) );
+        for ( UUID p : members ) {
+            final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( p );
+            if ( user == null ) {
+                return;
+            }
+            if ( plot.getWorldName( ).equals( PlotType.P31.getWorldName( ) ) ) {
+                user.removePlot( plot.getId( ).toString( ) , PlotType.P31 );
+            } else if ( plot.getWorldName( ).equals( PlotType.P101.getWorldName( ) ) ) {
+                user.removePlot( plot.getId( ).toString( ) , PlotType.P101 );
+            } else if ( plot.getWorldName( ).equals( PlotType.P501.getWorldName( ) ) ) {
+                user.removePlot( plot.getId( ).toString( ) , PlotType.P501 );
+            } else if ( plot.getWorldName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
+                user.removePlot( plot.getId( ).toString( ) , PlotType.P1001 );
+            }
+            
+            vs.getBbbApi( ).getPlayers( ).savePlayer( user );
+        }
     }
     
     @EventHandler(ignoreCancelled = true)
@@ -156,7 +183,7 @@ public class P2Listener implements Listener {
         final World world = e.getTo( ).getWorld( );
         final UUID playerUUID = e.getPlayer( ).getUniqueId( );
         
-        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
+        final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
         final Location loc = e.getTo( );
         final Plot plot = new PlotAPI( ).getPlot( loc );
         final Loc location = new Loc( vs.getBbbApi( ).getProxyServerName( ) , world.getName( ) , loc.getX( ) , loc.getY( ) , loc.getZ( ) , plot == null ? null : plot.getId( ).toString( ) );
@@ -169,15 +196,34 @@ public class P2Listener implements Listener {
         final Player player = e.getPlayer( );
         final World world = player.getWorld( );
         final UUID playerUUID = player.getUniqueId( );
-        
-        final User user = vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
+    
+        final User user = ( User ) vs.getBbbApi( ).getPlayers( ).getPlayer( playerUUID );
         if ( world.getName( ).equals( PlotType.P1001.getWorldName( ) ) ) {
             if ( user.getRank( ).equals( Rank.VISITOR ) ) {
                 vs.getBbbApi( ).getSocket( ).sendJoinServer( playerUUID , "lobby" );
                 vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( playerUUID , "error.plot.not-allowed-to-join-1001" );
             }
         }
+    
+    }
+    
+    @EventHandler
+    public void subPlayerChatEvent( AsyncPlayerChatEvent e ){
+        final String worldName = e.getPlayer( ).getWorld( ).getName( );
+        final net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot plot = new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.getPlotTypeByWorld( worldName ) , "" , version );
+        final PlotMsg msg = new PlotMsg( e.getPlayer( ).getUniqueId( ) , e.getMessage( ) , version , plot );
+        vs.getBbbApi( ).getSocket( ).sendMsgFromPlayer( msg );
         
+        
+    }
+    
+    @EventHandler
+    public void onPlayerChangeGamemode( PlayerGameModeChangeEvent e ){
+        if ( e.getNewGameMode( ) != GameMode.CREATIVE ) {
+            e.setCancelled( true );
+        } else {
+            e.getPlayer( ).setGameMode( GameMode.CREATIVE );
+        }
     }
     
 }

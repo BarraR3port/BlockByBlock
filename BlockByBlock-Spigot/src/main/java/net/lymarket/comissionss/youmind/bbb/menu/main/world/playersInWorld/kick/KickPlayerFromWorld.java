@@ -33,7 +33,7 @@ public class KickPlayerFromWorld extends MenuSelector {
     
     @Override
     public String getMenuName( ){
-        return "&7Echar jugador del mundo";
+        return "Echar jugador del mundo";
     }
     
     public void setSubMenuItems( ){

@@ -8,35 +8,24 @@ import org.bukkit.Location;
 import java.util.ArrayList;
 
 public class Settings {
-    
+    //Disable this in final releases
+    public static boolean DEVELOPMENT_MODE = true;
     public static String SOCKET_IP = "localhost";
-    
     public static int SOCKET_PORT = 5555;
     public static boolean BREAK_BLOCKS = false;
     public static boolean PLACE_BLOCKS = false;
     public static boolean PLAYER_INTERACT_AT_ENTITY = false;
     public static boolean PLAYER_INTERACT_ENTITY = false;
-    
     public static boolean PLAYER_BED_EVENTS = false;
-    
     public static boolean PLAYER_DROP_ITEMS = false;
-    
     public static boolean PLAYER_PICKUP_ITEMS = false;
-    
     public static boolean CONSUME_ITEMS = false;
-    
     public static Location SPAWN_LOCATION;
-    
     public static String SERVER_NAME;
-    
     public static boolean DEBUG;
-    
     public static ArrayList < String > PERMS_WHEN_CREATING_WORLD = new ArrayList <>( );
-    
     public static ArrayList < String > PERMS_WHEN_JOINING_WORLD = new ArrayList <>( );
-    
     public static ServerType SERVER_TYPE;
-    
     public static String VERSION;
     
     
@@ -62,7 +51,7 @@ public class Settings {
         PERMS_WHEN_CREATING_WORLD = new ArrayList <>( config.getStringList( "perms.when-creating-world" ) );
         PERMS_WHEN_JOINING_WORLD = new ArrayList <>( config.getStringList( "perms.when-joining-world" ) );
         SERVER_TYPE = ServerType.valueOf( config.getString( "global.server-type" ) );
-        switch ( Main.getInstance( ).getVersion( ) ) {
+        switch ( Main.getInstance( ).getNMSVersion( ) ) {
             case "v1_12_R1": {
                 VERSION = "1.12";
                 break;
