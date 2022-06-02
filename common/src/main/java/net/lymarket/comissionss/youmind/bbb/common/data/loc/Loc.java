@@ -16,7 +16,7 @@ public class Loc {
     private final float Yaw;
     private final float Pitch;
     
-    public Loc( String server , String world , double x , double y , double z ){
+    public Loc(String server, String world, double x, double y, double z){
         this.Server = server;
         this.World = world;
         this.X = x;
@@ -28,7 +28,7 @@ public class Loc {
         this.BWorld = null;
     }
     
-    public Loc( String server , String world , double x , double y , double z , UUID bWorld ){
+    public Loc(String server, String world, double x, double y, double z, UUID bWorld){
         this.Server = server;
         this.World = world;
         this.X = x;
@@ -40,7 +40,7 @@ public class Loc {
         this.Plot = null;
     }
     
-    public Loc( String server , String world , double x , double y , double z , String Plot ){
+    public Loc(String server, String world, double x, double y, double z, String Plot){
         this.Server = server;
         this.World = world;
         this.X = x;
@@ -52,7 +52,7 @@ public class Loc {
         this.Plot = Plot;
     }
     
-    public Loc( String server , String world , double x , double y , double z , float yaw , float pitch ){
+    public Loc(String server, String world, double x, double y, double z, float yaw, float pitch){
         this.Server = server;
         this.World = world;
         this.X = x;
@@ -65,7 +65,7 @@ public class Loc {
     }
     
     public String serialize( ){
-        return Api.getGson( ).toJson( this );
+        return Api.getGson().toJson(this);
     }
     
     public double getX( ){
@@ -97,7 +97,7 @@ public class Loc {
     }
     
     public boolean isInPlot( ){
-        return Server.startsWith( "PP-" ) || Plot != null;
+        return Server.startsWith("PP-") || Plot != null;
     }
     
     public String getPlot( ){
@@ -105,7 +105,7 @@ public class Loc {
     }
     
     public boolean isInBWorld( ){
-        return Server.startsWith( "PW-" ) || BWorld != null;
+        return Server.startsWith("PW-") || BWorld != null;
     }
     
     public UUID getBWorld( ){

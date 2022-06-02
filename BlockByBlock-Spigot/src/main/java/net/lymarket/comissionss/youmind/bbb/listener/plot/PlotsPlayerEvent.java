@@ -15,25 +15,25 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 public final class PlotsPlayerEvent extends MainEvents {
     
-    public void subPlayerQuitEvent( PlayerQuitEvent e ){
+    public void subPlayerQuitEvent(PlayerQuitEvent e){
     
     }
     
-    public void subPlayerJoinEvent( PlayerJoinEvent e ){
-        e.getPlayer( ).setGameMode( GameMode.CREATIVE );
+    public void subPlayerJoinEvent(PlayerJoinEvent e){
+        e.getPlayer().setGameMode(GameMode.CREATIVE);
     }
     
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerTeleport( PlayerTeleportEvent e ){
+    public void onPlayerTeleport(PlayerTeleportEvent e){
     }
     
     @EventHandler
-    public void onPlotCreateFailed( PlotCreateFailed e ){
-        Main.getLang( ).sendErrorMsg( e.getPlayer( ) , "plot.create.failed" , "plot-type" , e.getPlotType( ).getFormattedName( ) );
+    public void onPlotCreateFailed(PlotCreateFailed e){
+        Main.getLang().sendErrorMsg(e.getPlayer(), "plot.create.failed", "plot-type", e.getPlotType().getFormattedName());
     }
     
     @Override
-    public void subPlayerChatEvent( AsyncPlayerChatEvent e ){
+    public void subPlayerChatEvent(AsyncPlayerChatEvent e){
         final String worldName = e.getPlayer().getWorld().getName();
         final net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot plot = new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot(PlotType.getPlotTypeByWorld(worldName), "", Settings.VERSION);
         final PlotMsg msg = new PlotMsg(e.getPlayer().getUniqueId(), e.getMessage(), Settings.VERSION, plot);

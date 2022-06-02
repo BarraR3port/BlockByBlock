@@ -23,8 +23,8 @@ public class Settings {
     public static Location SPAWN_LOCATION;
     public static String SERVER_NAME;
     public static boolean DEBUG;
-    public static ArrayList < String > PERMS_WHEN_CREATING_WORLD = new ArrayList <>( );
-    public static ArrayList < String > PERMS_WHEN_JOINING_WORLD = new ArrayList <>( );
+    public static ArrayList < String > PERMS_WHEN_CREATING_WORLD = new ArrayList <>();
+    public static ArrayList < String > PERMS_WHEN_JOINING_WORLD = new ArrayList <>();
     public static ServerType SERVER_TYPE;
     public static String VERSION;
     
@@ -33,34 +33,34 @@ public class Settings {
     
     }
     
-    public static void init( Config config ){
-        BREAK_BLOCKS = config.getBoolean( "actions.break-blocks" );
-        PLACE_BLOCKS = config.getBoolean( "actions.place-blocks" );
-        PLAYER_INTERACT_AT_ENTITY = config.getBoolean( "actions.player-interact-at-entity" );
-        PLAYER_INTERACT_ENTITY = config.getBoolean( "actions.player-interact-entity" );
-        PLAYER_BED_EVENTS = config.getBoolean( "actions.player-bed-events" );
-        PLAYER_DROP_ITEMS = config.getBoolean( "actions.player-drop-items" );
-        PLAYER_PICKUP_ITEMS = config.getBoolean( "actions.player-pickup-items" );
-        CONSUME_ITEMS = config.getBoolean( "actions.consume-items" );
+    public static void init(Config config){
+        BREAK_BLOCKS = config.getBoolean("actions.break-blocks");
+        PLACE_BLOCKS = config.getBoolean("actions.place-blocks");
+        PLAYER_INTERACT_AT_ENTITY = config.getBoolean("actions.player-interact-at-entity");
+        PLAYER_INTERACT_ENTITY = config.getBoolean("actions.player-interact-entity");
+        PLAYER_BED_EVENTS = config.getBoolean("actions.player-bed-events");
+        PLAYER_DROP_ITEMS = config.getBoolean("actions.player-drop-items");
+        PLAYER_PICKUP_ITEMS = config.getBoolean("actions.player-pickup-items");
+        CONSUME_ITEMS = config.getBoolean("actions.consume-items");
         try {
-            SPAWN_LOCATION = ( Location ) config.get( "spawn.location" , Location.class );
-        } catch ( NullPointerException | ClassCastException ignored ) {
+            SPAWN_LOCATION = (Location) config.get("spawn.location", Location.class);
+        } catch (NullPointerException | ClassCastException ignored) {
         }
-        SERVER_NAME = config.getString( "global.proxy-server-name" );
-        DEBUG = config.getBoolean( "global.debug" );
-        PERMS_WHEN_CREATING_WORLD = new ArrayList <>( config.getStringList( "perms.when-creating-world" ) );
-        PERMS_WHEN_JOINING_WORLD = new ArrayList <>( config.getStringList( "perms.when-joining-world" ) );
-        SERVER_TYPE = ServerType.valueOf( config.getString( "global.server-type" ) );
-        switch ( Main.getInstance( ).getNMSVersion( ) ) {
-            case "v1_12_R1": {
+        SERVER_NAME = config.getString("global.proxy-server-name");
+        DEBUG = config.getBoolean("global.debug");
+        PERMS_WHEN_CREATING_WORLD = new ArrayList <>(config.getStringList("perms.when-creating-world"));
+        PERMS_WHEN_JOINING_WORLD = new ArrayList <>(config.getStringList("perms.when-joining-world"));
+        SERVER_TYPE = ServerType.valueOf(config.getString("global.server-type"));
+        switch(Main.getInstance().getNMSVersion()){
+            case "v1_12_R1":{
                 VERSION = "1.12";
                 break;
             }
-            case "v1_16_R3": {
+            case "v1_16_R3":{
                 VERSION = "1.16";
                 break;
             }
-            default: {
+            default:{
                 VERSION = "1.18";
                 break;
             }

@@ -18,13 +18,13 @@ public class KickPlayerFromWorld extends MenuSelector {
     
     private final UUID target_uuid;
     
-    public KickPlayerFromWorld( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , Menu lastMenu , UUID target_uuid ){
-        super( playerMenuUtility );
+    public KickPlayerFromWorld(IPlayerMenuUtility playerMenuUtility, UUID world_uuid, Menu lastMenu, UUID target_uuid){
+        super(playerMenuUtility);
         this.lastMenu = lastMenu;
-        super.ACCEPT = new ItemBuilder( super.ACCEPT.clone( ) )
-                .addLoreLine( "&7Click para echar al jugador" )
-                .addLoreLine( "&7del mundo." )
-                .build( );
+        super.ACCEPT = new ItemBuilder(super.ACCEPT.clone())
+                .addLoreLine("&7Click para echar al jugador")
+                .addLoreLine("&7del mundo.")
+                .build();
         
         this.world_uuid = world_uuid;
         
@@ -40,7 +40,7 @@ public class KickPlayerFromWorld extends MenuSelector {
     
     }
     
-    public void handleSubMenu( InventoryClickEvent e ){
+    public void handleSubMenu(InventoryClickEvent e){
     
     }
     
@@ -57,8 +57,8 @@ public class KickPlayerFromWorld extends MenuSelector {
     }
     
     public boolean handleAccept( ){
-        final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( this.world_uuid );
-        Main.getInstance( ).getSocket( ).sendKickFromWorld( getOwner( ).getUniqueId( ) , world , target_uuid );
+        final BWorld world = Main.getInstance().getWorlds().getWorld(this.world_uuid);
+        Main.getInstance().getSocket().sendKickFromWorld(getOwner().getUniqueId(), world, target_uuid);
         return true;
     }
     

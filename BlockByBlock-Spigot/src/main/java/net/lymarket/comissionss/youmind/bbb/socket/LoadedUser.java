@@ -9,32 +9,32 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LoadedUser {
     
     
-    private static final ConcurrentHashMap < UUID, LoadedUser > loaded = new ConcurrentHashMap <>( );
+    private static final ConcurrentHashMap < UUID, LoadedUser > loaded = new ConcurrentHashMap <>();
     private UUID uuid;
     private String partyOwnerOrSpectateTarget = null;
     private long toleranceTime;
     private String arenaIdentifier;
     
-    public LoadedUser( String uuid , String arenaIdentifier , String langIso , String partyOwnerOrSpectateTarget ){
-        if ( Bukkit.getWorld( arenaIdentifier ) == null ) return;
+    public LoadedUser(String uuid, String arenaIdentifier, String langIso, String partyOwnerOrSpectateTarget){
+        if (Bukkit.getWorld(arenaIdentifier) == null) return;
         this.arenaIdentifier = arenaIdentifier;
-        this.uuid = UUID.fromString( uuid );
-        if ( partyOwnerOrSpectateTarget != null ) {
-            if ( !partyOwnerOrSpectateTarget.isEmpty( ) ) {
+        this.uuid = UUID.fromString(uuid);
+        if (partyOwnerOrSpectateTarget != null){
+            if (!partyOwnerOrSpectateTarget.isEmpty()){
                 this.partyOwnerOrSpectateTarget = partyOwnerOrSpectateTarget;
             }
         }
-        this.toleranceTime = System.currentTimeMillis( );
+        this.toleranceTime = System.currentTimeMillis();
         
-        loaded.put( this.uuid , this );
+        loaded.put(this.uuid, this);
     }
     
-    public static boolean isPreLoaded( UUID uuid ){
-        return loaded.containsKey( uuid );
+    public static boolean isPreLoaded(UUID uuid){
+        return loaded.containsKey(uuid);
     }
     
-    public static LoadedUser getPreLoaded( UUID uuid ){
-        return loaded.get( uuid );
+    public static LoadedUser getPreLoaded(UUID uuid){
+        return loaded.get(uuid);
     }
     
     public static ConcurrentHashMap < UUID, LoadedUser > getLoaded( ){
@@ -42,7 +42,7 @@ public class LoadedUser {
     }
     
     public boolean isTimedOut( ){
-        return System.currentTimeMillis( ) > this.toleranceTime;
+        return System.currentTimeMillis() > this.toleranceTime;
     }
     
     public UUID getUuid( ){
@@ -53,9 +53,9 @@ public class LoadedUser {
         return arenaIdentifier;
     }
     
-    public void destroy( String reason ){
-        Main.getInstance( ).debug( "Destroyed PreLoaded User: " + uuid + " Reason: " + reason + ". Tolerance: " );
-        loaded.remove( uuid );
+    public void destroy(String reason){
+        Main.getInstance().debug("Destroyed PreLoaded User: " + uuid + " Reason: " + reason + ". Tolerance: ");
+        loaded.remove(uuid);
     }
     
     // if arena is started is used as staff teleport target

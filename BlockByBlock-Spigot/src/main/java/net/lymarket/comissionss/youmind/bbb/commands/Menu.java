@@ -39,7 +39,7 @@ public final class Menu implements ILyCommand {
     }
     
     @Tab
-    public ArrayList < String > tabComplete( STabContext context ){
+    public ArrayList < String > tabComplete(STabContext context){
         final ArrayList < String > list = new ArrayList <>();
     
         if (context.getSender().hasPermission("blockbyblock.admin")){

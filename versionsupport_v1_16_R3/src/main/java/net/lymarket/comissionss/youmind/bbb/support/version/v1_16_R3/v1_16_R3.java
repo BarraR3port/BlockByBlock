@@ -27,15 +27,15 @@ public class v1_16_R3 extends VersionSupport {
     
     private IPlotManager < Plot > plotManager;
     
-    public v1_16_R3( JavaPlugin plugin ){
-        super( plugin );
+    public v1_16_R3(JavaPlugin plugin){
+        super(plugin);
     }
     
     @Override
     public void registerPlotEvents( ){
-        PlotAPI api = new PlotAPI( );
-        plotManager = new PlotManager( plugin , this );
-        Bukkit.getServer( ).getPluginManager( ).registerEvents( new P2Listener( api , this ) , plugin );
+        PlotAPI api = new PlotAPI();
+        plotManager = new PlotManager(plugin, this);
+        Bukkit.getServer().getPluginManager().registerEvents(new P2Listener(api, this), plugin);
     }
     
     @Override

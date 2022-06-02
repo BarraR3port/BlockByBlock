@@ -9,13 +9,13 @@ import java.util.UUID;
 
 public final class PlayerJoinBWorld extends Event implements Cancellable {
     
-    private static final HandlerList handlerList = new HandlerList( );
+    private static final HandlerList handlerList = new HandlerList();
     private final UUID user;
     private boolean cancelled = false;
     private BWorld world;
     
-    public PlayerJoinBWorld( UUID user , BWorld world ){
-        super( true );
+    public PlayerJoinBWorld(UUID user, BWorld world){
+        super(true);
         this.user = user;
         this.world = world;
     }
@@ -31,7 +31,7 @@ public final class PlayerJoinBWorld extends Event implements Cancellable {
     
     
     @Override
-    public void setCancelled( boolean b ){
+    public void setCancelled(boolean b){
         cancelled = b;
     }
     
@@ -48,7 +48,7 @@ public final class PlayerJoinBWorld extends Event implements Cancellable {
         return world;
     }
     
-    public void setWorld( BWorld world ){
+    public void setWorld(BWorld world){
         this.world = world;
     }
 }

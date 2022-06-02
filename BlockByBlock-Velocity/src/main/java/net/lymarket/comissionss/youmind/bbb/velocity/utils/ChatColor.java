@@ -12,105 +12,105 @@ public enum ChatColor {
     /**
      * Represents black
      */
-    BLACK( '0' , 0x00 ),
+    BLACK('0', 0x00),
     /**
      * Represents dark blue
      */
-    DARK_BLUE( '1' , 0x1 ),
+    DARK_BLUE('1', 0x1),
     /**
      * Represents dark green
      */
-    DARK_GREEN( '2' , 0x2 ),
+    DARK_GREEN('2', 0x2),
     /**
      * Represents dark blue (aqua)
      */
-    DARK_AQUA( '3' , 0x3 ),
+    DARK_AQUA('3', 0x3),
     /**
      * Represents dark red
      */
-    DARK_RED( '4' , 0x4 ),
+    DARK_RED('4', 0x4),
     /**
      * Represents dark purple
      */
-    DARK_PURPLE( '5' , 0x5 ),
+    DARK_PURPLE('5', 0x5),
     /**
      * Represents gold
      */
-    GOLD( '6' , 0x6 ),
+    GOLD('6', 0x6),
     /**
      * Represents gray
      */
-    GRAY( '7' , 0x7 ),
+    GRAY('7', 0x7),
     /**
      * Represents dark gray
      */
-    DARK_GRAY( '8' , 0x8 ),
+    DARK_GRAY('8', 0x8),
     /**
      * Represents blue
      */
-    BLUE( '9' , 0x9 ),
+    BLUE('9', 0x9),
     /**
      * Represents green
      */
-    GREEN( 'a' , 0xA ),
+    GREEN('a', 0xA),
     /**
      * Represents aqua
      */
-    AQUA( 'b' , 0xB ),
+    AQUA('b', 0xB),
     /**
      * Represents red
      */
-    RED( 'c' , 0xC ),
+    RED('c', 0xC),
     /**
      * Represents light purple
      */
-    LIGHT_PURPLE( 'd' , 0xD ),
+    LIGHT_PURPLE('d', 0xD),
     /**
      * Represents yellow
      */
-    YELLOW( 'e' , 0xE ),
+    YELLOW('e', 0xE),
     /**
      * Represents white
      */
-    WHITE( 'f' , 0xF ),
+    WHITE('f', 0xF),
     /**
      * Represents magical characters that change around randomly
      */
-    MAGIC( 'k' , 0x10 , true ),
+    MAGIC('k', 0x10, true),
     /**
      * Makes the text bold.
      */
-    BOLD( 'l' , 0x11 , true ),
+    BOLD('l', 0x11, true),
     /**
      * Makes a line appear through the text.
      */
-    STRIKETHROUGH( 'm' , 0x12 , true ),
+    STRIKETHROUGH('m', 0x12, true),
     /**
      * Makes the text appear underlined.
      */
-    UNDERLINE( 'n' , 0x13 , true ),
+    UNDERLINE('n', 0x13, true),
     /**
      * Makes the text italic.
      */
-    ITALIC( 'o' , 0x14 , true ),
+    ITALIC('o', 0x14, true),
     /**
      * Resets all previous chat colors or formats.
      */
-    RESET( 'r' , 0x15 );
+    RESET('r', 0x15);
     
     /**
      * The special character which prefixes all chat colour codes. Use this if
      * you need to dynamically convert colour codes from your custom format.
      */
     public static final char COLOR_CHAR = '\u00A7';
-    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile( "(?i)" + COLOR_CHAR + "[0-9A-FK-OR]" );
-    private final static Map < Integer, ChatColor > BY_ID = Maps.newHashMap( );
-    private final static Map < Character, ChatColor > BY_CHAR = Maps.newHashMap( );
+    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + COLOR_CHAR + "[0-9A-FK-OR]");
+    private final static Map < Integer, ChatColor > BY_ID = Maps.newHashMap();
+    private final static Map < Character, ChatColor > BY_CHAR = Maps.newHashMap();
     
     static{
-        for ( ChatColor color : values( ) ) {
-            BY_ID.put( color.intCode , color );
-            BY_CHAR.put( color.code , color );
+        for ( ChatColor color : values() ){
+            BY_ID.put(color.intCode, color);
+            BY_CHAR.put(color.code, color);
         }
     }
     
@@ -119,15 +119,15 @@ public enum ChatColor {
     private final boolean isFormat;
     private final String toString;
     
-    ChatColor( char code , int intCode ){
-        this( code , intCode , false );
+    ChatColor(char code, int intCode){
+        this(code, intCode, false);
     }
     
-    ChatColor( char code , int intCode , boolean isFormat ){
+    ChatColor(char code, int intCode, boolean isFormat){
         this.code = code;
         this.intCode = intCode;
         this.isFormat = isFormat;
-        this.toString = new String( new char[]{COLOR_CHAR , code} );
+        this.toString = new String(new char[]{COLOR_CHAR, code});
     }
     
     /**
@@ -138,8 +138,8 @@ public enum ChatColor {
      * @return Associative {@link ChatColor} with the given code,
      * or null if it doesn't exist
      */
-    public static ChatColor getByChar( char code ){
-        return BY_CHAR.get( code );
+    public static ChatColor getByChar(char code){
+        return BY_CHAR.get(code);
     }
     
     /**
@@ -150,8 +150,8 @@ public enum ChatColor {
      * @return Associative {@link ChatColor} with the given code,
      * or null if it doesn't exist
      */
-    public static ChatColor getByChar( String code ){
-        return BY_CHAR.get( code.charAt( 0 ) );
+    public static ChatColor getByChar(String code){
+        return BY_CHAR.get(code.charAt(0));
     }
     
     /**
@@ -161,24 +161,24 @@ public enum ChatColor {
      *
      * @return A copy of the input string, without any coloring
      */
-    public static String stripColor( final String input ){
-        if ( input == null ) {
+    public static String stripColor(final String input){
+        if (input == null){
             return null;
         }
         
-        return STRIP_COLOR_PATTERN.matcher( input ).replaceAll( "" );
+        return STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
     }
     
     
-    public static String translateAlternateColorCodes( char altColorChar , String textToTranslate ){
-        char[] b = textToTranslate.toCharArray( );
-        for ( int i = 0; i < b.length - 1; i++ ) {
-            if ( b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf( b[i + 1] ) > -1 ) {
+    public static String translateAlternateColorCodes(char altColorChar, String textToTranslate){
+        char[] b = textToTranslate.toCharArray();
+        for ( int i = 0; i < b.length - 1; i++ ){
+            if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1){
                 b[i] = ChatColor.COLOR_CHAR;
-                b[i + 1] = Character.toLowerCase( b[i + 1] );
+                b[i + 1] = Character.toLowerCase(b[i + 1]);
             }
         }
-        return new String( b );
+        return new String(b);
     }
     
     /**
@@ -188,29 +188,29 @@ public enum ChatColor {
      *
      * @return Any remaining ChatColors to pass onto the next line.
      */
-    public static String getLastColors( String input ){
-        StringBuilder result = new StringBuilder( );
-        int length = input.length( );
+    public static String getLastColors(String input){
+        StringBuilder result = new StringBuilder();
+        int length = input.length();
         
         // Search backwards from the end as it is faster
-        for ( int index = length - 1; index > -1; index-- ) {
-            char section = input.charAt( index );
-            if ( section == COLOR_CHAR && index < length - 1 ) {
-                char c = input.charAt( index + 1 );
-                ChatColor color = getByChar( c );
+        for ( int index = length - 1; index > -1; index-- ){
+            char section = input.charAt(index);
+            if (section == COLOR_CHAR && index < length - 1){
+                char c = input.charAt(index + 1);
+                ChatColor color = getByChar(c);
                 
-                if ( color != null ) {
-                    result.insert( 0 , color );
+                if (color != null){
+                    result.insert(0, color);
                     
                     // Once we find a color or reset we can stop searching
-                    if ( color.isColor( ) || color.equals( RESET ) ) {
+                    if (color.isColor() || color.equals(RESET)){
                         break;
                     }
                 }
             }
         }
         
-        return result.toString( );
+        return result.toString();
     }
     
     /**

@@ -9,9 +9,9 @@ public final class ConfigManager {
     private final Config config;
     private final Config items;
     
-    public ConfigManager( Main plugin ){
-        config = new Config( plugin , "config.yml" );
-        items = new Config( plugin , "items.yml" );
+    public ConfigManager(Main plugin){
+        config = new Config(plugin, "config.yml");
+        items = new Config(plugin, "items.yml");
     }
     
     public Config getConfig( ){

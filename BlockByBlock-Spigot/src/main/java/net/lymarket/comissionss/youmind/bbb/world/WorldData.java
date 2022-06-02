@@ -47,7 +47,7 @@ public class WorldData {
         return dataSource;
     }
     
-    public void setDataSource( String dataSource ){
+    public void setDataSource(String dataSource){
         this.dataSource = dataSource;
     }
     
@@ -55,7 +55,7 @@ public class WorldData {
         return spawn;
     }
     
-    public void setSpawn( String spawn ){
+    public void setSpawn(String spawn){
         this.spawn = spawn;
     }
     
@@ -63,7 +63,7 @@ public class WorldData {
         return difficulty;
     }
     
-    public void setDifficulty( String difficulty ){
+    public void setDifficulty(String difficulty){
         this.difficulty = difficulty;
     }
     
@@ -71,7 +71,7 @@ public class WorldData {
         return allowMonsters;
     }
     
-    public void setAllowMonsters( boolean allowMonsters ){
+    public void setAllowMonsters(boolean allowMonsters){
         this.allowMonsters = allowMonsters;
     }
     
@@ -79,7 +79,7 @@ public class WorldData {
         return allowAnimals;
     }
     
-    public void setAllowAnimals( boolean allowAnimals ){
+    public void setAllowAnimals(boolean allowAnimals){
         this.allowAnimals = allowAnimals;
     }
     
@@ -87,7 +87,7 @@ public class WorldData {
         return dragonBattle;
     }
     
-    public void setDragonBattle( boolean dragonBattle ){
+    public void setDragonBattle(boolean dragonBattle){
         this.dragonBattle = dragonBattle;
     }
     
@@ -95,7 +95,7 @@ public class WorldData {
         return pvp;
     }
     
-    public void setPvp( boolean pvp ){
+    public void setPvp(boolean pvp){
         this.pvp = pvp;
     }
     
@@ -103,7 +103,7 @@ public class WorldData {
         return environment;
     }
     
-    public void setEnvironment( String environment ){
+    public void setEnvironment(String environment){
         this.environment = environment;
     }
     
@@ -111,7 +111,7 @@ public class WorldData {
         return worldType;
     }
     
-    public void setWorldType( String worldType ){
+    public void setWorldType(String worldType){
         this.worldType = worldType;
     }
     
@@ -119,7 +119,7 @@ public class WorldData {
         return defaultBiome;
     }
     
-    public void setDefaultBiome( String defaultBiome ){
+    public void setDefaultBiome(String defaultBiome){
         this.defaultBiome = defaultBiome;
     }
     
@@ -127,7 +127,7 @@ public class WorldData {
         return loadOnStartup;
     }
     
-    public void setLoadOnStartup( boolean loadOnStartup ){
+    public void setLoadOnStartup(boolean loadOnStartup){
         this.loadOnStartup = loadOnStartup;
     }
     
@@ -135,62 +135,62 @@ public class WorldData {
         return readOnly;
     }
     
-    public void setReadOnly( boolean readOnly ){
+    public void setReadOnly(boolean readOnly){
         this.readOnly = readOnly;
     }
     
     public SlimePropertyMap toPropertyMap( ){
         try {
-            Enum.valueOf( Difficulty.class , this.difficulty.toUpperCase( ) );
-        } catch ( IllegalArgumentException ex ) {
-            throw new IllegalArgumentException( "unknown difficulty '" + this.difficulty + "'" );
+            Enum.valueOf(Difficulty.class, this.difficulty.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("unknown difficulty '" + this.difficulty + "'");
         }
-        
-        String[] spawnLocationSplit = spawn.split( ", " );
+    
+        String[] spawnLocationSplit = spawn.split(", ");
         
         double spawnX, spawnY, spawnZ;
-        
+    
         try {
-            spawnX = Double.parseDouble( spawnLocationSplit[0] );
-            spawnY = Double.parseDouble( spawnLocationSplit[1] );
-            spawnZ = Double.parseDouble( spawnLocationSplit[2] );
-        } catch ( NumberFormatException | ArrayIndexOutOfBoundsException ex ) {
-            throw new IllegalArgumentException( "invalid spawn location '" + this.spawn + "'" );
+            spawnX = Double.parseDouble(spawnLocationSplit[0]);
+            spawnY = Double.parseDouble(spawnLocationSplit[1]);
+            spawnZ = Double.parseDouble(spawnLocationSplit[2]);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
+            throw new IllegalArgumentException("invalid spawn location '" + this.spawn + "'");
         }
         
         String environment = this.environment;
-        
+    
         try {
-            Enum.valueOf( World.Environment.class , environment.toUpperCase( ) );
-        } catch ( IllegalArgumentException ex ) {
+            Enum.valueOf(World.Environment.class, environment.toUpperCase());
+        } catch (IllegalArgumentException ex) {
             try {
-                int envId = Integer.parseInt( environment );
-                
-                if ( envId < -1 || envId > 1 ) {
-                    throw new NumberFormatException( environment );
+                int envId = Integer.parseInt(environment);
+            
+                if (envId < -1 || envId > 1){
+                    throw new NumberFormatException(environment);
                 }
-                
-                environment = World.Environment.getEnvironment( envId ).name( );
-            } catch ( NumberFormatException ex2 ) {
-                throw new IllegalArgumentException( "unknown environment '" + this.environment + "'" );
+            
+                environment = World.Environment.getEnvironment(envId).name();
+            } catch (NumberFormatException ex2) {
+                throw new IllegalArgumentException("unknown environment '" + this.environment + "'");
             }
         }
-        
-        SlimePropertyMap propertyMap = new SlimePropertyMap( );
-        
-        propertyMap.setValue( SPAWN_X , ( int ) spawnX );
-        propertyMap.setValue( SPAWN_Y , ( int ) spawnY );
-        propertyMap.setValue( SPAWN_Z , ( int ) spawnZ );
-        
-        propertyMap.setValue( DIFFICULTY , difficulty );
-        propertyMap.setValue( ALLOW_MONSTERS , allowMonsters );
-        propertyMap.setValue( ALLOW_ANIMALS , allowAnimals );
-        propertyMap.setValue( DRAGON_BATTLE , dragonBattle );
-        propertyMap.setValue( PVP , pvp );
-        propertyMap.setValue( ENVIRONMENT , environment );
-        propertyMap.setValue( WORLD_TYPE , worldType );
-        propertyMap.setValue( DEFAULT_BIOME , defaultBiome );
-        
+    
+        SlimePropertyMap propertyMap = new SlimePropertyMap();
+    
+        propertyMap.setValue(SPAWN_X, (int) spawnX);
+        propertyMap.setValue(SPAWN_Y, (int) spawnY);
+        propertyMap.setValue(SPAWN_Z, (int) spawnZ);
+    
+        propertyMap.setValue(DIFFICULTY, difficulty);
+        propertyMap.setValue(ALLOW_MONSTERS, allowMonsters);
+        propertyMap.setValue(ALLOW_ANIMALS, allowAnimals);
+        propertyMap.setValue(DRAGON_BATTLE, dragonBattle);
+        propertyMap.setValue(PVP, pvp);
+        propertyMap.setValue(ENVIRONMENT, environment);
+        propertyMap.setValue(WORLD_TYPE, worldType);
+        propertyMap.setValue(DEFAULT_BIOME, defaultBiome);
+    
         return propertyMap;
     }
 }

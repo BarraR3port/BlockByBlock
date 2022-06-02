@@ -36,7 +36,7 @@ public class Stats {
         return BLOCKS_PLACED;
     }
     
-    public void addBLOCKS_PLACED( long BLOCKS_PLACED ){
+    public void addBLOCKS_PLACED(long BLOCKS_PLACED){
         this.BLOCKS_PLACED = this.BLOCKS_PLACED + BLOCKS_PLACED;
     }
     
@@ -44,7 +44,7 @@ public class Stats {
         return BLOCKS_BROKEN;
     }
     
-    public void addBLOCKS_BROKEN( long BLOCKS_BROKEN ){
+    public void addBLOCKS_BROKEN(long BLOCKS_BROKEN){
         this.BLOCKS_BROKEN = this.BLOCKS_BROKEN + BLOCKS_BROKEN;
     }
     
@@ -52,7 +52,7 @@ public class Stats {
         return TIME_PLAYED;
     }
     
-    public void addTIME_PLAYED( long TIME_PLAYED ){
+    public void addTIME_PLAYED(long TIME_PLAYED){
         this.TIME_PLAYED = this.TIME_PLAYED + TIME_PLAYED;
     }
     
@@ -60,11 +60,11 @@ public class Stats {
         return ELO;
     }
     
-    public void addELO( long ELO ){
+    public void addELO(long ELO){
         this.ELO = this.ELO + ELO;
     }
     
-    public void removeELO( long ELO ){
+    public void removeELO(long ELO){
         final long nextValue = this.ELO - ELO;
         this.ELO = nextValue <= 0 ? 0 : nextValue;
     }
@@ -73,11 +73,11 @@ public class Stats {
         return MAX_PLOTS_31;
     }
     
-    public void addMAX_PLOTS_31( int MAX_PLOTS_31 ){
+    public void addMAX_PLOTS_31(int MAX_PLOTS_31){
         this.MAX_PLOTS_31 = this.MAX_PLOTS_31 + MAX_PLOTS_31;
     }
     
-    public void removeMAX_PLOTS_31( int MAX_PLOTS_31 ){
+    public void removeMAX_PLOTS_31(int MAX_PLOTS_31){
         final int nextValue = this.MAX_PLOTS_31 - MAX_PLOTS_31;
         this.MAX_PLOTS_31 = nextValue <= 0 ? 0 : nextValue;
     }
@@ -86,11 +86,11 @@ public class Stats {
         return MAX_PLOTS_101;
     }
     
-    public void addMAX_PLOTS_101( int MAX_PLOTS_101 ){
+    public void addMAX_PLOTS_101(int MAX_PLOTS_101){
         this.MAX_PLOTS_101 = this.MAX_PLOTS_101 + MAX_PLOTS_101;
     }
     
-    public void removeMAX_PLOTS_101( int MAX_PLOTS_101 ){
+    public void removeMAX_PLOTS_101(int MAX_PLOTS_101){
         final int nextValue = this.MAX_PLOTS_101 - MAX_PLOTS_101;
         this.MAX_PLOTS_101 = nextValue <= 0 ? 0 : nextValue;
     }
@@ -99,11 +99,11 @@ public class Stats {
         return MAX_PLOTS_501;
     }
     
-    public void addMAX_PLOTS_501( int MAX_PLOTS_501 ){
+    public void addMAX_PLOTS_501(int MAX_PLOTS_501){
         this.MAX_PLOTS_501 = this.MAX_PLOTS_501 + MAX_PLOTS_501;
     }
     
-    public void removeMAX_PLOTS_501( int MAX_PLOTS_501 ){
+    public void removeMAX_PLOTS_501(int MAX_PLOTS_501){
         final int nextValue = this.MAX_PLOTS_501 - MAX_PLOTS_501;
         this.MAX_PLOTS_501 = nextValue <= 0 ? 0 : nextValue;
     }
@@ -112,11 +112,11 @@ public class Stats {
         return MAX_PLOTS_1001;
     }
     
-    public void addMAX_PLOTS_1001( int MAX_PLOTS_1001 ){
+    public void addMAX_PLOTS_1001(int MAX_PLOTS_1001){
         this.MAX_PLOTS_1001 = this.MAX_PLOTS_1001 + MAX_PLOTS_1001;
     }
     
-    public void removeMAX_PLOTS_1001( int MAX_PLOTS_1001 ){
+    public void removeMAX_PLOTS_1001(int MAX_PLOTS_1001){
         final int nextValue = this.MAX_PLOTS_1001 - MAX_PLOTS_1001;
         this.MAX_PLOTS_1001 = nextValue <= 0 ? 0 : nextValue;
     }
@@ -125,11 +125,11 @@ public class Stats {
         return this.ADDITIONAL_WORLDS;
     }
     
-    public void addADDITIONAL_WORLDS( int ADDITIONAL_WORLDS ){
+    public void addADDITIONAL_WORLDS(int ADDITIONAL_WORLDS){
         this.ADDITIONAL_WORLDS = this.ADDITIONAL_WORLDS + ADDITIONAL_WORLDS;
     }
     
-    public void removeADDITIONAL_WORLDS( int ADDITIONAL_WORLDS ){
+    public void removeADDITIONAL_WORLDS(int ADDITIONAL_WORLDS){
         final int nextValue = this.ADDITIONAL_WORLDS - ADDITIONAL_WORLDS;
         this.ADDITIONAL_WORLDS = nextValue <= 0 ? 0 : nextValue;
     }

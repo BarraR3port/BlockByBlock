@@ -12,29 +12,29 @@ public class ServerManager {
     
     
     public ServerManager( ){
-        servers = new ArrayList <>( );
+        servers = new ArrayList <>();
     }
     
-    public void addServer( String server ){
-        servers.add( server );
+    public void addServer(String server){
+        servers.add(server);
     }
     
-    public void removeServer( String server ){
-        servers.remove( server );
+    public void removeServer(String server){
+        servers.remove(server);
     }
     
     public void init( ){
-        VMain.getInstance( ).getProxy( ).getScheduler( ).buildTask( VMain.getInstance( ) , ( ) -> {
-            final ArrayList < String > serversToRemove = new ArrayList <>( );
+        VMain.getInstance().getProxy().getScheduler().buildTask(VMain.getInstance(), ( ) -> {
+            final ArrayList < String > serversToRemove = new ArrayList <>();
             servers.forEach(
                     server ->
-                            VMain.getInstance( ).getProxy( ).getServer( server ).ifPresent(
-                                    registeredServer -> serversToRemove.add( server )
-                            ) );
+                            VMain.getInstance().getProxy().getServer(server).ifPresent(
+                                    registeredServer -> serversToRemove.add(server)
+                            ));
             
-            serversToRemove.forEach( this::removeServer );
+            serversToRemove.forEach(this::removeServer);
             
-        } ).repeat( 5 , TimeUnit.SECONDS ).schedule( );
+        }).repeat(5, TimeUnit.SECONDS).schedule();
         
     }
     

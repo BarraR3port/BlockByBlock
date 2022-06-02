@@ -21,6 +21,6 @@ public class Undo implements ILyCommand {
     
     @Tab
     public ArrayList < String > tabComplete(STabContext context){
-        return new ArrayList <>( );
+        return new ArrayList <>();
     }
 }

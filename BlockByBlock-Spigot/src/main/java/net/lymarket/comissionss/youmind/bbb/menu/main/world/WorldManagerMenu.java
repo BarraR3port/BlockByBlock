@@ -30,31 +30,31 @@ public class WorldManagerMenu extends UpdatableMenu {
     
     private final SpigotUser targetUser;
     
-    public WorldManagerMenu( IPlayerMenuUtility playerMenuUtility , UUID targetUserUUID ){
-        super( playerMenuUtility );
+    public WorldManagerMenu(IPlayerMenuUtility playerMenuUtility, UUID targetUserUUID){
+        super(playerMenuUtility);
         this.targetUserUUID = targetUserUUID;
-        this.ownerUUID = getOwner( ).getUniqueId( );
-        this.targetUser = Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID );
+        this.ownerUUID = getOwner().getUniqueId();
+        this.targetUser = Main.getInstance().getPlayers().getPlayer(ownerUUID);
     }
     
-    public WorldManagerMenu( IPlayerMenuUtility playerMenuUtility ){
-        super( playerMenuUtility );
-        this.targetUserUUID = getOwner( ).getUniqueId( );
-        this.ownerUUID = getOwner( ).getUniqueId( );
-        this.targetUser = Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID );
+    public WorldManagerMenu(IPlayerMenuUtility playerMenuUtility){
+        super(playerMenuUtility);
+        this.targetUserUUID = getOwner().getUniqueId();
+        this.ownerUUID = getOwner().getUniqueId();
+        this.targetUser = Main.getInstance().getPlayers().getPlayer(ownerUUID);
     }
     
-    public WorldManagerMenu( IPlayerMenuUtility playerMenuUtility , UUID targetUserUUID , long reOpenDelay ){
-        super( playerMenuUtility );
+    public WorldManagerMenu(IPlayerMenuUtility playerMenuUtility, UUID targetUserUUID, long reOpenDelay){
+        super(playerMenuUtility);
         this.targetUserUUID = targetUserUUID;
-        Bukkit.getServer( ).getScheduler( ).runTaskLater( Main.getInstance( ) , this::reOpen , reOpenDelay );
-        this.ownerUUID = getOwner( ).getUniqueId( );
-        this.targetUser = Main.getInstance( ).getPlayers( ).getPlayer( ownerUUID );
+        Bukkit.getServer().getScheduler().runTaskLater(Main.getInstance(), this::reOpen, reOpenDelay);
+        this.ownerUUID = getOwner().getUniqueId();
+        this.targetUser = Main.getInstance().getPlayers().getPlayer(ownerUUID);
     }
     
     @Override
     public String getMenuName( ){
-        return targetUserUUID.equals( ownerUUID ) ? "Tus mundos" : "Mundos de " + Main.getInstance( ).getPlayers( ).getPlayer( targetUserUUID ).getName( );
+        return targetUserUUID.equals(ownerUUID) ? "Tus mundos" : "Mundos de " + Main.getInstance().getPlayers().getPlayer(targetUserUUID).getName();
     }
     
     @Override
@@ -63,132 +63,132 @@ public class WorldManagerMenu extends UpdatableMenu {
     }
     
     @Override
-    public void handleMenu( InventoryClickEvent e ){
-        final ItemStack item = e.getCurrentItem( );
-        final Player p = ( Player ) e.getWhoClicked( );
-        if ( NBTItem.hasTag( item , "type" ) ) {
-            new WarpMenu( playerMenuUtility ).open( );
-        } else if ( NBTItem.hasTag( item , "world-uuid" ) ) {
-            final String server_target = NBTItem.getTag( item , "world-server" );
-            final UUID world_uuid = UUID.fromString( NBTItem.getTag( item , "world-uuid" ) );
-            final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
-            final String version = world.getVersion( );
-            if ( e.getClick( ).equals( ClickType.LEFT ) ) {
-                switch ( version ) {
-                    case "1.12": {
-                        int playerVersion = Main.getInstance( ).getViaVersion( ).getPlayerVersion( p );
-                        if ( playerVersion >= 340 ) {
-                            Main.getInstance( ).getSocket( ).sendJoinWorldRequest( ownerUUID , server_target , world_uuid , e.getSlot( ) );
+    public void handleMenu(InventoryClickEvent e){
+        final ItemStack item = e.getCurrentItem();
+        final Player p = (Player) e.getWhoClicked();
+        if (NBTItem.hasTag(item, "type")){
+            new WarpMenu(playerMenuUtility).open();
+        } else if (NBTItem.hasTag(item, "world-uuid")){
+            final String server_target = NBTItem.getTag(item, "world-server");
+            final UUID world_uuid = UUID.fromString(NBTItem.getTag(item, "world-uuid"));
+            final BWorld world = Main.getInstance().getWorlds().getWorld(world_uuid);
+            final String version = world.getVersion();
+            if (e.getClick().equals(ClickType.LEFT)){
+                switch(version){
+                    case "1.12":{
+                        int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
+                        if (playerVersion >= 340){
+                            Main.getInstance().getSocket().sendJoinWorldRequest(ownerUUID, server_target, world_uuid, e.getSlot());
                             return;
                         } else {
-                            super.checkSomething( p , e.getSlot( ) , item , "&cVersión incompatible con tu cliente." , "" , this.getMenuUUID( ) );
+                            super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
                         }
                     }
-                    case "1.16": {
-                        int playerVersion = Main.getInstance( ).getViaVersion( ).getPlayerVersion( p );
-                        if ( playerVersion >= 754 ) {
-                            Main.getInstance( ).getSocket( ).sendJoinWorldRequest( ownerUUID , server_target , world_uuid , e.getSlot( ) );
+                    case "1.16":{
+                        int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
+                        if (playerVersion >= 754){
+                            Main.getInstance().getSocket().sendJoinWorldRequest(ownerUUID, server_target, world_uuid, e.getSlot());
                             return;
                         } else {
-                            super.checkSomething( p , e.getSlot( ) , item , "&cVersión incompatible con tu cliente." , "" , this.getMenuUUID( ) );
+                            super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
                         }
                     }
-                    case "1.18": {
-                        int playerVersion = Main.getInstance( ).getViaVersion( ).getPlayerVersion( p );
-                        if ( playerVersion >= 758 ) {
-                            Main.getInstance( ).getSocket( ).sendJoinWorldRequest( ownerUUID , server_target , world_uuid , e.getSlot( ) );
+                    case "1.18":{
+                        int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
+                        if (playerVersion >= 758){
+                            Main.getInstance().getSocket().sendJoinWorldRequest(ownerUUID, server_target, world_uuid, e.getSlot());
                             return;
                         } else {
-                            super.checkSomething( p , e.getSlot( ) , item , "&cVersión incompatible con tu cliente." , "" , this.getMenuUUID( ) );
+                            super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
                         }
                     }
-                    default: {
-                        super.checkSomething( p , e.getSlot( ) , item , "&cVersión incompatible con tu cliente." , "" , this.getMenuUUID( ) );
+                    default:{
+                        super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
                     }
                 }
-            } else if ( e.getClick( ).equals( ClickType.RIGHT ) ) {
-                if ( world.getOwner( ).equals( ownerUUID ) || targetUser.getRank( ).isAdmin( ) ) {
-                    new WorldEditorMenu( playerMenuUtility , targetUserUUID , world_uuid ).open( );
-                } else if ( world.getMembers( ).contains( ownerUUID ) ) {
-                    new PlayersInWorldMenu( playerMenuUtility , world_uuid , false , this ).open( );
+            } else if (e.getClick().equals(ClickType.RIGHT)){
+                if (world.getOwner().equals(ownerUUID) || targetUser.getRank().isAdmin()){
+                    new WorldEditorMenu(playerMenuUtility, targetUserUUID, world_uuid).open();
+                } else if (world.getMembers().contains(ownerUUID)){
+                    new PlayersInWorldMenu(playerMenuUtility, world_uuid, false, this).open();
                 }
             }
-        } else if ( NBTItem.hasTag( item , "world-available" ) && p.getUniqueId( ).equals( targetUserUUID ) ) {
-            new VersionChooser( playerMenuUtility , targetUserUUID , this ).open( );
-        } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
-            new MainMenu( playerMenuUtility , targetUserUUID ).open( );
+        } else if (NBTItem.hasTag(item, "world-available") && p.getUniqueId().equals(targetUserUUID)){
+            new VersionChooser(playerMenuUtility, targetUserUUID, this).open();
+        } else if (NBTItem.hasTag(item, "ly-menu-close")){
+            new MainMenu(playerMenuUtility, targetUserUUID).open();
         }
     }
     
     @Override
     public void setMenuItems( ){
     
-        int available = targetUser.getRank( ).getMAX_WORLDS( ) + targetUser.getStats( ).getADDITIONAL_WORLDS( );
+        int available = targetUser.getRank().getMAX_WORLDS() + targetUser.getStats().getADDITIONAL_WORLDS();
         int start = 11;
-        for ( int i = start; i < (start + 5); i++ ) {
-            inventory.setItem( i , Items.UNAVAILABLE_WORLD );
+        for ( int i = start; i < (start + 5); i++ ){
+            inventory.setItem(i, Items.UNAVAILABLE_WORLD);
         }
-        
-        
-        for ( int i = start; i < (start + available); i++ ) {
-            inventory.setItem( i , Items.AVAILABLE_WORLD );
+    
+    
+        for ( int i = start; i < (start + available); i++ ){
+            inventory.setItem(i, Items.AVAILABLE_WORLD);
         }
-        
-        final ArrayList < BWorld > worlds = Main.getInstance( ).getWorlds( ).getWorldsByUser( targetUserUUID );
-        
-        final ArrayList < ItemStack > finalWorlds = new ArrayList <>( );
-        
-        for ( BWorld world : worlds ) {
-            finalWorlds.add( new ItemBuilder(Items.CREATED_WORLD_BASE.clone())
+    
+        final ArrayList < BWorld > worlds = Main.getInstance().getWorlds().getWorldsByUser(targetUserUUID);
+    
+        final ArrayList < ItemStack > finalWorlds = new ArrayList <>();
+    
+        for ( BWorld world : worlds ){
+            finalWorlds.add(new ItemBuilder(Items.CREATED_WORLD_BASE.clone())
                     .setDisplayName("&bMundo: " + world.getName().split("-")[0])
-                    .addLoreLine( "&7Click para ir al mundo." )
-                    .addLoreLine( "&bInfo:" )
-                    .addLoreLine( " &b> &7Versión: &a" + world.getVersion( ) )
-                    .addLoreLine( " &b> &7Server: &a" + world.getServer( ) )
-                    .addLoreLine( " &b> &7Usuarios dentro: &a" + world.getOnlineMembers( ).size( ) )
-                    .addLoreLine( " &b> &7ID: &a" + world.getUUID( ).toString( ).split( "-" )[0] )
-                    .addLoreLine( "" )
-                    .addLoreLine( world.getOwner( ).equals( ownerUUID ) || world.getMembers( ).contains( ownerUUID ) ? "&7Click &eizquierdo &7para entrar al mundo." : null )
-                    .addLoreLine( "" )
-                    .addLoreLine( world.getOwner( ).equals( ownerUUID ) ? "&7Click &ederecho &7para editar el mundo" : world.getMembers( ).contains( ownerUUID ) ? "&7Click &ederecho &7para ver la lista de miembros online" : null )
-                    .addTag( "world-uuid" , world.getUUID( ).toString( ) )
-                    .addTag( "world-server" , world.getServer( ) )
-                    .build( )
+                    .addLoreLine("&7Click para ir al mundo.")
+                    .addLoreLine("&bInfo:")
+                    .addLoreLine(" &b> &7Versión: &a" + world.getVersion())
+                    .addLoreLine(" &b> &7Server: &a" + world.getServer())
+                    .addLoreLine(" &b> &7Usuarios dentro: &a" + world.getOnlineMembers().size())
+                    .addLoreLine(" &b> &7ID: &a" + world.getUUID().toString().split("-")[0])
+                    .addLoreLine("")
+                    .addLoreLine(world.getOwner().equals(ownerUUID) || world.getMembers().contains(ownerUUID) ? "&7Click &eizquierdo &7para entrar al mundo." : null)
+                    .addLoreLine("")
+                    .addLoreLine(world.getOwner().equals(ownerUUID) ? "&7Click &ederecho &7para editar el mundo" : world.getMembers().contains(ownerUUID) ? "&7Click &ederecho &7para ver la lista de miembros online" : null)
+                    .addTag("world-uuid", world.getUUID().toString())
+                    .addTag("world-server", world.getServer())
+                    .build()
             );
         }
-        
-        
-        for ( int i = 0; i < finalWorlds.size( ); i++ ) {
+    
+    
+        for ( int i = 0; i < finalWorlds.size(); i++ ){
             try {
-                inventory.setItem( 11 + i , finalWorlds.get( i ) );
-            } catch ( ArrayIndexOutOfBoundsException ignored ) {
+                inventory.setItem(11 + i, finalWorlds.get(i));
+            } catch (ArrayIndexOutOfBoundsException ignored) {
             }
         }
-        
-        
-        inventory.setItem( 18 , super.CLOSE_ITEM );
+    
+    
+        inventory.setItem(18, super.CLOSE_ITEM);
     }
     
     
     @Override
-    public void checkSomething( Player p , int slot , ItemStack item , String name , String lore , UUID menu_uuid ){
+    public void checkSomething(Player p, int slot, ItemStack item, String name, String lore, UUID menu_uuid){
         
-        if ( isOnSchedule ) return;
+        if (isOnSchedule) return;
         
         isOnSchedule = true;
         
-        p.getOpenInventory( ).getTopInventory( ).setItem( slot , new ItemBuilder( XMaterial.PLAYER_HEAD.parseItem( ) )
-                .setHeadSkin( "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJlMzViZWNhMWY1NzMxMjBlZTc5MTdhYTk2YTg5ZTE5NGRlZmM0NDQ1ZGY4YzY5ZTQ0OGU3NTVkYTljY2NkYSJ9fX0=" )
-                .addLoreLine( lore )
-                .setDisplayName( name )
-                .build( ) );
-        setOnSchedule( p , slot , item , menu_uuid );
-        inventory.setItem( 18 , super.CLOSE_ITEM.clone( ) );
+        p.getOpenInventory().getTopInventory().setItem(slot, new ItemBuilder(XMaterial.PLAYER_HEAD.parseItem())
+                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJlMzViZWNhMWY1NzMxMjBlZTc5MTdhYTk2YTg5ZTE5NGRlZmM0NDQ1ZGY4YzY5ZTQ0OGU3NTVkYTljY2NkYSJ9fX0=")
+                .addLoreLine(lore)
+                .setDisplayName(name)
+                .build());
+        setOnSchedule(p, slot, item, menu_uuid);
+        inventory.setItem(18, super.CLOSE_ITEM.clone());
         
-        inventory.setItem( 26 , new ItemBuilder( XMaterial.ENDER_PEARL.parseItem( ) )
-                .setDisplayName( "&bWarps" )
-                .addTag( "type" , "warps" )
-                .build( ) );
+        inventory.setItem(26, new ItemBuilder(XMaterial.ENDER_PEARL.parseItem())
+                .setDisplayName("&bWarps")
+                .addTag("type", "warps")
+                .build());
         
     }
     

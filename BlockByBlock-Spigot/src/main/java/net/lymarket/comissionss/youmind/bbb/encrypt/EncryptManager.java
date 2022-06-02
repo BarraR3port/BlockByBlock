@@ -10,31 +10,31 @@ import java.io.IOException;
 
 public class EncryptManager {
     
-    public static String encrypt( String json ){
-        
+    public static String encrypt(String json){
+    
         try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
-            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream( outputStream );
-            dataOutput.writeObject( json );
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+            dataOutput.writeObject(json);
             // Serialize that array
-            dataOutput.close( );
-            return Base64Coder.encodeLines( outputStream.toByteArray( ) );
-        } catch ( Exception e ) {
-            throw new IllegalStateException( "Unable to save item stacks." , e );
+            dataOutput.close();
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to save item stacks.", e);
         }
         
     }
     
-    public static String decrypt( String data ){
+    public static String decrypt(String data){
         try {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream( Base64Coder.decodeLines( data ) );
-            BukkitObjectInputStream dataInput = new BukkitObjectInputStream( inputStream );
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
             
-            String json = ( String ) dataInput.readObject( );
+            String json = (String) dataInput.readObject();
             
-            dataInput.close( );
+            dataInput.close();
             return json;
-        } catch ( ClassNotFoundException | IOException ignored ) {
+        } catch (ClassNotFoundException | IOException ignored) {
             return null;
         }
     }

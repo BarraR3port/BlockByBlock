@@ -11,19 +11,19 @@ public abstract class Home {
     private Loc location;
     private String version;
     
-    public Home( UUID owner , String name , Loc location , String version ){
+    public Home(UUID owner, String name, Loc location, String version){
         this.owner = owner;
-        this.uuid = UUID.randomUUID( );
+        this.uuid = UUID.randomUUID();
         this.name = name;
         this.location = location;
         this.version = version;
     }
     
-    public Home( String uuid , UUID owner , String name , Loc location , String version ){
+    public Home(String uuid, UUID owner, String name, Loc location, String version){
         this.owner = owner;
         this.name = name;
         this.location = location;
-        this.uuid = UUID.fromString( uuid );
+        this.uuid = UUID.fromString(uuid);
         this.version = version;
     }
     
@@ -35,7 +35,7 @@ public abstract class Home {
         return name;
     }
     
-    public void setName( String homeName ){
+    public void setName(String homeName){
         this.name = homeName;
     }
     
@@ -43,7 +43,7 @@ public abstract class Home {
         return location;
     }
     
-    public void setLocation( Loc homeLoc ){
+    public void setLocation(Loc homeLoc){
         this.location = homeLoc;
     }
     
@@ -55,7 +55,7 @@ public abstract class Home {
         return version;
     }
     
-    public void setVersion( String version ){
+    public void setVersion(String version){
         this.version = version;
     }
 }

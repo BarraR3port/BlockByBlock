@@ -13,11 +13,11 @@ public class SpigotUser extends User {
     public SpigotUser( ){
     }
     
-    public SpigotUser( String name , UUID uuid ){
-        super( name , uuid );
+    public SpigotUser(String name, UUID uuid){
+        super(name, uuid);
     }
     
     public Location getBukkitLocation( ){
-        return new Location( Bukkit.getWorld( this.getLastLocation( ).getWorld( ) ) , this.getLastLocation( ).getX( ) , this.getLastLocation( ).getY( ) , this.getLastLocation( ).getZ( ) );
+        return new Location(Bukkit.getWorld(this.getLastLocation().getWorld()), this.getLastLocation().getX(), this.getLastLocation().getY(), this.getLastLocation().getZ());
     }
 }

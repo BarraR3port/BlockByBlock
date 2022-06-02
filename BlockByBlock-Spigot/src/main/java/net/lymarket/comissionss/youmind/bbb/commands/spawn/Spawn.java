@@ -34,7 +34,7 @@ public final class Spawn implements ILyCommand {
      * @return
      */
     @Tab
-    public ArrayList < String > tabComplete( STabContext context ){
-        return new ArrayList <>( );
+    public ArrayList < String > tabComplete(STabContext context){
+        return new ArrayList <>();
     }
 }

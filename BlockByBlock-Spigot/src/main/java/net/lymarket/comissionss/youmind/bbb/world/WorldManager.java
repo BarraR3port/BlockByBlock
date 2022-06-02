@@ -34,24 +34,24 @@ import java.util.*;
 
 public class WorldManager extends IBWorldManager < SlimeWorld > {
     
-    private final SlimeLoader loader = Main.getSlimePlugin( ).getLoader( "file" );
+    private final SlimeLoader loader = Main.getSlimePlugin().getLoader("file");
     
-    private final HashMap < UUID, BWorld > guestToVisitWorlds = new HashMap <>( );
+    private final HashMap < UUID, BWorld > guestToVisitWorlds = new HashMap <>();
     
-    public WorldManager( MongoDBClient database , String tableName ){
-        super( database , tableName );
-    
+    public WorldManager(MongoDBClient database, String tableName){
+        super(database, tableName);
+        
         try {
-            WorldData worldData = new WorldData( );
-            worldData.setSpawn( "0, 64, 0" );
-            worldData.setWorldType( "flat" );
-            worldData.setDragonBattle( false );
-            worldData.setAllowMonsters( false );
-            worldData.setAllowAnimals( false );
-            worldData.setPvp( false );
-            SlimePropertyMap propertyMap = worldData.toPropertyMap( );
-            for ( String sw : loader.listWorlds( ) ) {
-                final SlimeWorld world = Main.getSlimePlugin( ).loadWorld( loader , sw , true , propertyMap );
+            WorldData worldData = new WorldData();
+            worldData.setSpawn("0, 64, 0");
+            worldData.setWorldType("flat");
+            worldData.setDragonBattle(false);
+            worldData.setAllowMonsters(false);
+            worldData.setAllowAnimals(false);
+            worldData.setPvp(false);
+            SlimePropertyMap propertyMap = worldData.toPropertyMap();
+            for ( String sw : loader.listWorlds() ){
+                final SlimeWorld world = Main.getSlimePlugin().loadWorld(loader, sw, true, propertyMap);
                 try {
                     final BWorld bWorld = getWorld(UUID.fromString(world.getName()));
                     Main.getSlimePlugin().generateWorld(world, Material.valueOf(bWorld.getBlock_base()));
@@ -60,77 +60,77 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
                 } catch (NullPointerException e) {
                     deleteWorld(world);
                 }
-    
+                
             }
-        } catch ( IOException | CorruptedWorldException | NewerFormatException | WorldInUseException |
-                  UnknownWorldException | IndexOutOfBoundsException e ) {
-            e.printStackTrace( );
+        } catch (IOException | CorruptedWorldException | NewerFormatException | WorldInUseException |
+                 UnknownWorldException | IndexOutOfBoundsException e) {
+            e.printStackTrace();
         }
         
     }
     
     @Override
-    public ArrayList < BWorld > getWorldsByUser( UUID uuid ){
-        return database.findMany( TABLE_NAME , world -> world.getOwner( ).equals( uuid ) , BWorld.class );
+    public ArrayList < BWorld > getWorldsByUser(UUID uuid){
+        return database.findMany(TABLE_NAME, world -> world.getOwner().equals(uuid), BWorld.class);
     }
     
     @Override
-    public ArrayList < BWorld > getWorldsByServer( String serverName ){
-        return database.findMany( TABLE_NAME , world -> world.getServer( ).equalsIgnoreCase( serverName ) , BWorld.class );
+    public ArrayList < BWorld > getWorldsByServer(String serverName){
+        return database.findMany(TABLE_NAME, world -> world.getServer().equalsIgnoreCase(serverName), BWorld.class);
     }
     
     @Override
     public ArrayList < BWorld > getWorldsByServer( ){
-        return database.findMany( TABLE_NAME , world -> world.getServer( ).equalsIgnoreCase( Settings.SERVER_NAME ) , BWorld.class );
+        return database.findMany(TABLE_NAME, world -> world.getServer().equalsIgnoreCase(Settings.SERVER_NAME), BWorld.class);
     }
     
     @Override
-    public SlimeWorld createWorldSlimeWorld( BWorld world ){
-        WorldData worldData = new WorldData( );
-        worldData.setSpawn( "0, 64, 0" );
-        worldData.setWorldType( "flat" );
-        worldData.setDragonBattle( false );
-        worldData.setAllowMonsters( false );
-        worldData.setAllowAnimals( false );
-        worldData.setPvp( false );
-        SlimePropertyMap propertyMap = worldData.toPropertyMap( );
+    public SlimeWorld createWorldSlimeWorld(BWorld world){
+        WorldData worldData = new WorldData();
+        worldData.setSpawn("0, 64, 0");
+        worldData.setWorldType("flat");
+        worldData.setDragonBattle(false);
+        worldData.setAllowMonsters(false);
+        worldData.setAllowAnimals(false);
+        worldData.setPvp(false);
+        SlimePropertyMap propertyMap = worldData.toPropertyMap();
         SlimeWorld slimeWorld = null;
         try {
-            slimeWorld = Main.getSlimePlugin( ).createEmptyWorld( loader , world.getUUID( ).toString( ) , false , propertyMap );
+            slimeWorld = Main.getSlimePlugin().createEmptyWorld(loader, world.getUUID().toString(), false, propertyMap);
             
-            Main.getSlimePlugin( ).generateWorld( slimeWorld );
+            Main.getSlimePlugin().generateWorld(slimeWorld);
             
             
-        } catch ( IOException | WorldAlreadyExistsException | IllegalArgumentException ignored ) {
+        } catch (IOException | WorldAlreadyExistsException | IllegalArgumentException ignored) {
         
         }
         return slimeWorld;
     }
     
     @Override
-    public SlimeWorld createCustomLayerWorld( BWorld world , String material ){
-        WorldData worldData = new WorldData( );
-        worldData.setSpawn( "0, 64, 0" );
-        worldData.setWorldType( "flat" );
-        worldData.setDragonBattle( false );
-        worldData.setAllowMonsters( false );
-        worldData.setAllowAnimals( false );
-        worldData.setPvp( false );
-        SlimePropertyMap propertyMap = worldData.toPropertyMap( );
+    public SlimeWorld createCustomLayerWorld(BWorld world, String material){
+        WorldData worldData = new WorldData();
+        worldData.setSpawn("0, 64, 0");
+        worldData.setWorldType("flat");
+        worldData.setDragonBattle(false);
+        worldData.setAllowMonsters(false);
+        worldData.setAllowAnimals(false);
+        worldData.setPvp(false);
+        SlimePropertyMap propertyMap = worldData.toPropertyMap();
         SlimeWorld slimeWorld = null;
         try {
-            slimeWorld = Main.getSlimePlugin( ).createEmptyWorld( loader , world.getUUID( ).toString( ) , false , propertyMap );
-    
-            final Material mat = XMaterial.valueOf( material.equals( "GRASS" ) && !Settings.VERSION.equals( "v1_12_R1" ) ? "GRASS_BLOCK" : material ).parseMaterial( );
-            boolean empty = mat == XMaterial.AIR.parseMaterial( );
-            if ( empty ) {
-                Main.getSlimePlugin( ).generateEmptyWorld( slimeWorld , true );
+            slimeWorld = Main.getSlimePlugin().createEmptyWorld(loader, world.getUUID().toString(), false, propertyMap);
+            
+            final Material mat = XMaterial.valueOf(material.equals("GRASS") && !Settings.VERSION.equals("v1_12_R1") ? "GRASS_BLOCK" : material).parseMaterial();
+            boolean empty = mat == XMaterial.AIR.parseMaterial();
+            if (empty){
+                Main.getSlimePlugin().generateEmptyWorld(slimeWorld, true);
             } else {
-                Main.getSlimePlugin( ).generateWorld( slimeWorld , mat );
+                Main.getSlimePlugin().generateWorld(slimeWorld, mat);
             }
             
             
-        } catch ( IOException | WorldAlreadyExistsException | IllegalArgumentException ignored ) {
+        } catch (IOException | WorldAlreadyExistsException | IllegalArgumentException ignored) {
         
         }
         return slimeWorld;
@@ -140,94 +140,94 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
      * @param world
      */
     @Override
-    public void createWorld( BWorld world ){
-        database.insertOne( TABLE_NAME , world );
+    public void createWorld(BWorld world){
+        database.insertOne(TABLE_NAME, world);
     }
     
     
     @Override
-    public void deleteWorldFromOutside( UUID owner_uuid , BWorld bworld , String serverTarget , JsonObject json ){
-        final String worldName = bworld.getUUID( ).toString( );
-        final World world = Bukkit.getWorld( bworld.getUUID( ).toString( ) );
-        final long time = System.currentTimeMillis( );
+    public void deleteWorldFromOutside(UUID owner_uuid, BWorld bworld, String serverTarget, JsonObject json){
+        final String worldName = bworld.getUUID().toString();
+        final World world = Bukkit.getWorld(bworld.getUUID().toString());
+        final long time = System.currentTimeMillis();
         boolean isDone = true;
-        Main.getInstance( ).debug( "Initializing the WorldDestroyer:" );
-        Main.getInstance( ).debug( "[WorldDestroyer] Deleting the world: " + worldName );
-        if ( world == null ) {
-            Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: world == null" );
-            Main.getInstance( ).getSocket( ).sendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.not-loaded" , "world" , worldName ) );
+        Main.getInstance().debug("Initializing the WorldDestroyer:");
+        Main.getInstance().debug("[WorldDestroyer] Deleting the world: " + worldName);
+        if (world == null){
+            Main.getInstance().debug("[WorldDestroyer] &4ERROR AT: world == null");
+            Main.getInstance().getSocket().sendMSGToPlayer(owner_uuid, Main.getLang().getMSG("error.world.not-loaded", "world", worldName));
             
             isDone = false;
         }
         
         
         // Teleport all players outside the world before unloading it
-        List < Player > players = world.getPlayers( );
+        List < Player > players = world.getPlayers();
         
-        if ( !players.isEmpty( ) ) {
-            players.forEach( player -> player.kickPlayer( "El mundo ha sido borrado" ) );
-            Main.getInstance( ).getSocket( ).sendJoinServer( owner_uuid , "lobby" );
+        if (!players.isEmpty()){
+            players.forEach(player -> player.kickPlayer("El mundo ha sido borrado"));
+            Main.getInstance().getSocket().sendJoinServer(owner_uuid, "lobby");
         }
         
-        if ( !Bukkit.unloadWorld( world , true ) ) {
-            Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: &e!Bukkit.unloadWorld( world , true )" );
-            Main.getInstance( ).getSocket( ).sendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) );
+        if (!Bukkit.unloadWorld(world, true)){
+            Main.getInstance().debug("[WorldDestroyer] &4ERROR AT: &e!Bukkit.unloadWorld( world , true )");
+            Main.getInstance().getSocket().sendMSGToPlayer(owner_uuid, Main.getLang().getMSG("error.world.failed-to-unload", "world", worldName));
             isDone = false;
         }
         
-        Main.getInstance( ).debug( "[WorldDestroyer] Attempting to unlock world.. " + worldName + "." );
+        Main.getInstance().debug("[WorldDestroyer] Attempting to unlock world.. " + worldName + ".");
         try {
-            if ( loader != null && loader.isWorldLocked( worldName ) ) {
-                Main.getInstance( ).debug( "[WorldDestroyer] World.. " + worldName + " is locked." );
-                loader.unlockWorld( worldName );
-                loader.deleteWorld( worldName );
-                Main.getInstance( ).debug( "[WorldDestroyer] Attempted to unlock world.. " + worldName + "." );
+            if (loader != null && loader.isWorldLocked(worldName)){
+                Main.getInstance().debug("[WorldDestroyer] World.. " + worldName + " is locked.");
+                loader.unlockWorld(worldName);
+                loader.deleteWorld(worldName);
+                Main.getInstance().debug("[WorldDestroyer] Attempted to unlock world.. " + worldName + ".");
             } else {
-                Main.getInstance( ).debug( "[WorldDestroyer] " + worldName + " was not unlocked. This could be because the world is either unlocked or not in the config. This is not an error" );
+                Main.getInstance().debug("[WorldDestroyer] " + worldName + " was not unlocked. This could be because the world is either unlocked or not in the config. This is not an error");
             }
-        } catch ( UnknownWorldException | IOException e ) {
-            e.printStackTrace( );
+        } catch (UnknownWorldException | IOException e) {
+            e.printStackTrace();
         }
-    
-        final ArrayList < SpigotHome > homesByWorld = Main.getInstance( ).getHomes( ).getHomesByWorld( bworld.getUUID( ) );
-        Main.getInstance( ).debug( "[WorldDestroyer] Deleting the " + homesByWorld.size( ) + " Homes from the world..." );
-        for ( SpigotHome home : homesByWorld ) {
-            Main.getInstance( ).getHomes( ).deleteHome( home );
-            Main.getInstance( ).debug( "[WorldDestroyer] Deleted the home: " + home.getName( ) + " from the world" );
+        
+        final ArrayList < SpigotHome > homesByWorld = Main.getInstance().getHomes().getHomesByWorld(bworld.getUUID());
+        Main.getInstance().debug("[WorldDestroyer] Deleting the " + homesByWorld.size() + " Homes from the world...");
+        for ( SpigotHome home : homesByWorld ){
+            Main.getInstance().getHomes().deleteHome(home);
+            Main.getInstance().debug("[WorldDestroyer] Deleted the home: " + home.getName() + " from the world");
         }
-        Main.getInstance( ).debug( "[WorldDestroyer] Deleted all the homes." );
-    
-        database.deleteOne( TABLE_NAME , Filters.eq( "uuid" , bworld.getUUID( ).toString( ) ) );
-    
+        Main.getInstance().debug("[WorldDestroyer] Deleted all the homes.");
+        
+        database.deleteOne(TABLE_NAME, Filters.eq("uuid", bworld.getUUID().toString()));
+        
         try {
-            Main.getInstance( ).debug( "[WorldDestroyer] Deleting the World Folder of: " + worldName + "..." );
-            FileUtils.deleteDirectory( new File( worldName ) );
-            FileUtils.forceDelete( new File( Main.getInstance( ).getServer( ).getWorldContainer( ) , "/slime_worlds/" + worldName + ".slime" ) );
-            Main.getInstance( ).debug( "[WorldDestroyer] Deleted the World Folder of: " + worldName + "." );
-        } catch ( Exception e ) {
-            e.printStackTrace( );
-            Main.getInstance( ).debug( "[WorldDestroyer] &4ERROR AT: File file = new File( Main.getInstance( ).getDataFolder( ) , /" + worldName );
-            Main.getInstance( ).getSocket( ).sendMSGToPlayer( owner_uuid , Main.getLang( ).getMSG( "error.world.failed-to-unload" , "world" , worldName ) );
+            Main.getInstance().debug("[WorldDestroyer] Deleting the World Folder of: " + worldName + "...");
+            FileUtils.deleteDirectory(new File(worldName));
+            FileUtils.forceDelete(new File(Main.getInstance().getServer().getWorldContainer(), "/slime_worlds/" + worldName + ".slime"));
+            Main.getInstance().debug("[WorldDestroyer] Deleted the World Folder of: " + worldName + ".");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Main.getInstance().debug("[WorldDestroyer] &4ERROR AT: File file = new File( Main.getInstance( ).getDataFolder( ) , /" + worldName);
+            Main.getInstance().getSocket().sendMSGToPlayer(owner_uuid, Main.getLang().getMSG("error.world.failed-to-unload", "world", worldName));
             isDone = false;
         }
         
-        Main.getInstance( ).debug( "[WorldDestroyer] Removing all perms of the world members, owner and online members..." );
+        Main.getInstance().debug("[WorldDestroyer] Removing all perms of the world members, owner and online members...");
         
-        final ArrayList < UUID > playersToRemovePerms = new ArrayList <>( bworld.getOnlineMembers( ) );
-        playersToRemovePerms.add( bworld.getOwner( ) );
-        playersToRemovePerms.addAll( bworld.getMembers( ) );
+        final ArrayList < UUID > playersToRemovePerms = new ArrayList <>(bworld.getOnlineMembers());
+        playersToRemovePerms.add(bworld.getOwner());
+        playersToRemovePerms.addAll(bworld.getMembers());
         
         
-        for ( UUID uuid : playersToRemovePerms ) {
+        for ( UUID uuid : playersToRemovePerms ){
             try {
-                Main.getInstance( ).removePermissionsInOneWorld( uuid , bworld.getUUID( ) );
-            } catch ( NullPointerException ignored ) {
+                Main.getInstance().removePermissionsInOneWorld(uuid, bworld.getUUID());
+            } catch (NullPointerException ignored) {
             }
         }
         
-        Main.getInstance( ).debug( "[WorldDestroyer] World: " + worldName + " was unloaded and destroyed in " + (System.currentTimeMillis( ) - time) + "ms." );
-    
-    
+        Main.getInstance().debug("[WorldDestroyer] World: " + worldName + " was unloaded and destroyed in " + (System.currentTimeMillis() - time) + "ms.");
+        
+        
         if (isDone){
             json.addProperty("type", "WORLD_DELETE_SUCCESS");
         } else {
@@ -235,7 +235,7 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
             json.addProperty("error", "WORLD_DELETE_FAILED");
         }
         Main.getInstance().getSocket().sendMessage(json);
-    
+        
     }
     
     private void deleteWorld(SlimeWorld slimeWorld){
@@ -306,83 +306,83 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
     }*/
     
     @Override
-    public void saveWorld( Object world ){
+    public void saveWorld(Object world){
         /*SlimeWorld slimeWorld = ( SlimeWorld ) world;*/
     }
     
     @Override
-    public boolean saveWorld( BWorld world ){
-        return database.replaceOneFast( TABLE_NAME , Filters.eq( "uuid" , world.getUUID( ).toString( ) ) , world );
+    public boolean saveWorld(BWorld world){
+        return database.replaceOneFast(TABLE_NAME, Filters.eq("uuid", world.getUUID().toString()), world);
     }
     
     
     @Override
-    public BWorld getWorld( UUID uuid ){
-        Document doc = database.findOneFast( TABLE_NAME , Filters.eq( "uuid" , uuid.toString( ) ) );
-        BWorld world = Api.getGson( ).fromJson( doc.toJson( ) , BWorld.class );
-        if ( world == null ) {
-            throw new WorldNotFoundError( uuid );
+    public BWorld getWorld(UUID uuid){
+        Document doc = database.findOneFast(TABLE_NAME, Filters.eq("uuid", uuid.toString()));
+        BWorld world = Api.getGson().fromJson(doc.toJson(), BWorld.class);
+        if (world == null){
+            throw new WorldNotFoundError(uuid);
         }
         return world;
     }
     
     @Override
-    public boolean manageVisitJoinWorld( WorldVisitRequest request ){
-        final Player p = Bukkit.getPlayer( request.getTarget_uuid( ) );
-        final boolean isInWorld = !p.getWorld( ).getName( ).equals( "warp" );
-        Main.getInstance( ).debug( "WorldVisitRequest" );
-        if ( isInWorld ) {
-            final BWorld world = getWorld( UUID.fromString( p.getWorld( ).getName( ) ) );
-            final User guest = Main.getInstance( ).getPlayers( ).getPlayer( request.getGuest( ) );
-            if ( request.isAccepted( ) || world.getOwner( ).equals( request.getGuest( ) ) || world.isMember( request.getGuest( ) ) || guest.getRank( ).isAdmin( ) ) {
-                if ( request.getGuest_server( ).equals( request.getTarget_server( ) ) ) {
-                    Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
-                    final Player worldOwner = Bukkit.getPlayer( world.getOwner( ) );
-                    if ( worldOwner != null ) {
-                        loc = worldOwner.getLocation( );
+    public boolean manageVisitJoinWorld(WorldVisitRequest request){
+        final Player p = Bukkit.getPlayer(request.getTarget_uuid());
+        final boolean isInWorld = !p.getWorld().getName().equals("warp");
+        Main.getInstance().debug("WorldVisitRequest");
+        if (isInWorld){
+            final BWorld world = getWorld(UUID.fromString(p.getWorld().getName()));
+            final User guest = Main.getInstance().getPlayers().getPlayer(request.getGuest());
+            if (request.isAccepted() || world.getOwner().equals(request.getGuest()) || world.isMember(request.getGuest()) || guest.getRank().isAdmin()){
+                if (request.getGuest_server().equals(request.getTarget_server())){
+                    Location loc = Bukkit.getWorld(world.getUUID().toString()).getSpawnLocation();
+                    final Player worldOwner = Bukkit.getPlayer(world.getOwner());
+                    if (worldOwner != null){
+                        loc = worldOwner.getLocation();
                     }
-                    world.addOnlineMember( request.getGuest( ) );
-                    world.removeVisitor( request.getGuest( ) );
-                    final Player guestPlayer = Bukkit.getPlayer( request.getGuest( ) );
+                    world.addOnlineMember(request.getGuest());
+                    world.removeVisitor(request.getGuest());
+                    final Player guestPlayer = Bukkit.getPlayer(request.getGuest());
                     Location finalLoc = loc;
-                    Main.getInstance( ).manageVisitorPermissions( request.getGuest( ) , world.getUUID( ) , false ).thenAccept( a -> {
-                        Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( request.getGuest( ) , world );
-                        Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> guestPlayer.teleport( finalLoc , PlayerTeleportEvent.TeleportCause.PLUGIN ) );
-                    } );
+                    Main.getInstance().manageVisitorPermissions(request.getGuest(), world.getUUID(), false).thenAccept(a -> {
+                        Main.getInstance().getWorlds().addGuestToVisitWorldList(request.getGuest(), world);
+                        Bukkit.getScheduler().runTask(Main.getInstance(), ( ) -> guestPlayer.teleport(finalLoc, PlayerTeleportEvent.TeleportCause.PLUGIN));
+                    });
                 } else {
-                    request.accept( );
-                    Main.getInstance( ).getSocket( ).sendWorldVisitResponse( request );
+                    request.accept();
+                    Main.getInstance().getSocket().sendWorldVisitResponse(request);
                 }
                 return true;
             } else {
-                final HashMap < String, String > replace = new HashMap <>( );
-                replace.put( "player" , guest.getName( ) );
-                replace.put( "world" , world.getName( ).split( "-" )[0] );
-                world.addVisitor( request );
-                Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( request.getGuest( ) , world );
+                final HashMap < String, String > replace = new HashMap <>();
+                replace.put("player", guest.getName());
+                replace.put("world", world.getName().split("-")[0]);
+                world.addVisitor(request);
+                Main.getInstance().getWorlds().addGuestToVisitWorldList(request.getGuest(), world);
                 
-                Utils.sendMessage( p , Utils.hoverOverMessageRunCommand( Main.getLang( ).getMSG( "world.visit-request-to-owner" , replace ) ,
-                        Collections.singletonList( "&7Click para &aACEPTAR" ) , "/visit accept world " + request.getGuest( ) + " " + world.getUUID( ) ) );
+                Utils.sendMessage(p, Utils.hoverOverMessageRunCommand(Main.getLang().getMSG("world.visit-request-to-owner", replace),
+                        Collections.singletonList("&7Click para &aACEPTAR"), "/visit accept world " + request.getGuest() + " " + world.getUUID()));
                 return false;
             }
         } else {
-            Main.getInstance( ).getSocket( ).sendMSGToPlayer( request.getGuest( ) , "error.visit.world.player-in-warp" , "player" , request.getGuest_name( ) );
+            Main.getInstance().getSocket().sendMSGToPlayer(request.getGuest(), "error.visit.world.player-in-warp", "player", request.getGuest_name());
             return false;
         }
         
     }
     
-    public void addGuestToVisitWorldList( UUID guest , BWorld world ){
-        guestToVisitWorlds.put( guest , world );
-        saveWorld( world );
+    public void addGuestToVisitWorldList(UUID guest, BWorld world){
+        guestToVisitWorlds.put(guest, world);
+        saveWorld(world);
     }
     
-    public BWorld getWorldByVisitor( UUID visitor ){
-        return guestToVisitWorlds.getOrDefault( visitor , null );
+    public BWorld getWorldByVisitor(UUID visitor){
+        return guestToVisitWorlds.getOrDefault(visitor, null);
     }
     
-    public void removeGuestFromVisitWorldList( UUID guest ){
-        guestToVisitWorlds.remove( guest );
+    public void removeGuestFromVisitWorldList(UUID guest){
+        guestToVisitWorlds.remove(guest);
     }
     
     @Override

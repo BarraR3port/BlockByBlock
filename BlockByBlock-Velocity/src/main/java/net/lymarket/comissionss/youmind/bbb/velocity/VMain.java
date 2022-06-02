@@ -28,13 +28,13 @@ import org.slf4j.Logger;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "blockbyblock", name = "BlockByBlock", version = "1.0", authors = {"BarraR3port" , "LyMarket Development Team"}, url = "https://lymarket.net/")
+@Plugin(id = "blockbyblock", name = "BlockByBlock", version = "1.0", authors = {"BarraR3port", "LyMarket Development Team"}, url = "https://lymarket.net/")
 public final class VMain extends LyApiVelocity {
     
     private static VMain instance;
     private static Config.MainConfig config;
-    private final ServerSocketManager serverSocketManager = new ServerSocketManager( );
-    private final ServerManager serverManager = new ServerManager( );
+    private final ServerSocketManager serverSocketManager = new ServerSocketManager();
+    private final ServerManager serverManager = new ServerManager();
     private final ProxyServer proxy;
     private final Slf4jPluginLogger logger;
     private final Path path;
@@ -51,11 +51,11 @@ public final class VMain extends LyApiVelocity {
      */
     @Inject
     @Internal
-    public VMain( final ProxyServer server , final Logger logger , final @DataDirectory Path path ){
-        super( server , "&cSin permisos" );
+    public VMain(final ProxyServer server, final Logger logger, final @DataDirectory Path path){
+        super(server, "&cSin permisos");
         this.proxy = server;
         this.path = path;
-        this.logger = new Slf4jPluginLogger( logger );
+        this.logger = new Slf4jPluginLogger(logger);
     }
     
     @Internal
@@ -64,9 +64,9 @@ public final class VMain extends LyApiVelocity {
     }
     
     @Internal
-    public static void debug( String msg ){
-        if ( config.isDebug( ) ) {
-            instance.getLogger( ).info( ChatColor.RED + "[DEBUG] " + ChatColor.LIGHT_PURPLE + msg );
+    public static void debug(String msg){
+        if (config.isDebug()){
+            instance.getLogger().info(ChatColor.RED + "[DEBUG] " + ChatColor.LIGHT_PURPLE + msg);
         }
     }
     
@@ -77,42 +77,42 @@ public final class VMain extends LyApiVelocity {
     
     @Subscribe
     @Internal
-    public void onProxyInitialize( ProxyInitializeEvent event ){
+    public void onProxyInitialize(ProxyInitializeEvent event){
         // Plugin startup logic
         instance = this;
-        config = new Config( path ).getConfig( );
-        proxy.getChannelRegistrar( ).register( new LegacyChannelIdentifier( "lymarket:bbb" ) );
-        proxy.getEventManager( ).register( this , new onPluginMessage( ) );
-        proxy.getEventManager( ).register( this , new PlayerEvents( ) );
+        config = new Config(path).getConfig();
+        proxy.getChannelRegistrar().register(new LegacyChannelIdentifier("lymarket:bbb"));
+        proxy.getEventManager().register(this, new onPluginMessage());
+        proxy.getEventManager().register(this, new PlayerEvents());
         //serverManager.init( );
         
         
-        if ( ServerSocketTask.init( ) ) {
-            debug( "ServerSocketTask started" );
+        if (ServerSocketTask.init()){
+            debug("ServerSocketTask started");
         }
-        String url = /*config.getDb_urli( ).equals( "" ) ? "mongodb://" + config.getDb_username( ) + ":" + config.getDb_password( ) + "@" + config.getDb_host( ) + ":" + config.getDb_port( ) :*/ config.getDb_urli( );
-        final MongoDBClient mongo = new MongoDBClient( url , config.getDb_database( ) );
-        playersRepository = new PlayersRepository( mongo , "players" );
-        worldManager = new WorldManager( mongo , "worlds" );
-        proxy.getScheduler( ).buildTask( this , this::sendInfoToServers ).repeat( 10 , TimeUnit.SECONDS ).schedule( );
-        new Lobby( proxy.getCommandManager( ) );
+        String url = /*config.getDb_urli( ).equals( "" ) ? "mongodb://" + config.getDb_username( ) + ":" + config.getDb_password( ) + "@" + config.getDb_host( ) + ":" + config.getDb_port( ) :*/ config.getDb_urli();
+        final MongoDBClient mongo = new MongoDBClient(url, config.getDb_database());
+        playersRepository = new PlayersRepository(mongo, "players");
+        worldManager = new WorldManager(mongo, "worlds");
+        proxy.getScheduler().buildTask(this, this::sendInfoToServers).repeat(10, TimeUnit.SECONDS).schedule();
+        new Lobby(proxy.getCommandManager());
     }
     
     @Subscribe
-    public void onProxyShutdown( ProxyShutdownEvent event ){
+    public void onProxyShutdown(ProxyShutdownEvent event){
         // Plugin shutdown logic
-        ServerSocketTask.stopTasks( );
+        ServerSocketTask.stopTasks();
     }
     
     private void sendInfoToServers( ){
-        getServerSocketManager( ).getSocketByServer( ).forEach( ( server , socket ) -> {
-            if ( server.startsWith( "PW-" ) ) {
-                final JsonObject js = new JsonObject( );
-                js.addProperty( "type" , "UPDATE_ONLINE_PLAYERS_IN_WORLDS" );
-                socket.sendMessage( js );
+        getServerSocketManager().getSocketByServer().forEach((server, socket) -> {
+            if (server.startsWith("PW-")){
+                final JsonObject js = new JsonObject();
+                js.addProperty("type", "UPDATE_ONLINE_PLAYERS_IN_WORLDS");
+                socket.sendMessage(js);
             }
-        } );
-        
+        });
+    
     }
     
     @Internal

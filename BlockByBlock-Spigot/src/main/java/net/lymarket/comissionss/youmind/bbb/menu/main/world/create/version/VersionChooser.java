@@ -16,8 +16,8 @@ public class VersionChooser extends Menu {
     
     private final Menu previousMenu;
     
-    public VersionChooser( IPlayerMenuUtility playerMenuUtility , UUID targetUserUUID , Menu prevMenu ){
-        super( playerMenuUtility );
+    public VersionChooser(IPlayerMenuUtility playerMenuUtility, UUID targetUserUUID, Menu prevMenu){
+        super(playerMenuUtility);
         this.targetUserUUID = targetUserUUID;
         this.previousMenu = prevMenu;
     }
@@ -34,26 +34,26 @@ public class VersionChooser extends Menu {
     
     @Override
     public void setMenuItems( ){
-        
-        inventory.setItem( 11 , Items.BUILDER_1_12 );
-        
-        inventory.setItem( 13 , Items.BUILDER_1_16 );
-        
-        inventory.setItem( 15 , Items.BUILDER_1_18 );
-        
-        inventory.setItem( 18 , super.CLOSE_ITEM );
+    
+        inventory.setItem(11, Items.BUILDER_1_12);
+    
+        inventory.setItem(13, Items.BUILDER_1_16);
+    
+        inventory.setItem(15, Items.BUILDER_1_18);
+    
+        inventory.setItem(18, super.CLOSE_ITEM);
     }
     
     @Override
-    public void handleMenu( InventoryClickEvent e ){
-        final ItemStack item = e.getCurrentItem( );
+    public void handleMenu(InventoryClickEvent e){
+        final ItemStack item = e.getCurrentItem();
         
-        if ( NBTItem.hasTag( item , "server-version" ) ) {
-            final String version = NBTItem.getTag( item , "server-version" );
-            new WorldCreatorMenu( playerMenuUtility , version , targetUserUUID ).open( );
+        if (NBTItem.hasTag(item, "server-version")){
+            final String version = NBTItem.getTag(item, "server-version");
+            new WorldCreatorMenu(playerMenuUtility, version, targetUserUUID).open();
             
-        } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
-            previousMenu.open( );
+        } else if (NBTItem.hasTag(item, "ly-menu-close")){
+            previousMenu.open();
         }
     }
 }

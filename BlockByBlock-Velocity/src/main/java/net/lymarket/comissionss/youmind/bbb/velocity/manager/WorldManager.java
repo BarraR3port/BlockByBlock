@@ -15,16 +15,16 @@ import java.util.UUID;
 public class WorldManager extends IBWorldManager < Void > {
     
     
-    public WorldManager( MongoDBClient database , String tableName ){
-        super( database , tableName );
+    public WorldManager(MongoDBClient database, String tableName){
+        super(database, tableName);
     }
     
-    public ArrayList < BWorld > getWorldsByUser( UUID uuid ){
+    public ArrayList < BWorld > getWorldsByUser(UUID uuid){
         return null;
     }
     
     @Override
-    public ArrayList < BWorld > getWorldsByServer( String serverName ){
+    public ArrayList < BWorld > getWorldsByServer(String serverName){
         return null;
     }
     
@@ -33,43 +33,43 @@ public class WorldManager extends IBWorldManager < Void > {
         return null;
     }
     
-    public Void createWorldSlimeWorld( BWorld world ){
+    public Void createWorldSlimeWorld(BWorld world){
         return null;
     }
     
-    public Void createCustomLayerWorld( BWorld world , String material ){
+    public Void createCustomLayerWorld(BWorld world, String material){
         return null;
     }
     
-    public void createWorld( BWorld world ){
-        database.insertOne( TABLE_NAME , world );
+    public void createWorld(BWorld world){
+        database.insertOne(TABLE_NAME, world);
     }
     
     @Override
-    public void deleteWorldFromOutside( UUID senderUUID , BWorld bworld , String serverTarget , JsonObject json ){
+    public void deleteWorldFromOutside(UUID senderUUID, BWorld bworld, String serverTarget, JsonObject json){
     
     }
     
-    public boolean saveWorld( BWorld world ){
-        return database.replaceOneFast( TABLE_NAME , Filters.eq( "uuid" , world.getUUID( ).toString( ) ) , world );
+    public boolean saveWorld(BWorld world){
+        return database.replaceOneFast(TABLE_NAME, Filters.eq("uuid", world.getUUID().toString()), world);
     }
     
-    public BWorld getWorld( UUID uuid ){
-        Document doc = database.findOneFast( TABLE_NAME , Filters.eq( "uuid" , uuid.toString( ) ) );
-        return Api.getGson( ).fromJson( doc.toJson( ) , BWorld.class );
+    public BWorld getWorld(UUID uuid){
+        Document doc = database.findOneFast(TABLE_NAME, Filters.eq("uuid", uuid.toString()));
+        return Api.getGson().fromJson(doc.toJson(), BWorld.class);
     }
     
     @Override
-    public boolean manageVisitJoinWorld( WorldVisitRequest request ){
+    public boolean manageVisitJoinWorld(WorldVisitRequest request){
         return false;
     }
     
-    public void saveWorld( Object world ){
+    public void saveWorld(Object world){
     
     }
     
     public ArrayList < BWorld > getAllWorlds( ){
-        return database.findMany( TABLE_NAME , BWorld.class );
+        return database.findMany(TABLE_NAME, BWorld.class);
     }
     
     public void trashFinder( ){

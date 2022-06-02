@@ -9,7 +9,7 @@ public final class VelocityUser extends User {
     public VelocityUser( ){
     }
     
-    public VelocityUser( String name , UUID uuid ){
-        super( name , uuid );
+    public VelocityUser(String name, UUID uuid){
+        super(name, uuid);
     }
 }

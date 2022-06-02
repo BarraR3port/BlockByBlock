@@ -27,26 +27,26 @@ public class Visit implements ILyCommand {
                         Main.getLang().sendErrorMsg(context.getSender(), "visit.self");
                     }
                 } else {
-                    Main.getLang( ).sendErrorMsg( context.getSender( ) , "player.not-fund" , "player" , context.getArg( 0 ) );
+                    Main.getLang().sendErrorMsg(context.getSender(), "player.not-fund", "player", context.getArg(0));
                 }
                 return new CommandResponse();
             }
-            case 4: {
-                if ( context.getArg( 0 ).equalsIgnoreCase( "accept" ) && context.getArg( 1 ).equalsIgnoreCase( "world" ) ) {
-                    if ( !(context.getSender( ) instanceof Player) ) {
+            case 4:{
+                if (context.getArg(0).equalsIgnoreCase("accept") && context.getArg(1).equalsIgnoreCase("world")){
+                    if (!(context.getSender() instanceof Player)){
                         return new CommandResponse();
                     }
-                    final Player p = ( Player ) context.getSender( );
+                    final Player p = (Player) context.getSender();
                     try {
-                        UUID owner_uuid = UUID.fromString( context.getArg( 2 ) );
-                        UUID world_uuid = UUID.fromString( context.getArg( 3 ) );
-    
-                        final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
-    
-                        if ( world.isVisitor( owner_uuid ) ) {
-                            final WorldVisitRequest rq = world.getVisitor( owner_uuid );
-                            Main.getInstance( ).debug( "Visit Accept" );
-                            Main.getInstance( ).getWorlds( ).manageVisitJoinWorld( rq.accept( ) );
+                        UUID owner_uuid = UUID.fromString(context.getArg(2));
+                        UUID world_uuid = UUID.fromString(context.getArg(3));
+                
+                        final BWorld world = Main.getInstance().getWorlds().getWorld(world_uuid);
+                
+                        if (world.isVisitor(owner_uuid)){
+                            final WorldVisitRequest rq = world.getVisitor(owner_uuid);
+                            Main.getInstance().debug("Visit Accept");
+                            Main.getInstance().getWorlds().manageVisitJoinWorld(rq.accept());
                             /*if ( rq.getGuest_server( ).equalsIgnoreCase( Settings.SERVER_NAME ) ) {
                                 final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
                                 world.addOnlineMember( owner_uuid );
@@ -62,12 +62,12 @@ public class Visit implements ILyCommand {
                                 Main.getInstance( ).getWorlds( ).manageVisitJoinWorld( rq );
                             }*/
                         } else {
-                            Main.getLang( ).sendErrorMsg( p , "visit.expired" );
+                            Main.getLang().sendErrorMsg(p, "visit.expired");
                         }
                         return new CommandResponse();
-    
-                    } catch ( IllegalArgumentException e ) {
-                        Main.getLang( ).sendErrorMsg( p , "player.not-fund" , "player" , context.getArg( 2 ) );
+                
+                    } catch (IllegalArgumentException e) {
+                        Main.getLang().sendErrorMsg(p, "player.not-fund", "player", context.getArg(2));
                         return new CommandResponse();
                     }
                 }
@@ -79,11 +79,11 @@ public class Visit implements ILyCommand {
     
     
     @Tab
-    public ArrayList < String > tabComplete( STabContext context ){
-        final ArrayList < String > list = new ArrayList <>( );
-        if ( context.getSender( ).hasPermission( "bbb.visit" ) ) {
-            if ( context.getArgs( ).length == 1 ) {
-                list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( context.getSender( ).getName( ) ) );
+    public ArrayList < String > tabComplete(STabContext context){
+        final ArrayList < String > list = new ArrayList <>();
+        if (context.getSender().hasPermission("bbb.visit")){
+            if (context.getArgs().length == 1){
+                list.addAll(Main.getInstance().getPlayers().getPlayersName(context.getSender().getName()));
                 
             }
         }

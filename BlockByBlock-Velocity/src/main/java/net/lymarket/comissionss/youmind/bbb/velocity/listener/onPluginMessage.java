@@ -7,14 +7,14 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent;
 
 public class onPluginMessage {
     
-    private int servers = 1;
+    private final int servers = 1;
     
     /*@Subscribe*/
-    public void onPluginMessage( final PluginMessageEvent e ){
-        if ( !e.getResult( ).isAllowed( ) ) return;
-        if ( e.getIdentifier( ).getId( ).equalsIgnoreCase( "lymarket:bbb" ) ) {
-            ByteArrayDataInput in = ByteStreams.newDataInput( e.getData( ) );
-            String subChannel = in.readUTF( );
+    public void onPluginMessage(final PluginMessageEvent e){
+        if (!e.getResult().isAllowed()) return;
+        if (e.getIdentifier().getId().equalsIgnoreCase("lymarket:bbb")){
+            ByteArrayDataInput in = ByteStreams.newDataInput(e.getData());
+            String subChannel = in.readUTF();
             /*if ( subChannel.equalsIgnoreCase( "Report" ) ) {
                 int id = in.readInt( );
                 String sender = in.readUTF( );

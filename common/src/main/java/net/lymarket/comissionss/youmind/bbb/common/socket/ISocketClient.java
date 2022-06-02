@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 
 public interface ISocketClient {
     
-    boolean sendMessage( JsonObject message );
+    boolean sendMessage(JsonObject message);
     
-    void reconnect( String msg );
+    void reconnect(String msg);
     
-    void disable( String reason );
+    void disable(String reason);
 }

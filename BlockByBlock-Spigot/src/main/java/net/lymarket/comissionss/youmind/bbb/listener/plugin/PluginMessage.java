@@ -15,29 +15,29 @@ public class PluginMessage implements PluginMessageListener {
     }
     
     @Override
-    public void onPluginMessageReceived( String channel , Player p , byte[] msg ){
-        if ( channel.equals( "lymarket:bbb" ) || channel.equals( "BungeeCord" ) ) {
-            ByteArrayDataInput in = ByteStreams.newDataInput( msg );
-            String subChannel = in.readUTF( );
-            switch ( subChannel ) {
-                case "OpenGui": {
-                    String guiType = in.readUTF( );
-                    String owner = in.readUTF( );
-                    String target = in.readUTF( );
+    public void onPluginMessageReceived(String channel, Player p, byte[] msg){
+        if (channel.equals("lymarket:bbb") || channel.equals("BungeeCord")){
+            ByteArrayDataInput in = ByteStreams.newDataInput(msg);
+            String subChannel = in.readUTF();
+            switch(subChannel){
+                case "OpenGui":{
+                    String guiType = in.readUTF();
+                    String owner = in.readUTF();
+                    String target = in.readUTF();
                     //Bukkit.getPluginManager( ).callEvent( new OpenGuiEvent( Enum.valueOf( GuiType.class , guiType ) , owner , target ) );
                     return;
                 }
-                case "GetServer": {
-                    String servername = in.readUTF( );
-                    if ( Settings.SERVER_NAME == null || Settings.SERVER_NAME.equals( "" ) ) {
-                        Main.getInstance( ).getConfig( ).set( "global.proxy-server-name" , servername );
-                        Main.getInstance( ).getConfig( ).saveData( );
+                case "GetServer":{
+                    String servername = in.readUTF();
+                    if (Settings.SERVER_NAME == null || Settings.SERVER_NAME.equals("")){
+                        Main.getInstance().getConfig().set("global.proxy-server-name", servername);
+                        Main.getInstance().getConfig().saveData();
                     }
                     Settings.SERVER_NAME = servername;
                     return;
-                    
+                
                 }
-                case "GetData": {
+                case "GetData":{
                     /*int tbPlayers = in.readInt( );
                     int bwPlayers = in.readInt( );
                     int svPlayers = in.readInt( );

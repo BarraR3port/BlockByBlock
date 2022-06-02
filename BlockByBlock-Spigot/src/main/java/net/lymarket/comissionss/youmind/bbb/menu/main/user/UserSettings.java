@@ -10,14 +10,14 @@ public class UserSettings extends UpdatableMenu {
     
     private final UUID target_user;
     
-    public UserSettings( IPlayerMenuUtility playerMenuUtility , UUID target_user ){
-        super( playerMenuUtility );
+    public UserSettings(IPlayerMenuUtility playerMenuUtility, UUID target_user){
+        super(playerMenuUtility);
         this.target_user = target_user;
     }
     
     @Override
     public String getMenuName( ){
-        return "Ajustes" + (getOwner( ).getUniqueId( ).equals( target_user ) ? "" : " de " + getOwner( ).getName( ));
+        return "Ajustes" + (getOwner().getUniqueId().equals(target_user) ? "" : " de " + getOwner().getName());
     }
     
     @Override
@@ -31,7 +31,7 @@ public class UserSettings extends UpdatableMenu {
     }
     
     @Override
-    public void handleMenu( InventoryClickEvent e ){
+    public void handleMenu(InventoryClickEvent e){
     
     }
 }

@@ -29,24 +29,24 @@ public class RankMenu implements ILyCommand {
             } else {
                 context.getSender().sendMessage("§e- §dEstablece el rango a un jugador §e- §d/rank set (jugador) (rango)");
             }
-            context.getSender( ).sendMessage( "§b§m----------------------------------------------------" );
+            context.getSender().sendMessage("§b§m----------------------------------------------------");
             return new CommandResponse();
         }
-        
-        if ( context.getArg( 0 ).equalsIgnoreCase( "set" ) ) {
-            if ( context.getArgs( ).length == 3 ) {
-                final String target = context.getArg( 1 );
+    
+        if (context.getArg(0).equalsIgnoreCase("set")){
+            if (context.getArgs().length == 3){
+                final String target = context.getArg(1);
                 try {
-                    Rank rank = Rank.valueOf( context.getArg( 2 ).toUpperCase( Locale.ROOT ) );
-                    SpigotUser user = Main.getInstance( ).getPlayers( ).getPlayer( target );
-                    Bukkit.dispatchCommand( Bukkit.getConsoleSender( ) , "lp user " + target + " group set " + rank.getLpName( ) );
-                    user.setRank( rank );
-                    Main.getInstance( ).getPlayers( ).savePlayer( user );
-                } catch ( NullPointerException e ) {
-                    Main.getLang( ).sendErrorMsg( context.getSender( ) , "player.not-fund" , "player" , target );
+                    Rank rank = Rank.valueOf(context.getArg(2).toUpperCase(Locale.ROOT));
+                    SpigotUser user = Main.getInstance().getPlayers().getPlayer(target);
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + target + " group set " + rank.getLpName());
+                    user.setRank(rank);
+                    Main.getInstance().getPlayers().savePlayer(user);
+                } catch (NullPointerException e) {
+                    Main.getLang().sendErrorMsg(context.getSender(), "player.not-fund", "player", target);
                 }
             } else {
-                Main.getLang( ).sendErrorMsg( context.getSender( ) , "wrong-command" , "command" , "/rank set (jugador) (rango)" );
+                Main.getLang().sendErrorMsg(context.getSender(), "wrong-command", "command", "/rank set (jugador) (rango)");
             }
             return new CommandResponse();
         }
@@ -55,18 +55,18 @@ public class RankMenu implements ILyCommand {
     
     
     @Tab
-    public ArrayList < String > tabComplete( STabContext context ){
-        ArrayList < String > list = new ArrayList <>( );
-        if ( context.getSender( ).hasPermission( "blockbyblock.rank" ) ) {
-            if ( context.getArgs( ).length == 1 ) {
-                list.add( "set" );
+    public ArrayList < String > tabComplete(STabContext context){
+        ArrayList < String > list = new ArrayList <>();
+        if (context.getSender().hasPermission("blockbyblock.rank")){
+            if (context.getArgs().length == 1){
+                list.add("set");
             }
-            if ( context.getArgs( ).length == 2 ) {
-                list.addAll( Main.getInstance( ).getPlayers( ).getPlayersName( ) );
+            if (context.getArgs().length == 2){
+                list.addAll(Main.getInstance().getPlayers().getPlayersName());
             }
-            if ( context.getArgs( ).length == 3 ) {
-                for ( net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank rank : net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank.values( ) ) {
-                    list.add( StringUtils.capitalize( rank.name( ).toLowerCase( Locale.ROOT ) ) );
+            if (context.getArgs().length == 3){
+                for ( net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank rank : net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank.values() ){
+                    list.add(StringUtils.capitalize(rank.name().toLowerCase(Locale.ROOT)));
                 }
             }
         }

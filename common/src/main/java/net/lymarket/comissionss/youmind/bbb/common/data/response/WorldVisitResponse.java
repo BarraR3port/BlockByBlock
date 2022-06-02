@@ -13,7 +13,7 @@ public final class WorldVisitResponse implements Response {
     private boolean response;
     
     
-    public WorldVisitResponse( UUID owner_uuid , UUID world_uuid , UUID target_uuid , String targetName , String target_server , String initial_server , boolean response ){
+    public WorldVisitResponse(UUID owner_uuid, UUID world_uuid, UUID target_uuid, String targetName, String target_server, String initial_server, boolean response){
         this.owner_uuid = owner_uuid;
         this.world_uuid = world_uuid;
         this.targetName = targetName;
@@ -23,7 +23,7 @@ public final class WorldVisitResponse implements Response {
         this.initial_server = initial_server;
     }
     
-    public WorldVisitResponse( boolean response ){
+    public WorldVisitResponse(boolean response){
         this.owner_uuid = null;
         this.world_uuid = null;
         this.target_uuid = null;
@@ -49,7 +49,7 @@ public final class WorldVisitResponse implements Response {
         return world_uuid;
     }
     
-    public void setWorld_uuid( UUID world_uuid ){
+    public void setWorld_uuid(UUID world_uuid){
         this.world_uuid = world_uuid;
     }
     
@@ -61,7 +61,7 @@ public final class WorldVisitResponse implements Response {
         return response;
     }
     
-    public void setResponse( boolean response ){
+    public void setResponse(boolean response){
         this.response = response;
     }
     

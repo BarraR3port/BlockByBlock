@@ -11,20 +11,20 @@ public class Settings extends UpdatableMenu {
     
     private final UUID targetUUID;
     
-    public Settings( IPlayerMenuUtility playerMenuUtility ){
-        super( playerMenuUtility );
-        this.targetUUID = getOwner( ).getUniqueId( );
+    public Settings(IPlayerMenuUtility playerMenuUtility){
+        super(playerMenuUtility);
+        this.targetUUID = getOwner().getUniqueId();
         
     }
     
-    public Settings( IPlayerMenuUtility playerMenuUtility , UUID target ){
-        super( playerMenuUtility );
+    public Settings(IPlayerMenuUtility playerMenuUtility, UUID target){
+        super(playerMenuUtility);
         this.targetUUID = target;
     }
     
     @Override
     public String getMenuName( ){
-        return targetUUID.equals( getOwner( ).getUniqueId( ) ) ? "Ajustes" : "Ajustes de " + Main.getInstance( ).getPlayers( ).getPlayer( targetUUID ).getName( );
+        return targetUUID.equals(getOwner().getUniqueId()) ? "Ajustes" : "Ajustes de " + Main.getInstance().getPlayers().getPlayer(targetUUID).getName();
     }
     
     @Override
@@ -38,7 +38,7 @@ public class Settings extends UpdatableMenu {
     }
     
     @Override
-    public void handleMenu( InventoryClickEvent e ){
+    public void handleMenu(InventoryClickEvent e){
     
     }
 }

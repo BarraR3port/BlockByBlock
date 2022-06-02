@@ -14,12 +14,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class User {
-    private final Date createDate = new Date( );
-    private final HashMap < String, Boolean > options = new HashMap <>( );
-    private final HashMap < String, String > properties = new HashMap <>( );
-    private final ArrayList < Plot > plots = new ArrayList <>( );
-    private final ArrayList < Warp > warps = new ArrayList <>( );
-    private final ArrayList < Home > homes = new ArrayList <>( );
+    private final Date createDate = new Date();
+    private final HashMap < String, Boolean > options = new HashMap <>();
+    private final HashMap < String, String > properties = new HashMap <>();
+    private final ArrayList < Plot > plots = new ArrayList <>();
+    private final ArrayList < Warp > warps = new ArrayList <>();
+    private final ArrayList < Home > homes = new ArrayList <>();
     
     private Rank rank;
     private UUID uuid;
@@ -33,11 +33,11 @@ public abstract class User {
     public User( ){
     }
     
-    public User( String name , UUID uuid ){
+    public User(String name, UUID uuid){
         this.name = name;
         this.uuid = uuid;
-        stats = new Stats( );
-        skin = SkinManager.getSkin( name );
+        stats = new Stats();
+        skin = SkinManager.getSkin(name);
         rank = Rank.VISITOR;
     }
     
@@ -46,7 +46,7 @@ public abstract class User {
         return name;
     }
     
-    public void setName( String name ){
+    public void setName(String name){
         this.name = name;
     }
     
@@ -58,45 +58,45 @@ public abstract class User {
         return uuid;
     }
     
-    public void setUUID( UUID uuid ){
+    public void setUUID(UUID uuid){
         this.uuid = uuid;
     }
     
     @Override
     public String toString( ){
-        return Api.getGson( ).toJson( this );
+        return Api.getGson().toJson(this);
     }
     
-    public boolean getOption( String key ){
-        return options.getOrDefault( key , false );
+    public boolean getOption(String key){
+        return options.getOrDefault(key, false);
     }
     
-    public void removeOption( String key ){
-        options.remove( key );
+    public void removeOption(String key){
+        options.remove(key);
     }
     
-    public void setOption( String key , boolean value ){
-        options.put( key , value );
+    public void setOption(String key, boolean value){
+        options.put(key, value);
     }
     
-    public String getProperty( String key ){
-        return properties.get( key );
+    public String getProperty(String key){
+        return properties.get(key);
     }
     
-    public void removeProperty( String key ){
-        properties.remove( key );
+    public void removeProperty(String key){
+        properties.remove(key);
     }
     
-    public void addProperty( String key , String value ){
-        properties.put( key , value );
+    public void addProperty(String key, String value){
+        properties.put(key, value);
     }
     
     public String serialize( ){
-        return Api.getGson( ).toJson( this );
+        return Api.getGson().toJson(this);
     }
     
-    public User deserialize( String s ){
-        return Api.getGson( ).fromJson( s , User.class );
+    public User deserialize(String s){
+        return Api.getGson().fromJson(s, User.class);
     }
     
     public HashMap < String, String > getProperties( ){
@@ -111,33 +111,33 @@ public abstract class User {
         return plots;
     }
     
-    public ArrayList < Plot > getPlots31( String version ){
-        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P31 ) && plot.getVersion( ).equals( version ) ).collect( Collectors.toCollection( ArrayList::new ) );
+    public ArrayList < Plot > getPlots31(String version){
+        return this.plots.stream().filter(plot -> plot.getType().equals(PlotType.P31) && plot.getVersion().equals(version)).collect(Collectors.toCollection(ArrayList::new));
     }
     
-    public ArrayList < Plot > getPlots101( String version ){
-        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P101 ) && plot.getVersion( ).equals( version ) ).collect( Collectors.toCollection( ArrayList::new ) );
+    public ArrayList < Plot > getPlots101(String version){
+        return this.plots.stream().filter(plot -> plot.getType().equals(PlotType.P101) && plot.getVersion().equals(version)).collect(Collectors.toCollection(ArrayList::new));
     }
     
-    public ArrayList < Plot > getPlots501( String version ){
-        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P501 ) && plot.getVersion( ).equals( version ) ).collect( Collectors.toCollection( ArrayList::new ) );
+    public ArrayList < Plot > getPlots501(String version){
+        return this.plots.stream().filter(plot -> plot.getType().equals(PlotType.P501) && plot.getVersion().equals(version)).collect(Collectors.toCollection(ArrayList::new));
     }
     
-    public ArrayList < Plot > getPlots1001( String version ){
-        return this.plots.stream( ).filter( plot -> plot.getType( ).equals( PlotType.P1001 ) && plot.getVersion( ).equals( version ) ).collect( Collectors.toCollection( ArrayList::new ) );
+    public ArrayList < Plot > getPlots1001(String version){
+        return this.plots.stream().filter(plot -> plot.getType().equals(PlotType.P1001) && plot.getVersion().equals(version)).collect(Collectors.toCollection(ArrayList::new));
     }
     
-    public void addPlot( Plot plot ){
-        plots.add( plot );
+    public void addPlot(Plot plot){
+        plots.add(plot);
     }
     
-    public void removePlot( String plotId , PlotType plotType ){
-        plots.removeIf( plot -> Objects.equals( plot.getPlotID( ) , plotId ) && Objects.equals( plot.getType( ) , plotType ) );
+    public void removePlot(String plotId, PlotType plotType){
+        plots.removeIf(plot -> Objects.equals(plot.getPlotID(), plotId) && Objects.equals(plot.getType(), plotType));
     }
     
-    public Plot getPlot( String uuid ){
-        for ( Plot plot : plots ) {
-            if ( Objects.equals( plot.getPlotID( ) , uuid ) ) {
+    public Plot getPlot(String uuid){
+        for ( Plot plot : plots ){
+            if (Objects.equals(plot.getPlotID(), uuid)){
                 return plot;
             }
         }
@@ -148,7 +148,7 @@ public abstract class User {
         return address;
     }
     
-    public void setAddress( String address ){
+    public void setAddress(String address){
         this.address = address;
     }
     
@@ -156,39 +156,39 @@ public abstract class User {
         return warps;
     }
     
-    public void addWarp( Warp warp ){
-        warps.add( warp );
+    public void addWarp(Warp warp){
+        warps.add(warp);
     }
     
-    public void removeWarp( Warp warp ){
-        warps.remove( warp );
+    public void removeWarp(Warp warp){
+        warps.remove(warp);
     }
     
-    public void removeWarp( UUID warp ){
-        warps.removeIf( warp1 -> warp1.getUUID( ) == warp );
+    public void removeWarp(UUID warp){
+        warps.removeIf(warp1 -> warp1.getUUID() == warp);
     }
     
     public ArrayList < Home > getHomes( ){
         return homes;
     }
     
-    public void addHome( Home home ){
-        homes.add( home );
+    public void addHome(Home home){
+        homes.add(home);
     }
     
-    public void removeHome( Home home ){
-        homes.remove( home );
+    public void removeHome(Home home){
+        homes.remove(home);
     }
     
-    public void removeHome( UUID home ){
-        homes.removeIf( home1 -> home1.getUUID( ) == home );
+    public void removeHome(UUID home){
+        homes.removeIf(home1 -> home1.getUUID() == home);
     }
     
     public Stats getStats( ){
         return stats;
     }
     
-    public void setStats( Stats stats ){
+    public void setStats(Stats stats){
         this.stats = stats;
     }
     
@@ -197,14 +197,14 @@ public abstract class User {
     }
     
     public void updateSkin( ){
-        this.skin = SkinManager.getSkin( this.name );
+        this.skin = SkinManager.getSkin(this.name);
     }
     
     public Rank getRank( ){
         return rank;
     }
     
-    public void setRank( Rank rank ){
+    public void setRank(Rank rank){
         this.rank = rank;
     }
     
@@ -212,7 +212,7 @@ public abstract class User {
         return this.lastLocation;
     }
     
-    public void setLastLocation( Loc loc ){
+    public void setLastLocation(Loc loc){
         this.lastLocation = loc;
     }
     

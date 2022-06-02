@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class WorldNotFoundError extends RuntimeException {
     
-    public WorldNotFoundError( UUID worldUUID ){
-        super( "World " + worldUUID.toString( ) + " not found" );
+    public WorldNotFoundError(UUID worldUUID){
+        super("World " + worldUUID.toString() + " not found");
     }
 }

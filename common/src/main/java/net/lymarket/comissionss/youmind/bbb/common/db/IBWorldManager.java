@@ -12,13 +12,13 @@ import java.util.UUID;
 
 public abstract class IBWorldManager< V > extends MongoDB < UUID, BWorld > {
     
-    private final HashMap < UUID, BWorld > playersToTP = new HashMap <>( );
+    private final HashMap < UUID, BWorld > playersToTP = new HashMap <>();
     
-    public IBWorldManager( MongoDBClient database , String tableName ){
-        super( database , tableName );
+    public IBWorldManager(MongoDBClient database, String tableName){
+        super(database, tableName);
     }
     
-    public static BWorld getWorldFormatted( UUID ownerUUID , String versionTarget , String material ){
+    public static BWorld getWorldFormatted(UUID ownerUUID, String versionTarget, String material){
         /*ArrayList < String > list = new ArrayList <>( );
         String versionFormatted = versionTarget.replace( "." , "" ).replace( "_" , "" );
         list.add( "PW-" + versionFormatted + "-1" );
@@ -27,24 +27,24 @@ public abstract class IBWorldManager< V > extends MongoDB < UUID, BWorld > {
         String server = list.get( ( int ) (Math.random( ) * list.size( )) );
         
         return new BWorld( ownerUUID , server , versionTarget );*/
-        final String versionFormatted = versionTarget.replace( "." , "" ).replace( "_" , "" );
-        return new BWorld( ownerUUID , "PW-" + versionFormatted + "-1" , versionTarget , material );
+        final String versionFormatted = versionTarget.replace(".", "").replace("_", "");
+        return new BWorld(ownerUUID, "PW-" + versionFormatted + "-1", versionTarget, material);
     }
     
-    public void addPlayerToTP( UUID uuid , BWorld world ){
-        playersToTP.put( uuid , world );
+    public void addPlayerToTP(UUID uuid, BWorld world){
+        playersToTP.put(uuid, world);
     }
     
-    public void removePlayerToTP( UUID uuid ){
-        playersToTP.remove( uuid );
+    public void removePlayerToTP(UUID uuid){
+        playersToTP.remove(uuid);
     }
     
-    public boolean isPlayerToTP( UUID uuid ){
-        return playersToTP.containsKey( uuid );
+    public boolean isPlayerToTP(UUID uuid){
+        return playersToTP.containsKey(uuid);
     }
     
-    public BWorld getPlayerToTP( UUID uuid ){
-        return playersToTP.get( uuid );
+    public BWorld getPlayerToTP(UUID uuid){
+        return playersToTP.get(uuid);
     }
     
     public HashMap < UUID, BWorld > getPlayersToTP( ){
@@ -52,55 +52,55 @@ public abstract class IBWorldManager< V > extends MongoDB < UUID, BWorld > {
     }
     
     
-    public abstract ArrayList < BWorld > getWorldsByUser( UUID uuid );
+    public abstract ArrayList < BWorld > getWorldsByUser(UUID uuid);
     
-    public abstract ArrayList < BWorld > getWorldsByServer( String serverName );
+    public abstract ArrayList < BWorld > getWorldsByServer(String serverName);
     
     public abstract ArrayList < BWorld > getWorldsByServer( );
     
-    public abstract V createWorldSlimeWorld( BWorld world );
+    public abstract V createWorldSlimeWorld(BWorld world);
     
-    public abstract V createCustomLayerWorld( BWorld world , String material );
-    
-    
-    public abstract void createWorld( BWorld world );
-    
-    public abstract void deleteWorldFromOutside( UUID senderUUID , BWorld bworld , String serverTarget , JsonObject json );
-    
-    public abstract void saveWorld( Object world );
+    public abstract V createCustomLayerWorld(BWorld world, String material);
     
     
-    public boolean addPlayerToWorldOnlineMembers( UUID uuid , BWorld world ){
-        if ( removePlayerFromWorldOnlineMembers( uuid ) ) {
-            world.addOnlineMember( uuid );
-            saveWorld( world );
+    public abstract void createWorld(BWorld world);
+    
+    public abstract void deleteWorldFromOutside(UUID senderUUID, BWorld bworld, String serverTarget, JsonObject json);
+    
+    public abstract void saveWorld(Object world);
+    
+    
+    public boolean addPlayerToWorldOnlineMembers(UUID uuid, BWorld world){
+        if (removePlayerFromWorldOnlineMembers(uuid)){
+            world.addOnlineMember(uuid);
+            saveWorld(world);
         }
         return true;
     }
     
-    public boolean addPlayerToWorldOnlineMembers( UUID uuid , UUID world_uuid ){
-        return addPlayerToWorldOnlineMembers( uuid , getWorld( world_uuid ) );
+    public boolean addPlayerToWorldOnlineMembers(UUID uuid, UUID world_uuid){
+        return addPlayerToWorldOnlineMembers(uuid, getWorld(world_uuid));
     }
     
-    public boolean removePlayerFromWorldOnlineMembers( UUID uuid ){
+    public boolean removePlayerFromWorldOnlineMembers(UUID uuid){
         
-        for ( BWorld world : getWorlds( ) ) {
-            if ( world.hasOnlineMember( uuid ) ) {
-                world.removeOnlineMember( uuid );
-                saveWorld( world );
+        for ( BWorld world : getWorlds() ){
+            if (world.hasOnlineMember(uuid)){
+                world.removeOnlineMember(uuid);
+                saveWorld(world);
             }
         }
         return true;
-    
+        
     }
     
     public ArrayList < BWorld > getWorlds( ){
-        return database.findMany( TABLE_NAME , BWorld.class );
+        return database.findMany(TABLE_NAME, BWorld.class);
     }
     
-    public abstract boolean saveWorld( BWorld world );
+    public abstract boolean saveWorld(BWorld world);
     
-    public abstract BWorld getWorld( UUID uuid );
+    public abstract BWorld getWorld(UUID uuid);
     
-    public abstract boolean manageVisitJoinWorld( WorldVisitRequest request );
+    public abstract boolean manageVisitJoinWorld(WorldVisitRequest request);
 }

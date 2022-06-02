@@ -9,7 +9,7 @@ public abstract class Msg {
     private final String version;
     private String msg;
     
-    public Msg( UUID owner , String msg , String version ){
+    public Msg(UUID owner, String msg, String version){
         this.msg = msg;
         this.owner = owner;
         this.version = version;
@@ -19,7 +19,7 @@ public abstract class Msg {
         return msg;
     }
     
-    public void setMsg( String msg ){
+    public void setMsg(String msg){
         this.msg = msg;
     }
     

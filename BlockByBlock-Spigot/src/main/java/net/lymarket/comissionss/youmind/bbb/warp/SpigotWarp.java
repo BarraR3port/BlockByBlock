@@ -11,19 +11,19 @@ import java.util.UUID;
 
 public class SpigotWarp extends Warp {
     
-    public SpigotWarp( Loc location , String version , WarpType type ){
-        super( location , version , type );
+    public SpigotWarp(Loc location, String version, WarpType type){
+        super(location, version, type);
     }
     
-    public SpigotWarp( Loc location , String version , WarpType type , boolean isPublic ){
-        super( location , version , type , isPublic );
+    public SpigotWarp(Loc location, String version, WarpType type, boolean isPublic){
+        super(location, version, type, isPublic);
     }
     
-    public SpigotWarp( String uuid , Loc location , String version , WarpType type , boolean isPublic , List < UUID > members ){
-        super( uuid , location , version , type , isPublic , members );
+    public SpigotWarp(String uuid, Loc location, String version, WarpType type, boolean isPublic, List < UUID > members){
+        super(uuid, location, version, type, isPublic, members);
     }
     
     public Location getBukkitLocation( ){
-        return new Location( Bukkit.getWorld( this.getLocation( ).getWorld( ) ) , this.getLocation( ).getX( ) , this.getLocation( ).getY( ) , this.getLocation( ).getZ( ) );
+        return new Location(Bukkit.getWorld(this.getLocation().getWorld()), this.getLocation().getX(), this.getLocation().getY(), this.getLocation().getZ());
     }
 }

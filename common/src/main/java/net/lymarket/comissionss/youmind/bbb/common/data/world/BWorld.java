@@ -6,43 +6,43 @@ import java.util.UUID;
 public class BWorld {
     
     private final UUID uuid;
-    private final ArrayList < UUID > members = new ArrayList <>( );
-    private final ArrayList < String > description = new ArrayList <>( );
-    private final ArrayList < WorldVisitRequest > visitors = new ArrayList <>( );
+    private final ArrayList < UUID > members = new ArrayList <>();
+    private final ArrayList < String > description = new ArrayList <>();
+    private final ArrayList < WorldVisitRequest > visitors = new ArrayList <>();
     private final String block_base;
-    private ArrayList < UUID > online_members = new ArrayList <>( );
+    private ArrayList < UUID > online_members = new ArrayList <>();
     private String name;
     private UUID owner;
     private String server;
     private String version;
     
-    public BWorld( UUID owner , String name , String server , String version , String block_base ){
+    public BWorld(UUID owner, String name, String server, String version, String block_base){
         this.owner = owner;
         this.name = name;
         this.server = server;
         this.version = version;
-        this.uuid = UUID.randomUUID( );
-        this.members.add( owner );
+        this.uuid = UUID.randomUUID();
+        this.members.add(owner);
         this.block_base = block_base;
     }
     
-    public BWorld( UUID owner , String server , String version , String block_base ){
+    public BWorld(UUID owner, String server, String version, String block_base){
         this.owner = owner;
-        this.uuid = UUID.randomUUID( );
-        this.name = uuid.toString( );
+        this.uuid = UUID.randomUUID();
+        this.name = uuid.toString();
         this.server = server;
         this.version = version;
-        this.members.add( owner );
+        this.members.add(owner);
         this.block_base = block_base;
     }
     
-    public BWorld( UUID owner , String name , String server , String version , UUID uuid , String block_base ){
+    public BWorld(UUID owner, String name, String server, String version, UUID uuid, String block_base){
         this.owner = owner;
         this.name = name;
         this.server = server;
         this.version = version;
         this.uuid = uuid;
-        this.members.add( owner );
+        this.members.add(owner);
         this.block_base = block_base;
     }
     
@@ -50,7 +50,7 @@ public class BWorld {
         return owner;
     }
     
-    public void setOwner( UUID owner ){
+    public void setOwner(UUID owner){
         this.owner = owner;
     }
     
@@ -58,7 +58,7 @@ public class BWorld {
         return name;
     }
     
-    public void setName( String name ){
+    public void setName(String name){
         this.name = name;
     }
     
@@ -70,7 +70,7 @@ public class BWorld {
         return server;
     }
     
-    public void setServer( String server ){
+    public void setServer(String server){
         this.server = server;
     }
     
@@ -78,7 +78,7 @@ public class BWorld {
         return version;
     }
     
-    public void setVersion( String version ){
+    public void setVersion(String version){
         this.version = version;
     }
     
@@ -87,38 +87,38 @@ public class BWorld {
     }
     
     
-    public void addMember( UUID member ){
-        if ( !members.contains( member ) ) {
-            members.add( member );
+    public void addMember(UUID member){
+        if (!members.contains(member)){
+            members.add(member);
         }
     }
     
-    public void removeMember( UUID member ){
-        members.remove( member );
+    public void removeMember(UUID member){
+        members.remove(member);
     }
     
-    public boolean isMember( UUID member ){
-        return members.contains( member );
+    public boolean isMember(UUID member){
+        return members.contains(member);
     }
     
     public ArrayList < String > getDescription( ){
         return description;
     }
     
-    public void addDescription( String description ){
-        this.description.add( description );
+    public void addDescription(String description){
+        this.description.add(description);
     }
     
-    public void removeDescription( String description ){
-        this.description.remove( description );
+    public void removeDescription(String description){
+        this.description.remove(description);
     }
     
     public ArrayList < UUID > getOnlineMembers( ){
         return online_members;
     }
     
-    public void setOnlineMembers( ArrayList < UUID > online_members ){
-        this.online_members.clear( );
+    public void setOnlineMembers(ArrayList < UUID > online_members){
+        this.online_members.clear();
         this.online_members = online_members;
     }
     
@@ -126,38 +126,38 @@ public class BWorld {
         return visitors;
     }
     
-    public WorldVisitRequest getVisitor( UUID uuid ){
-        return visitors.stream( ).filter( visitor -> visitor.getGuest( ).equals( uuid ) ).findFirst( ).orElse( null );
+    public WorldVisitRequest getVisitor(UUID uuid){
+        return visitors.stream().filter(visitor -> visitor.getGuest().equals(uuid)).findFirst().orElse(null);
         
     }
     
-    public void addVisitor( WorldVisitRequest visitor ){
-        if ( !visitors.contains( visitor ) ) {
-            visitors.add( visitor );
+    public void addVisitor(WorldVisitRequest visitor){
+        if (!visitors.contains(visitor)){
+            visitors.add(visitor);
         }
     }
     
-    public void removeVisitor( UUID visitor ){
-        visitors.removeIf( v -> v.getGuest( ).equals( visitor ) );
+    public void removeVisitor(UUID visitor){
+        visitors.removeIf(v -> v.getGuest().equals(visitor));
     }
     
-    public boolean isVisitor( UUID visitor ){
-        return visitors.stream( ).map( WorldVisitRequest::getGuest ).anyMatch( visitor::equals );
+    public boolean isVisitor(UUID visitor){
+        return visitors.stream().map(WorldVisitRequest::getGuest).anyMatch(visitor::equals);
     }
     
     
-    public void addOnlineMember( UUID member ){
-        if ( !online_members.contains( member ) ) {
-            online_members.add( member );
+    public void addOnlineMember(UUID member){
+        if (!online_members.contains(member)){
+            online_members.add(member);
         }
     }
     
-    public void removeOnlineMember( UUID member ){
-        online_members.remove( member );
+    public void removeOnlineMember(UUID member){
+        online_members.remove(member);
     }
     
-    public boolean hasOnlineMember( UUID member ){
-        return online_members.contains( member );
+    public boolean hasOnlineMember(UUID member){
+        return online_members.contains(member);
     }
     
     public String getBlock_base( ){

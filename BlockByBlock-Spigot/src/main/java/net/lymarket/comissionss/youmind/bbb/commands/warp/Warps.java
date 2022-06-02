@@ -25,7 +25,7 @@ public class Warps implements ILyCommand {
             return new CommandResponse();
         }
         if (context.getArgs().length == 0){
-            new WarpMenu( LyApi.getPlayerMenuUtility( p ) ).open( );
+            new WarpMenu(LyApi.getPlayerMenuUtility(p)).open();
             /*ArrayList < Warp > warps = Main.getInstance( ).getWarps( ).getWarpsByVersion( Settings.VERSION );
             if ( warps == null || warps.isEmpty( ) ) {
                 Main.getLang( ).sendErrorMsg( context.getSender( ) , "warp.no-warps" );
@@ -64,14 +64,14 @@ public class Warps implements ILyCommand {
                 Utils.sendMessage( p , text );
             }*/
         } else {
-            Main.getLang( ).sendErrorMsg( context.getSender( ) , "wrong-command" , "command" , "/warps" );
+            Main.getLang().sendErrorMsg(context.getSender(), "wrong-command", "command", "/warps");
         }
         
         return new CommandResponse();
     }
     
     @Tab
-    public ArrayList < String > tabComplete( STabContext context ){
-        return new ArrayList <>( );
+    public ArrayList < String > tabComplete(STabContext context){
+        return new ArrayList <>();
     }
 }

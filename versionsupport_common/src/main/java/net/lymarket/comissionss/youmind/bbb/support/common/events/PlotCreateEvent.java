@@ -11,7 +11,7 @@ public class PlotCreateEvent extends Event implements Cancellable {
     private boolean canceled;
     
     public PlotCreateEvent( ){
-        handlers = new HandlerList( );
+        handlers = new HandlerList();
         canceled = false;
     }
     
@@ -32,7 +32,7 @@ public class PlotCreateEvent extends Event implements Cancellable {
      * @param b canceled
      */
     @Override
-    public void setCancelled( boolean b ){
+    public void setCancelled(boolean b){
         canceled = b;
     }
 }

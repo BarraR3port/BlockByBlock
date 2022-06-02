@@ -3,10 +3,10 @@ package net.lymarket.comissionss.youmind.bbb.common.data.rank;
 import java.util.Arrays;
 
 public enum Rank {
-    ADMIN( "admin" , "&c&l「Admin⏌" , "&c&l「Admin⏌" , Integer.MAX_VALUE , Integer.MAX_VALUE , Integer.MAX_VALUE , Integer.MAX_VALUE , 5 ),
-    DEV( "dev" , "&d&l「Dev⏌" , " &d&l「Dev⏌" , Integer.MAX_VALUE , Integer.MAX_VALUE , Integer.MAX_VALUE , Integer.MAX_VALUE , 5 ),
-    BUILDER( "builder" , "&9「B⏌" , "&9&l「Builder⏌" , 15 , 10 , 3 , 1 , 3 ),
-    VISITOR( "default" , "&7「Visitor⏌" , "&7「Visitor⏌" , 15 , 5 , 2 , 0 , 0 );
+    ADMIN("admin", "&c&l「Admin⏌", "&c&l「Admin⏌", Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, 5),
+    DEV("dev", "&d&l「Dev⏌", " &d&l「Dev⏌", Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, 5),
+    BUILDER("builder", "&9「B⏌", "&9&l「Builder⏌", 15, 10, 3, 1, 3),
+    VISITOR("default", "&7「Visitor⏌", "&7「Visitor⏌", 15, 5, 2, 0, 0);
     
     private final String lpName;
     private final String prefix;
@@ -22,7 +22,7 @@ public enum Rank {
     
     private final int maxWorlds;
     
-    Rank( String lpName , String prefix , String tabPrefix , int max31Plots , int max101Plots , int max501Plots , int max1001Plots , int maxWorlds ){
+    Rank(String lpName, String prefix, String tabPrefix, int max31Plots, int max101Plots, int max501Plots, int max1001Plots, int maxWorlds){
         this.lpName = lpName;
         this.prefix = prefix;
         this.tabPrefix = tabPrefix;
@@ -34,8 +34,8 @@ public enum Rank {
     }
     
     
-    public static Rank fromString( String rank ){
-        return Arrays.stream( Rank.values( ) ).filter( r -> r.getLpName( ).equalsIgnoreCase( rank ) ).findFirst( ).orElse( null );
+    public static Rank fromString(String rank){
+        return Arrays.stream(Rank.values()).filter(r -> r.getLpName().equalsIgnoreCase(rank)).findFirst().orElse(null);
     }
     
     public String getLpName( ){

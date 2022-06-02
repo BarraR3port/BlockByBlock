@@ -8,8 +8,8 @@ public class PlotMsg extends Msg {
     
     private final Plot plot;
     
-    public PlotMsg( UUID owner , String msg , String version , Plot plot ){
-        super( owner , msg , version );
+    public PlotMsg(UUID owner, String msg, String version, Plot plot){
+        super(owner, msg, version);
         this.plot = plot;
     }
     

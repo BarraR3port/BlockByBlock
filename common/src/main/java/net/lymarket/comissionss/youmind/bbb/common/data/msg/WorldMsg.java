@@ -8,8 +8,8 @@ public class WorldMsg extends Msg {
     
     private final BWorld world;
     
-    public WorldMsg( UUID owner , String msg , String version , BWorld world ){
-        super( owner , msg , version );
+    public WorldMsg(UUID owner, String msg, String version, BWorld world){
+        super(owner, msg, version);
         this.world = world;
     }
     

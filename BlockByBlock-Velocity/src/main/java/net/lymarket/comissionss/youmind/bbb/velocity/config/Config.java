@@ -13,23 +13,23 @@ import java.nio.file.Path;
 public class Config {
     private MainConfig config;
     
-    public Config( Path path ){
-        Path configPath = path.resolve( "config.yml" );
-        final YamlConfigurationLoader loader = YamlConfigurationLoader.builder( )
-                .defaultOptions( opts -> opts
-                        .shouldCopyDefaults( true )
-                        .header( "BlockByBlock | BarraR3port\n------------- | -------------" )
+    public Config(Path path){
+        Path configPath = path.resolve("config.yml");
+        final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
+                .defaultOptions(opts -> opts
+                        .shouldCopyDefaults(true)
+                        .header("BlockByBlock | BarraR3port\n------------- | -------------")
                 )
-                .path( configPath )
-                .build( );
+                .path(configPath)
+                .build();
         
         try {
-            final CommentedConfigurationNode node = loader.load( );
-            config = node.get( MainConfig.class );
-            node.set( MainConfig.class , config );
-            loader.save( node );
-        } catch ( ConfigurateException exception ) {
-            VMain.debug( "Could not load config.yml file, error: " + exception.getMessage( ) );
+            final CommentedConfigurationNode node = loader.load();
+            config = node.get(MainConfig.class);
+            node.set(MainConfig.class, config);
+            loader.save(node);
+        } catch (ConfigurateException exception) {
+            VMain.debug("Could not load config.yml file, error: " + exception.getMessage());
         }
     }
     
@@ -73,56 +73,56 @@ public class Config {
         public boolean isDebug( ){
             return debug;
         }
-        
-        public void setDebug( boolean debug ){
+    
+        public void setDebug(boolean debug){
             this.debug = debug;
         }
         
         public String getDb_host( ){
             return db_host;
         }
-        
-        public void setDb_host( String db_host ){
+    
+        public void setDb_host(String db_host){
             this.db_host = db_host;
         }
         
         public int getDb_port( ){
             return db_port;
         }
-        
-        public void setDb_port( int db_port ){
+    
+        public void setDb_port(int db_port){
             this.db_port = db_port;
         }
         
         public String getDb_database( ){
             return db_database;
         }
-        
-        public void setDb_database( String db_database ){
+    
+        public void setDb_database(String db_database){
             this.db_database = db_database;
         }
         
         public String getDb_urli( ){
             return db_urli;
         }
-        
-        public void setDb_urli( String db_urli ){
+    
+        public void setDb_urli(String db_urli){
             this.db_urli = db_urli;
         }
         
         public String getDb_username( ){
             return db_username;
         }
-        
-        public void setDb_username( String db_username ){
+    
+        public void setDb_username(String db_username){
             this.db_username = db_username;
         }
         
         public String getDb_password( ){
             return db_password;
         }
-        
-        public void setDb_password( String db_password ){
+    
+        public void setDb_password(String db_password){
             this.db_password = db_password;
         }
     }

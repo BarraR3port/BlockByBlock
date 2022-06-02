@@ -10,7 +10,7 @@ import net.lymarket.lyapi.spigot.config.Config;
 
 public interface BBBApi< S, U, H, W > {
     
-    void error( String message );
+    void error(String message);
     
     Config getConfig( );
     
@@ -32,7 +32,7 @@ public interface BBBApi< S, U, H, W > {
     
     String getProxyServerName( );
     
-    void debug( String message );
+    void debug(String message);
     
     ServerType getServerType( );
     

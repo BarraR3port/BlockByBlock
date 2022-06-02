@@ -5,7 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class PacketManager {
     
     
-    public PacketManager( JavaPlugin plugin ){
+    public PacketManager(JavaPlugin plugin){
         
         /*ProtocolManager manager = ProtocolLibrary.getProtocolManager( );
         manager.addPacketListener( new PacketAdapter( plugin , ListenerPriority.NORMAL ,  PacketType.Play.Client.TAB_COMPLETE ) {

@@ -41,7 +41,7 @@ public final class DelSpawn implements ILyCommand {
      * @return
      */
     @Tab
-    public ArrayList < String > tabComplete( STabContext context ){
-        return new ArrayList <>( );
+    public ArrayList < String > tabComplete(STabContext context){
+        return new ArrayList <>();
     }
 }

@@ -7,12 +7,12 @@ import org.bukkit.event.HandlerList;
 
 public class PlotCreateFailed extends Event {
     
-    private static final HandlerList handlers = new HandlerList( );
+    private static final HandlerList handlers = new HandlerList();
     
     private final PlotType plotType;
     private final Player player;
     
-    public PlotCreateFailed( final Player player , final PlotType plotType ){
+    public PlotCreateFailed(final Player player, final PlotType plotType){
         this.player = player;
         this.plotType = plotType;
     }

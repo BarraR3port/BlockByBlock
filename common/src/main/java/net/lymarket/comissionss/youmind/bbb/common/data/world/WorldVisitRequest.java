@@ -16,7 +16,7 @@ public class WorldVisitRequest {
     
     private boolean accepted = false;
     
-    public WorldVisitRequest( UUID guest , UUID target_uuid , String guest_name , String guest_server , String target_server ){
+    public WorldVisitRequest(UUID guest, UUID target_uuid, String guest_name, String guest_server, String target_server){
         this.guest = guest;
         this.target_uuid = target_uuid;
         this.guest_name = guest_name;

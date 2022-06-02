@@ -20,7 +20,7 @@ public abstract class ISocket< V, U, H, W > implements SocketMSG {
     
     private final IWarpManager < W > warps;
     
-    public ISocket( IPlayerRepository < U > players , IBWorldManager < V > worlds , IHomeManager < H > homes , IWarpManager < W > warps ){
+    public ISocket(IPlayerRepository < U > players, IBWorldManager < V > worlds, IHomeManager < H > homes, IWarpManager < W > warps){
         this.worlds = worlds;
         this.players = players;
         this.homes = homes;
@@ -45,11 +45,11 @@ public abstract class ISocket< V, U, H, W > implements SocketMSG {
     
     public abstract ISocketClient getSocket( );
     
-    public abstract void sendJoinHome( UUID owner , Home home );
+    public abstract void sendJoinHome(UUID owner, Home home);
     
-    public abstract void sendWorldVisitResponse( WorldVisitRequest request );
+    public abstract void sendWorldVisitResponse(WorldVisitRequest request);
     
-    public abstract void sendMsgFromPlayer( Msg msg );
+    public abstract void sendMsgFromPlayer(Msg msg);
     
     
 }

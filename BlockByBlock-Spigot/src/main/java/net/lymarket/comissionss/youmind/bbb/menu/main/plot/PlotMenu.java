@@ -23,10 +23,10 @@ public class PlotMenu extends Menu {
     private final String serverVersion;
     private final User user;
     
-    public PlotMenu( IPlayerMenuUtility playerMenuUtility , String serverVersion , UUID targetUserUUID ){
-        super( playerMenuUtility );
+    public PlotMenu(IPlayerMenuUtility playerMenuUtility, String serverVersion, UUID targetUserUUID){
+        super(playerMenuUtility);
         this.serverVersion = serverVersion;
-        this.user = Main.getInstance( ).getPlayers( ).getUpdatedPlayer( targetUserUUID );
+        this.user = Main.getInstance().getPlayers().getUpdatedPlayer(targetUserUUID);
     }
     
     @Override
@@ -41,56 +41,56 @@ public class PlotMenu extends Menu {
     
     @Override
     public void setMenuItems( ){
-        final Stats stats = user.getStats( );
-        
-        inventory.setItem( 19 , Items.PLOT_31_BASE );
-        
-        inventory.setItem( 21 , Items.PLOT_101_BASE );
-        
-        inventory.setItem( 23 , Items.PLOT_501_BASE );
-        
-        if ( user.getRank( ).equals( Rank.VISITOR ) ) {
-            inventory.setItem( 25 , new ItemBuilder( Items.PLOT_1001_BASE.clone( ) ).addLoreLine( "&cNO TIENES RANGO PARA UNIRTE" ).build( ) );
+        final Stats stats = user.getStats();
+    
+        inventory.setItem(19, Items.PLOT_31_BASE);
+    
+        inventory.setItem(21, Items.PLOT_101_BASE);
+    
+        inventory.setItem(23, Items.PLOT_501_BASE);
+    
+        if (user.getRank().equals(Rank.VISITOR)){
+            inventory.setItem(25, new ItemBuilder(Items.PLOT_1001_BASE.clone()).addLoreLine("&cNO TIENES RANGO PARA UNIRTE").build());
         } else {
-            inventory.setItem( 25 , Items.PLOT_1001_BASE );
+            inventory.setItem(25, Items.PLOT_1001_BASE);
         }
-        
-        inventory.setItem( 40 , new ItemBuilder( XMaterial.PLAYER_HEAD.parseMaterial( ) )
-                .setHeadSkin( user.getSkin( ) )
-                .setDisplayName( "&b&lStats" )
-                .addLoreLine( "" )
-                .addLoreLine( "&aTiempo Jugado: " + stats.getFormattedTimePlayed( ) )
-                .addLoreLine( "&aBloques destruidos: " + stats.getBLOCKS_BROKEN( ) )
-                .addLoreLine( "&aBloques Colocados: " + stats.getBLOCKS_PLACED( ) )
-                .addLoreLine( "&aElo: " + (stats.getELO( ) > 0 ? "&a" + stats.getELO( ) : "&c" + stats.getELO( )) )
-                .addTag( "stats" , "stats" )
-                .build( ) );
-        
-        inventory.setItem( 45 , super.CLOSE_ITEM );
-        
-        inventory.setItem( 53 , new ItemBuilder( XMaterial.ENDER_PEARL.parseItem( ) )
-                .setDisplayName( "&bWarps" )
-                .addTag( "type" , "warps" )
-                .build( ) );
+    
+        inventory.setItem(40, new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
+                .setHeadSkin(user.getSkin())
+                .setDisplayName("&b&lStats")
+                .addLoreLine("")
+                .addLoreLine("&aTiempo Jugado: " + stats.getFormattedTimePlayed())
+                .addLoreLine("&aBloques destruidos: " + stats.getBLOCKS_BROKEN())
+                .addLoreLine("&aBloques Colocados: " + stats.getBLOCKS_PLACED())
+                .addLoreLine("&aElo: " + (stats.getELO() > 0 ? "&a" + stats.getELO() : "&c" + stats.getELO()))
+                .addTag("stats", "stats")
+                .build());
+    
+        inventory.setItem(45, super.CLOSE_ITEM);
+    
+        inventory.setItem(53, new ItemBuilder(XMaterial.ENDER_PEARL.parseItem())
+                .setDisplayName("&bWarps")
+                .addTag("type", "warps")
+                .build());
     }
     
     @Override
-    public void handleMenu( InventoryClickEvent e ){
-        final ItemStack item = e.getCurrentItem( );
-    
-        if ( NBTItem.hasTag( item , "type" ) ) {
-            new WarpMenu( playerMenuUtility , serverVersion ).open( );
-        } else if ( NBTItem.hasTag( item , "plot-type" ) ) {
-            final PlotType plotType = PlotType.valueOf( NBTItem.getTag( item , "plot-type" ) );
-            if ( plotType.equals( PlotType.P1001 ) ) {
-                if ( user.getRank( ).equals( Rank.VISITOR ) ) {
-                    Main.getLang( ).sendErrorMsg( e.getWhoClicked( ) , "plot.not-allowed-to-join-1001" );
+    public void handleMenu(InventoryClickEvent e){
+        final ItemStack item = e.getCurrentItem();
+        
+        if (NBTItem.hasTag(item, "type")){
+            new WarpMenu(playerMenuUtility, serverVersion).open();
+        } else if (NBTItem.hasTag(item, "plot-type")){
+            final PlotType plotType = PlotType.valueOf(NBTItem.getTag(item, "plot-type"));
+            if (plotType.equals(PlotType.P1001)){
+                if (user.getRank().equals(Rank.VISITOR)){
+                    Main.getLang().sendErrorMsg(e.getWhoClicked(), "plot.not-allowed-to-join-1001");
                     return;
                 }
             }
-            Main.getInstance( ).getSocket( ).sendJoinPlotRequest( getOwner( ).getUniqueId( ) , serverVersion , null , plotType , e.getSlot( ) );
-        } else if ( NBTItem.hasTag( item , "ly-menu-close" ) ) {
-            new MainMenu( playerMenuUtility ).open( );
+            Main.getInstance().getSocket().sendJoinPlotRequest(getOwner().getUniqueId(), serverVersion, null, plotType, e.getSlot());
+        } else if (NBTItem.hasTag(item, "ly-menu-close")){
+            new MainMenu(playerMenuUtility).open();
         }
     }
     

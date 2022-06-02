@@ -6,18 +6,18 @@ public class Plot {
     private final String version;
     private String PlotID;
     
-    public Plot( PlotType type , String plotID , String version ){
+    public Plot(PlotType type, String plotID, String version){
         this.type = type;
         this.PlotID = plotID;
         this.version = version;
-        
+    
     }
     
     public String getPlotID( ){
         return PlotID;
     }
     
-    public void setPlotID( String plotID ){
+    public void setPlotID(String plotID){
         PlotID = plotID;
     }
     

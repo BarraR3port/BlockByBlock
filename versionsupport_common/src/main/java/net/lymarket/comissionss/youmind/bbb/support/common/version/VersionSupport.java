@@ -10,24 +10,24 @@ public abstract class VersionSupport< S, U, H, W > {
     protected final JavaPlugin plugin;
     protected final BBBApi < S, U, H, W > bbbApi;
     
-    public VersionSupport( JavaPlugin plugin ){
+    public VersionSupport(JavaPlugin plugin){
         this.plugin = plugin;
-        this.bbbApi = ( BBBApi ) plugin;
-        switch ( bbbApi.getServerType( ) ) {
-            case LOBBY: {
+        this.bbbApi = (BBBApi) plugin;
+        switch(bbbApi.getServerType()){
+            case LOBBY:{
                 break;
             }
-            case PLOT: {
-                if ( Bukkit.getPluginManager( ).getPlugin( "PlotSquared" ) != null ) {
-                    registerPlotEvents( );
+            case PLOT:{
+                if (Bukkit.getPluginManager().getPlugin("PlotSquared") != null){
+                    registerPlotEvents();
                 }
                 break;
             }
-            case WORLDS: {
-                registerWorldEvents( );
+            case WORLDS:{
+                registerWorldEvents();
                 break;
             }
-            
+        
         }
         
         

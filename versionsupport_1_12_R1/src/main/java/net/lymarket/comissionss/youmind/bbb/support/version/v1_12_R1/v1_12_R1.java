@@ -14,13 +14,13 @@ public class v1_12_R1 extends VersionSupport {
     
     private IPlotManager < Plot > plotManager;
     
-    public v1_12_R1( JavaPlugin plugin ){
-        super( plugin );
+    public v1_12_R1(JavaPlugin plugin){
+        super(plugin);
     }
     
     public void registerPlotEvents( ){
-        plotManager = new PlotManager( plugin , this );
-        Bukkit.getServer( ).getPluginManager( ).registerEvents( new P2Listener( this ) , plugin );
+        plotManager = new PlotManager(plugin, this);
+        Bukkit.getServer().getPluginManager().registerEvents(new P2Listener(this), plugin);
     }
     
     @Override

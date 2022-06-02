@@ -21,28 +21,28 @@ public class DeleteWorldSelector extends MenuSelector {
     private final BWorld world;
     
     
-    public DeleteWorldSelector( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , Menu lastMenu , UUID target_uuid ){
-        super( playerMenuUtility );
+    public DeleteWorldSelector(IPlayerMenuUtility playerMenuUtility, UUID world_uuid, Menu lastMenu, UUID target_uuid){
+        super(playerMenuUtility);
         this.lastMenu = lastMenu;
-        super.ACCEPT = new ItemBuilder( super.ACCEPT.clone( ) )
-                .addLoreLine( "&7Click para &c&lBORRAR EL MUNDO" )
-                .build( );
+        super.ACCEPT = new ItemBuilder(super.ACCEPT.clone())
+                .addLoreLine("&7Click para &c&lBORRAR EL MUNDO")
+                .build();
         
         this.target_uuid = target_uuid;
         
-        world = Main.getInstance( ).getWorlds( ).getWorld( world_uuid );
+        world = Main.getInstance().getWorlds().getWorld(world_uuid);
     }
     
     public void setSubMenuItems( ){
     
     }
     
-    public void handleSubMenu( InventoryClickEvent e ){
+    public void handleSubMenu(InventoryClickEvent e){
     
     }
     
     public Menu getAcceptManu( ){
-        return new WorldManagerMenu( playerMenuUtility , target_uuid , 10 );
+        return new WorldManagerMenu(playerMenuUtility, target_uuid, 10);
     }
     
     public Menu getDenyManu( ){
@@ -54,8 +54,8 @@ public class DeleteWorldSelector extends MenuSelector {
     }
     
     public boolean handleAccept( ){
-        if ( world.getOwner( ).equals( target_uuid ) || Main.getInstance( ).getPlayers( ).getPlayer( target_uuid ).getRank( ) == Rank.ADMIN ) {
-            Main.getInstance( ).getSocket( ).sendWorldDeleteRequest( getOwner( ) , world );
+        if (world.getOwner().equals(target_uuid) || Main.getInstance().getPlayers().getPlayer(target_uuid).getRank() == Rank.ADMIN){
+            Main.getInstance().getSocket().sendWorldDeleteRequest(getOwner(), world);
             return true;
         }
         return false;

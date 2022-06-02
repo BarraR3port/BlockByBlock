@@ -33,11 +33,11 @@ public class ProxyMSGManager implements Listener {
      * Enviar el mensaje al proxy para que se organice la creación del mundo
      */
     @EventHandler
-    public void onPrevCreateWorld( PrevCreateWorld e ){
-        if ( e == null ) return;
-        if ( e.isCancelled( ) ) return;
-        Bukkit.getScheduler( ).runTaskAsynchronously( Main.getInstance( ) ,
-                ( ) -> Main.getInstance( ).getSocket( ).sendCreateWorldMSG( e ) );
+    public void onPrevCreateWorld(PrevCreateWorld e){
+        if (e == null) return;
+        if (e.isCancelled()) return;
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(),
+                ( ) -> Main.getInstance().getSocket().sendCreateWorldMSG(e));
     }
     
     

@@ -19,13 +19,13 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     
     private final UUID target_uuid;
     
-    public AddPlayersToWorldMenuSelector( IPlayerMenuUtility playerMenuUtility , UUID world_uuid , Menu lastMenu , UUID target_uuid ){
-        super( playerMenuUtility );
+    public AddPlayersToWorldMenuSelector(IPlayerMenuUtility playerMenuUtility, UUID world_uuid, Menu lastMenu, UUID target_uuid){
+        super(playerMenuUtility);
         this.lastMenu = lastMenu;
-        super.ACCEPT = new ItemBuilder( super.ACCEPT.clone( ) )
-                .addLoreLine( "&7Click para añadir a la" )
-                .addLoreLine( "&7lista de usuarios del mundo." )
-                .build( );
+        super.ACCEPT = new ItemBuilder(super.ACCEPT.clone())
+                .addLoreLine("&7Click para añadir a la")
+                .addLoreLine("&7lista de usuarios del mundo.")
+                .build();
         
         this.world_uuid = world_uuid;
         
@@ -41,7 +41,7 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     
     }
     
-    public void handleSubMenu( InventoryClickEvent e ){
+    public void handleSubMenu(InventoryClickEvent e){
     
     }
     
@@ -58,11 +58,11 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     }
     
     public boolean handleAccept( ){
-        final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( this.world_uuid );
-        if ( world.getOwner( ).equals( getOwner( ).getUniqueId( ) ) || getOwner( ).hasPermission( "blockbyblock.admin.world.members.add" ) || Main.getInstance( ).getPlayers( ).getPlayer( target_uuid ).getRank( ) == Rank.ADMIN ) {
-            world.addMember( target_uuid );
-            Main.getInstance( ).managePermissions( target_uuid , world.getUUID( ) , false );
-            return Main.getInstance( ).getWorlds( ).saveWorld( world );
+        final BWorld world = Main.getInstance().getWorlds().getWorld(this.world_uuid);
+        if (world.getOwner().equals(getOwner().getUniqueId()) || getOwner().hasPermission("blockbyblock.admin.world.members.add") || Main.getInstance().getPlayers().getPlayer(target_uuid).getRank() == Rank.ADMIN){
+            world.addMember(target_uuid);
+            Main.getInstance().managePermissions(target_uuid, world.getUUID(), false);
+            return Main.getInstance().getWorlds().saveWorld(world);
         }
         return false;
     }

@@ -10,15 +10,15 @@ import java.util.UUID;
 
 public final class PrevCreateWorld extends Event implements Cancellable {
     
-    private static final HandlerList handlerList = new HandlerList( );
+    private static final HandlerList handlerList = new HandlerList();
     private final UUID user;
     private boolean cancelled = false;
     private BWorld world;
     
     private Material material;
     
-    public PrevCreateWorld( UUID user , BWorld world , Material material ){
-        super( true );
+    public PrevCreateWorld(UUID user, BWorld world, Material material){
+        super(true);
         this.user = user;
         this.world = world;
         this.material = material;
@@ -40,7 +40,7 @@ public final class PrevCreateWorld extends Event implements Cancellable {
      * @param b
      */
     @Override
-    public void setCancelled( boolean b ){
+    public void setCancelled(boolean b){
         cancelled = b;
     }
     
@@ -60,7 +60,7 @@ public final class PrevCreateWorld extends Event implements Cancellable {
         return world;
     }
     
-    public void setWorld( BWorld world ){
+    public void setWorld(BWorld world){
         this.world = world;
     }
     
@@ -68,7 +68,7 @@ public final class PrevCreateWorld extends Event implements Cancellable {
         return material;
     }
     
-    public void setMaterial( Material material ){
+    public void setMaterial(Material material){
         this.material = material;
     }
 }

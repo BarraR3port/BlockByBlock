@@ -8,14 +8,14 @@ import org.bukkit.event.HandlerList;
 
 public class PlotCreateSuccess extends Event {
     
-    private static final HandlerList handlers = new HandlerList( );
+    private static final HandlerList handlers = new HandlerList();
     
     private final PlotType plotType;
     private final Player player;
     
     private final User user;
     
-    public PlotCreateSuccess( final Player player , final User user , final PlotType plotType ){
+    public PlotCreateSuccess(final Player player, final User user, final PlotType plotType){
         this.player = player;
         this.plotType = plotType;
         this.user = user;

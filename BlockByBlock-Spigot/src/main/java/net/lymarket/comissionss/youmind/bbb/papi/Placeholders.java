@@ -18,7 +18,7 @@ public class Placeholders extends PlaceholderExpansion {
     // We get an instance of the plugin later.
     private final Main plugin;
     
-    public Placeholders( Main plugin ){
+    public Placeholders(Main plugin){
         this.plugin = plugin;
     }
     
@@ -77,7 +77,7 @@ public class Placeholders extends PlaceholderExpansion {
      */
     @Override
     public @NotNull String getVersion( ){
-        return plugin.getDescription( ).getVersion( );
+        return plugin.getDescription().getVersion();
     }
     
     /**
@@ -91,55 +91,55 @@ public class Placeholders extends PlaceholderExpansion {
      *
      * @return possibly-null String of the requested identifier.
      */
-    
+
     // PLACEHOLDERS
     @Override
-    public String onPlaceholderRequest( Player player , @NotNull String identifier ){
-        
-        if ( player == null ) return "";
-        
-        switch ( identifier ) {
-            case "server": {
+    public String onPlaceholderRequest(Player player, @NotNull String identifier){
+    
+        if (player == null) return "";
+    
+        switch(identifier){
+            case "server":{
                 return Settings.SERVER_NAME;
             }
-            case "health": {
-                return String.valueOf( player.getHealth( ) );
+            case "health":{
+                return String.valueOf(player.getHealth());
             }
-            case "gamemode": {
-                return String.valueOf( player.getGameMode( ) );
+            case "gamemode":{
+                return String.valueOf(player.getGameMode());
             }
-            
+        
         }
-        
-        final User p = Main.getInstance( ).getPlayers( ).getLocalStoredPlayer( player.getUniqueId( ) );
-        
-        if ( p == null ) return "Jugador no encontrado";
+    
+        final User p = Main.getInstance().getPlayers().getLocalStoredPlayer(player.getUniqueId());
+    
+        if (p == null) return "Jugador no encontrado";
         //%lydark_lycoins%
-        
-        switch ( identifier ) {
-            case "stats_blocks_placed": {
-                return String.valueOf( p.getStats( ).getBLOCKS_PLACED( ) );
+    
+        switch(identifier){
+            case "stats_blocks_placed":{
+                return String.valueOf(p.getStats().getBLOCKS_PLACED());
             }
-            case "stats_blocks_broken": {
-                return String.valueOf( p.getStats( ).getBLOCKS_BROKEN( ) );
+            case "stats_blocks_broken":{
+                return String.valueOf(p.getStats().getBLOCKS_BROKEN());
             }
-            case "stats_time_played": {
-                return p.getStats( ).getFormattedTimePlayed( );
+            case "stats_time_played":{
+                return p.getStats().getFormattedTimePlayed();
             }
-            case "stats_elo": {
-                return String.valueOf( p.getStats( ).getELO( ) );
+            case "stats_elo":{
+                return String.valueOf(p.getStats().getELO());
             }
-            case "address": {
-                return p.getAddress( );
+            case "address":{
+                return p.getAddress();
             }
-            case "rank_tab": {
-                return p.getRank( ).getTabPrefix( );
+            case "rank_tab":{
+                return p.getRank().getTabPrefix();
             }
-            case "rank_prefix": {
-                return p.getRank( ).getPrefix( );
+            case "rank_prefix":{
+                return p.getRank().getPrefix();
             }
-            case "version": {
-                return plugin.getDescription( ).getVersion( );
+            case "version":{
+                return plugin.getDescription().getVersion();
             }
             /*case "lycoins_formatted": {
                 DecimalFormat df = new DecimalFormat( "#.##" );
@@ -152,47 +152,47 @@ public class Placeholders extends PlaceholderExpansion {
                 return p.getLyCoins( ).getCoins( ) + "&eK ⛃";
             }*/
         }
-        if ( Settings.SERVER_TYPE.equals( ServerType.WORLDS ) ) {
+        if (Settings.SERVER_TYPE.equals(ServerType.WORLDS)){
             try {
-                final BWorld world = Main.getInstance( ).getWorlds( ).getWorld( UUID.fromString( player.getWorld( ).getName( ) ) );
-                if ( world == null ) return "Warp";
-                switch ( identifier ) {
-                    case "world_name": {
-                        return world.getName( ).split( "-" )[0];
+                final BWorld world = Main.getInstance().getWorlds().getWorld(UUID.fromString(player.getWorld().getName()));
+                if (world == null) return "Warp";
+                switch(identifier){
+                    case "world_name":{
+                        return world.getName().split("-")[0];
                     }
-                    case "world_online_members": {
-                        return String.valueOf( world.getOnlineMembers( ).size( ) );
+                    case "world_online_members":{
+                        return String.valueOf(world.getOnlineMembers().size());
                     }
-                    case "world_members": {
-                        return String.valueOf( world.getMembers( ).size( ) );
+                    case "world_members":{
+                        return String.valueOf(world.getMembers().size());
                     }
-                    case "world_uuid": {
-                        return world.getUUID( ).toString( );
+                    case "world_uuid":{
+                        return world.getUUID().toString();
                     }
-                    case "world_online_members_list": {
-                        return world.getOnlineMembers( ).stream( ).map( ( uuid ) -> Main.getInstance( ).getPlayers( ).getPlayer( uuid ).getName( ) ).collect( Collectors.joining( ", " ) );
+                    case "world_online_members_list":{
+                        return world.getOnlineMembers().stream().map((uuid) -> Main.getInstance().getPlayers().getPlayer(uuid).getName()).collect(Collectors.joining(", "));
                     }
-                    case "world_members_list": {
-                        return world.getMembers( ).stream( ).map( ( uuid ) -> Main.getInstance( ).getPlayers( ).getPlayer( uuid ).getName( ) ).collect( Collectors.joining( ", " ) );
+                    case "world_members_list":{
+                        return world.getMembers().stream().map((uuid) -> Main.getInstance().getPlayers().getPlayer(uuid).getName()).collect(Collectors.joining(", "));
                     }
-                    case "world_version": {
-                        return world.getVersion( );
+                    case "world_version":{
+                        return world.getVersion();
                     }
-                    case "world_server": {
-                        return world.getServer( );
+                    case "world_server":{
+                        return world.getServer();
                     }
-                    case "world_owner": {
-                        return Main.getInstance( ).getPlayers( ).getPlayer( world.getOwner( ) ).getName( );
+                    case "world_owner":{
+                        return Main.getInstance().getPlayers().getPlayer(world.getOwner()).getName();
                     }
                 
                 }
-            } catch ( Exception e ) {
+            } catch (Exception e) {
                 return "Warp";
             }
-        } else if ( Settings.SERVER_TYPE.equals( ServerType.PLOT ) ) {
-            switch ( identifier ) {
-                case "plot_world_name": {
-                    return PlotType.getPlotTypeByWorld( player.getWorld( ).getName( ) ).getFormattedName( );
+        } else if (Settings.SERVER_TYPE.equals(ServerType.PLOT)){
+            switch(identifier){
+                case "plot_world_name":{
+                    return PlotType.getPlotTypeByWorld(player.getWorld().getName()).getFormattedName();
                 }
             }
         }
