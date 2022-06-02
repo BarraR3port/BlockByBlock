@@ -45,7 +45,7 @@ public class WorldEditorMenu extends UpdatableMenu {
     }
     
     public String getMenuName( ){
-        return "Editar el mundo: " + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( ));
+        return "Editar el mundo: " + world.getName().split("-")[0];
     }
     
     public int getSlots( ){
@@ -60,8 +60,8 @@ public class WorldEditorMenu extends UpdatableMenu {
                 .addTag( "edit-name" , "edit-name" )
                 .build( ) );
         
-        inventory.setItem( 10 , new ItemBuilder( Items.PLAYERS_IN_WORLD_BASE.clone( ) )
-                .setDisplayName( "&bMundo: " + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( )) )
+        inventory.setItem( 10 , new ItemBuilder(Items.PLAYERS_IN_WORLD_BASE.clone())
+                .setDisplayName("&bMundo: " + world.getName().split("-")[0])
                 .addLoreLine( "&7Click para ver la lista" )
                 .addLoreLine( "&7de jugadores dentro del mundo." )
                 .addLoreLine( "" )

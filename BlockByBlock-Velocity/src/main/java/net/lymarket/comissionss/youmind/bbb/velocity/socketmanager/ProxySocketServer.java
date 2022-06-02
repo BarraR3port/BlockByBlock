@@ -460,9 +460,9 @@ public class ProxySocketServer implements Runnable {
                                     } );
                                 } else {
                                     json.remove( "type" );
-                                    json.addProperty( "type" , "VISIT_REQUEST_DENY" );
-                                    json.addProperty( "reason" , "player.not-found" );
-                                    ServerSocketManager.getSocketByServer( json.get( "current_server" ).getAsString( ) ).ifPresent( socket -> socket.sendMessage( json ) );
+                                    json.addProperty("type", "VISIT_REQUEST_DENY");
+                                    json.addProperty("reason", "player.not-online-general");
+                                    ServerSocketManager.getSocketByServer(json.get("current_server").getAsString()).ifPresent(socket -> socket.sendMessage(json));
                                     continue;
                                 }
                                 continue;

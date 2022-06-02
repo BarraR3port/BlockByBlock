@@ -49,8 +49,8 @@ public class P2Listener implements Listener {
             } );
         } else if ( tpToWorld ) {
             final World world = vs.getPlotManager( ).getWorldToTp( uuid );
-            vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( uuid , "plot.join" , "plot" , world.getName( ) );
-            e.getPlayer( ).teleport( world.getSpawnLocation( ) );
+            vs.getBbbApi().getSocket().sendMSGToPlayer(uuid, "plot.join", "plot", world.getName().split("-")[0]);
+            e.getPlayer().teleport(world.getSpawnLocation());
             
         }
     }

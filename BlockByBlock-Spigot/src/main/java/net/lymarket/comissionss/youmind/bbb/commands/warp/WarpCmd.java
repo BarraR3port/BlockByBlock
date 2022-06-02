@@ -9,6 +9,7 @@ import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.transformers.Transformer;
 import net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp;
 import net.lymarket.common.commands.*;
+import net.lymarket.common.commands.response.CommandResponse;
 import net.lymarket.lyapi.spigot.utils.Utils;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -19,16 +20,16 @@ import java.util.*;
 public class WarpCmd implements ILyCommand {
     
     @Command(name = "warp", permission = "blockbyblock.warp", aliases = {"w"})
-    public boolean command( SCommandContext context ){
-        if ( !(context.getSender( ) instanceof Player) ) {
-            Main.getLang( ).sendErrorMsg( context.getSender( ) , "cant-execute-commands-from-console" );
-            return true;
+    public CommandResponse command(SCommandContext context){
+        if (!(context.getSender() instanceof Player)){
+            Main.getLang().sendErrorMsg(context.getSender(), "cant-execute-commands-from-console");
+            return new CommandResponse();
         }
-        Player p = ( Player ) context.getSender( );
-        final User user = Main.getInstance( ).getPlayers( ).getPlayer( p.getUniqueId( ) );
-        if ( Settings.SERVER_TYPE != ServerType.WORLDS ) {
-            Main.getLang( ).sendErrorMsg( p , "world.not-in-server" );
-            return true;
+        Player p = (Player) context.getSender();
+        final User user = Main.getInstance().getPlayers().getPlayer(p.getUniqueId());
+        if (Settings.SERVER_TYPE != ServerType.WORLDS){
+            Main.getLang().sendErrorMsg(p, "world.not-in-server");
+            return new CommandResponse();
         }
         switch ( context.getArgs( ).length ) {
             case 1: {
@@ -37,7 +38,7 @@ public class WarpCmd implements ILyCommand {
                         ArrayList < SpigotWarp > warps = Main.getInstance( ).getWarps( ).getWarpsByVersion( Settings.VERSION );
                         if ( warps == null || warps.isEmpty( ) ) {
                             Main.getLang( ).sendErrorMsg( context.getSender( ) , "warp.no-warps" );
-                            return true;
+                            return new CommandResponse();
                         }
                         int warpsPerPage = 7;
                         int warpsIHave = warps.size( );
@@ -71,16 +72,15 @@ public class WarpCmd implements ILyCommand {
                             }
                             Utils.sendMessage( p , text );
                         }
-                        return true;
+                        return new CommandResponse();
                     }
                     case "gotoworld": {
                         if ( p.hasPermission( "blockbyblock.warp.gotoworld" ) || user.getRank( ).isBuilder( ) ) {
                             p.teleport( Bukkit.getWorld( "warp" ).getSpawnLocation( ) );
                             Main.getLang( ).sendMsg( p , "warp.teleported-to-world" );
-                            return true;
+                            return new CommandResponse();
                         }
-                        Main.getLang( ).sendErrorMsg( context.getSender( ) , "no-permission" );
-                        return true;
+                        return new CommandResponse("blockbyblock.warp.gotoworld");
                     }
                 }
             }
@@ -93,15 +93,14 @@ public class WarpCmd implements ILyCommand {
                                 SpigotWarp warp = Main.getInstance( ).getWarps( ).getUserWarpByName( type , Settings.SERVER_NAME );
                                 Main.getInstance( ).getWarps( ).deleteWarp( warp );
                                 Main.getLang( ).sendMsg( p , "warp.deleted" , "warp" , warp.getType( ).getName( ) );
-                                return true;
+                                return new CommandResponse();
                             } else {
-                                Main.getLang( ).sendErrorMsg( p , "warp.no-permission-to-delete" );
-                                return false;
+                                return new CommandResponse("blockbyblock.warp.delete.other");
                             }
                         } catch ( IllegalArgumentException e ) {
                             Main.getLang( ).sendErrorMsg( p , "warp.invalid-name" );
                         }
-                        return true;
+                        return new CommandResponse();
                     }
                     case "goto": {
                         try {
@@ -116,12 +115,12 @@ public class WarpCmd implements ILyCommand {
                             Main.getLang( ).sendErrorMsg( p , "warp.invalid-name" );
                             
                         }
-                        return true;
+                        return new CommandResponse();
                     }
                     case "create": {
                         if ( !p.getWorld( ).getName( ).equals( "warp" ) ) {
                             Main.getLang( ).sendErrorMsg( p , "warp.not-in-world-of-warps" );
-                            return true;
+                            return new CommandResponse();
                         }
                         if ( p.hasPermission( "blockbyblock.warp.create" ) || user.getRank( ).isAdmin( ) ) {
                             try {
@@ -143,12 +142,12 @@ public class WarpCmd implements ILyCommand {
                                 text.addExtra( Utils.hoverOverMessageRunCommand( "&a" + warp.getType( ).getName( ) , replaced , "/warp goto" + warp.getUUID( ) ) );
     
                                 Main.getLang( ).sendMsg( p , "warp.created" , "warp" , text );
-                                return true;
+                                return new CommandResponse();
                             } catch ( IllegalArgumentException e ) {
                                 Main.getLang( ).sendErrorMsg( p , "warp.invalid-type" );
                             }
                         }
-                        return false;
+                        return new CommandResponse("blockbyblock.warp.create");
                     }
                 }
     
@@ -165,7 +164,7 @@ public class WarpCmd implements ILyCommand {
                 if ( p.hasPermission( "blockbyblock.warp.gotoworld" ) || user.getRank( ).isBuilder( ) ) {
                     Utils.sendMessage( p , Utils.formatTC( "&e> &b" ) , Utils.hoverOverMessageRunCommand( "&b/warp gotoworld" , Collections.singletonList( "&7Con este comando puedes ir al mundo de warps" ) , "/warp gotoworld" ) );
                 }
-                return true;
+                return new CommandResponse();
             }
         }
     }

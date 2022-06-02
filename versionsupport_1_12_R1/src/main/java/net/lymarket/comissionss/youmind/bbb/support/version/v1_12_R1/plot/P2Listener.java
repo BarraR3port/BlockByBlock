@@ -5,7 +5,6 @@ import com.intellectualcrafters.plot.object.Plot;
 import com.plotsquared.bukkit.events.PlayerClaimPlotEvent;
 import com.plotsquared.bukkit.events.PlayerLeavePlotEvent;
 import net.lymarket.comissionss.youmind.bbb.common.data.loc.Loc;
-import net.lymarket.comissionss.youmind.bbb.common.data.msg.PlotMsg;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
@@ -18,7 +17,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashSet;
@@ -47,8 +49,8 @@ public class P2Listener implements Listener {
             }
         } else if ( tpToWorld ) {
             final World world = vs.getPlotManager( ).getWorldToTp( uuid );
-            vs.getBbbApi( ).getSocket( ).sendMSGToPlayer( uuid , "plot.join" , "plot" , world.getName( ) );
-            e.getPlayer( ).teleport( world.getSpawnLocation( ) );
+            vs.getBbbApi().getSocket().sendMSGToPlayer(uuid, "plot.join", "plot", world.getName().split("-")[0]);
+            e.getPlayer().teleport(world.getSpawnLocation());
             
         }
     }
@@ -207,15 +209,13 @@ public class P2Listener implements Listener {
     
     }
     
-    @EventHandler
+    /*@EventHandler
     public void subPlayerChatEvent( AsyncPlayerChatEvent e ){
         final String worldName = e.getPlayer( ).getWorld( ).getName( );
         final net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot plot = new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot( PlotType.getPlotTypeByWorld( worldName ) , "" , version );
         final PlotMsg msg = new PlotMsg( e.getPlayer( ).getUniqueId( ) , e.getMessage( ) , version , plot );
         vs.getBbbApi( ).getSocket( ).sendMsgFromPlayer( msg );
-        
-        
-    }
+    }*/
     
     @EventHandler
     public void onPlayerChangeGamemode( PlayerGameModeChangeEvent e ){

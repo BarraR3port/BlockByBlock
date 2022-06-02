@@ -12,6 +12,7 @@ import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.common.commands.*;
+import net.lymarket.common.commands.response.CommandResponse;
 import net.lymarket.lyapi.spigot.LyApi;
 import net.lymarket.lyapi.spigot.utils.Utils;
 import org.bukkit.entity.Player;
@@ -24,23 +25,23 @@ import java.util.HashMap;
 public class Admin implements ILyCommand {
     
     @Command(name = "admin", permission = "blockbyblock.admin", usage = "admin", description = "Admin Command")
-    public boolean command( SCommandContext context ){
-        if ( context.getArgs( ).length == 1 ) {
-            if ( context.getArg( 0 ).equalsIgnoreCase( "reload" ) ) {
-                Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlock &7- Reloading" );
-                Main.getInstance( ).getConfig( ).reloadConfig( );
-                Main.getInstance( ).getItems( ).reloadConfig( );
-                Main.getLang( ).reloadLang( );
-                Settings.init( Main.getInstance( ).getConfig( ) );
-                Items.init( Main.getInstance( ).getItems( ) );
-                Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlock reloaded Successfully!" );
-                return true;
+    public CommandResponse command(SCommandContext context){
+        if (context.getArgs().length == 1){
+            if (context.getArg(0).equalsIgnoreCase("reload")){
+                Utils.sendMessage(context.getSender(), "&c&lBlockByBlock &7- Reloading");
+                Main.getInstance().getConfig().reloadConfig();
+                Main.getInstance().getItems().reloadConfig();
+                Main.getLang().reloadLang();
+                Settings.init(Main.getInstance().getConfig());
+                Items.init(Main.getInstance().getItems());
+                Utils.sendMessage(context.getSender(), "&c&lBlockByBlock reloaded Successfully!");
+                return new CommandResponse();
             } else if ( context.getArg( 0 ).equalsIgnoreCase( "debug" ) ) {
                 Settings.DEBUG = !Settings.DEBUG;
                 Main.getInstance( ).getConfig( ).set( "global.debug" , Settings.DEBUG );
                 Main.getInstance( ).getConfig( ).saveData( );
                 Utils.sendMessage( context.getSender( ) , "&c&lBlockByBlock &dDEBUG " + (Settings.DEBUG ? "&aEnabled" : "&cDisabled") );
-                return true;
+                return new CommandResponse();
             }
         }
         if ( context.getSender( ) instanceof Player ) {
@@ -53,11 +54,11 @@ public class Admin implements ILyCommand {
                     } else {
                         Utils.sendMessage( context.getSender( ) , "&cPlayer not found!" );
                     }
-                    return true;
+                    return new CommandResponse();
                 } else if ( context.getArg( 0 ).equalsIgnoreCase( "homes" ) ) {
                     if ( Settings.SERVER_TYPE != ServerType.WORLDS ) {
                         Main.getLang( ).sendErrorMsg( context.getSender( ) , "world.not-in-server" );
-                        return true;
+                        return new CommandResponse();
                     }
                     final User user = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 1 ) );
                     final String homeName = context.getArg( 0 );
@@ -74,22 +75,22 @@ public class Admin implements ILyCommand {
                                 replace.put( "world" , home.getLocation( ).getWorld( ) );
                                 Main.getLang( ).sendErrorMsg( context.getSender( ) , "home.not-found-in-world" , replace );
                             }
-                            return true;
+                            return new CommandResponse();
                         } else {
                             throw new HomeNotFoundError( homeName );
                         }
                     } catch ( HomeNotFoundError e ) {
                         Main.getLang( ).sendErrorMsg( context.getSender( ) , "home.not-found" , "home" , homeName );
                     }
-                    return true;
+                    return new CommandResponse();
                 } else if ( context.getArg( 0 ).equalsIgnoreCase( "menu" ) ) {
                     final SpigotUser target = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 1 ) );
                     if ( target == null || p == null ) {
                         Main.getLang( ).sendErrorMsg( p , "player.not-found" , "player" , context.getArg( 1 ) );
-                        return true;
+                        return new CommandResponse();
                     }
                     new AdminMenu( LyApi.getPlayerMenuUtility( p ) , target ).open( );
-                    return true;
+                    return new CommandResponse();
                 }
             }
             Utils.sendMessage( p , "&c&lBlockByBlock &7- &a&lV" + Main.getInstance( ).getDescription( ).getVersion( ) );
@@ -101,9 +102,9 @@ public class Admin implements ILyCommand {
             Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/admin homes <usuario>" , Arrays.asList( "&7Con este comando ves los homes de" , "&7un usuario específico." ) , "/admin homes " ) );
             Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageSuggestCommand( "&b/admin reload" , Arrays.asList( "&7Con este comando se recarga" , "&7la información de la config." ) , "/admin reload" ) );
             Utils.sendMessage( p , Utils.formatTC( "&e> " ) , Utils.hoverOverMessageRunCommand( "&b/admin debug" , Arrays.asList( "&7Con este comando activas o desactivas" , "&7el modo debug." ) , "/admin debug" ) );
-            return true;
+            return new CommandResponse();
         }
-        return false;
+        return new CommandResponse("blockbyblock.admin");
     }
     
     @Tab

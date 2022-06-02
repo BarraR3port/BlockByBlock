@@ -9,7 +9,7 @@ lobby-book-details:
     2:
       paragraphs:
         - "Puedes utilizar la brújula para abrir el menú de servidores o usar el comando /ym"
-        - "Puedes unirte a nuestra comunidad y recibir clases en directo uniéndote a nuestro discord: &bhttps://discord.gg/blockbyblock"
+        - "Puedes unirte a nuestra comunidad y recibir clases en directo uniéndote a nuestro discord: &bhttps://discord.gg/3YudVaFCqW"
 error:
   cant-execute-commands-from-console: "&cNo puedes ejecutar comandos desde la consola"
   wrong-command: "&cComando incorrecto. Intenta usando: &e%command%&c."
@@ -32,6 +32,7 @@ error:
     not-available-to-be-visited: "&cEl jugador &e%player%&c no está disponible para ser visitado."
     in-lobby: "&cEl jugador &e%player%&c está en el lobby."
     not-online: "&cEl jugador &e%player%&c no está conectado."
+    not-online-general: "&cEl jugador no está conectado."
   server:
     not-online: "&cEl servidor &e%server%&c no está online."
   no-permission: "&cNo tienes permiso para usar este comando."

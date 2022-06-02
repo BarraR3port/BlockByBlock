@@ -43,17 +43,17 @@ public class PlotManager extends IPlotManager < Plot > {
             final Player p = Bukkit.getPlayer( owner_uuid );
             final World world = Bukkit.getWorld( plot_type.getWorldName( ) );
             if ( p != null && world != null ) {
-                vs.getBbbApi( ).debug( "Teleporting " + p.getName( ) + " to " + world.getName( ) );
-                Bukkit.getScheduler( ).runTask( ( Plugin ) vs.getBbbApi( ) , ( ) -> {
-                    if ( plot != null ) {
-                        plot.teleportPlayer( api.wrapPlayer( p.getUniqueId( ) ) , ( result ) -> {
-                            if ( result ) {
-                                for ( final Player players : Bukkit.getOnlinePlayers( ) ) {
-                                    p.showPlayer( plugin , players );
-                                    players.showPlayer( plugin , p );
+                vs.getBbbApi().debug("Teleporting " + p.getName() + " to " + world.getName().split("-")[0]);
+                Bukkit.getScheduler().runTask((Plugin) vs.getBbbApi(), ( ) -> {
+                    if (plot != null){
+                        plot.teleportPlayer(api.wrapPlayer(p.getUniqueId()), (result) -> {
+                            if (result){
+                                for ( final Player players : Bukkit.getOnlinePlayers() ){
+                                    p.showPlayer(plugin, players);
+                                    players.showPlayer(plugin, p);
                                 }
                             }
-                        } );
+                        });
                     } else {
                         p.teleport( world.getSpawnLocation( ) );
                     }

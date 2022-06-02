@@ -5,7 +5,7 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.1-BETA</version>
+        <version>0.2-BETA</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>net.lymarket.lyapi</groupId>
             <artifactId>lyapi-spigot</artifactId>
-            <version>1.2.4</version>
+            <version>1.2.5</version>
             <scope>provided</scope>
         </dependency>
 

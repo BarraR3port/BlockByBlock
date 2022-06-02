@@ -6,6 +6,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
+import net.lymarket.common.commands.response.CommandResponse;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -15,21 +16,21 @@ public class SetHome implements ILyCommand {
     
     
     @Command(name = "sethome", permission = "bbb.home.set")
-    public boolean command( SCommandContext context ){
-    
-        if ( !(context.getSender( ) instanceof Player) ) {
-            Main.getLang( ).sendErrorMsg( context.getSender( ) , "cant-execute-commands-from-console" );
-            return true;
+    public CommandResponse command(SCommandContext context){
+        
+        if (!(context.getSender() instanceof Player)){
+            Main.getLang().sendErrorMsg(context.getSender(), "cant-execute-commands-from-console");
+            return new CommandResponse();
         }
-        Player p = ( Player ) context.getSender( );
-    
-        if ( Settings.SERVER_TYPE != ServerType.WORLDS ) {
-            Main.getLang( ).sendErrorMsg( p , "world.not-in-server" );
-            return true;
+        Player p = (Player) context.getSender();
+        
+        if (Settings.SERVER_TYPE != ServerType.WORLDS){
+            Main.getLang().sendErrorMsg(p, "world.not-in-server");
+            return new CommandResponse();
         }
         if ( p.getWorld( ).getName( ).equals( "warp" ) ) {
             Main.getLang( ).sendErrorMsg( p , "world.not-in-world" );
-            return true;
+            return new CommandResponse();
         }
         if ( context.getArgs( ).length == 1 ) {
             final Loc location = new Loc( Settings.SERVER_NAME , p.getWorld( ).getName( ) , p.getLocation( ).getX( ) , p.getLocation( ).getY( ) , p.getLocation( ).getZ( ) , UUID.fromString( p.getWorld( ).getName( ) ) );
@@ -38,9 +39,9 @@ public class SetHome implements ILyCommand {
             Main.getLang( ).sendMsg( context.getSender( ) , "home.created-successfully" , "home" , home.getName( ) );
         } else {
             Main.getLang( ).sendErrorMsg( context.getSender( ) , "wrong-command" , "command" , "/sethome <nombre>" );
-            return true;
+            return new CommandResponse();
         }
-        return true;
+        return new CommandResponse();
     }
     
     @Tab

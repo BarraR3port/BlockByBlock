@@ -6,6 +6,7 @@ import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.common.commands.*;
+import net.lymarket.common.commands.response.CommandResponse;
 import net.lymarket.lyapi.spigot.utils.Utils;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -18,16 +19,16 @@ public class Homes implements ILyCommand {
     
     
     @Command(name = "homes", permission = "bbb.home.list")
-    public boolean command( SCommandContext context ){
+    public CommandResponse command(SCommandContext context){
         
-        if ( !(context.getSender( ) instanceof Player) ) {
-            Main.getLang( ).sendErrorMsg( context.getSender( ) , "cant-execute-commands-from-console" );
-            return true;
+        if (!(context.getSender() instanceof Player)){
+            Main.getLang().sendErrorMsg(context.getSender(), "cant-execute-commands-from-console");
+            return new CommandResponse();
         }
-        Player p = ( Player ) context.getSender( );
-        if ( Settings.SERVER_TYPE != ServerType.WORLDS ) {
-            Main.getLang( ).sendErrorMsg( p , "world.not-in-server" );
-            return true;
+        Player p = (Player) context.getSender();
+        if (Settings.SERVER_TYPE != ServerType.WORLDS){
+            Main.getLang().sendErrorMsg(p, "world.not-in-server");
+            return new CommandResponse();
         }
         if ( context.getArgs( ).length == 0 ) {
             Bukkit.getScheduler( ).runTaskAsynchronously( Main.getInstance( ) , ( ) -> {
@@ -70,7 +71,7 @@ public class Homes implements ILyCommand {
                     p.spigot( ).sendMessage( text );
                 }
             } );
-            return true;
+            return new CommandResponse();
         } else if ( context.getArgs( ).length == 1 ) {
             final SpigotUser targetUser = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 0 ) );
             if ( targetUser != null ) {
@@ -114,10 +115,10 @@ public class Homes implements ILyCommand {
                 } );
             } else {
                 Main.getLang( ).sendErrorMsg( context.getSender( ) , "player.not-found" , "player" , context.getArg( 0 ) );
-                return true;
+                return new CommandResponse();
             }
         }
-        return true;
+        return new CommandResponse();
     }
     
     @Tab

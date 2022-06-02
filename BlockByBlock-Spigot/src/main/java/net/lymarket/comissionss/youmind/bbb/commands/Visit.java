@@ -5,6 +5,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
 import net.lymarket.common.commands.*;
+import net.lymarket.common.commands.response.CommandResponse;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -13,27 +14,27 @@ import java.util.UUID;
 public class Visit implements ILyCommand {
     
     @Command(name = "visit", permission = "bbb.visit")
-    public boolean command( SCommandContext context ){
-        switch ( context.getArgs( ).length ) {
-            case 1: {
-                final User userTarget = Main.getInstance( ).getPlayers( ).getPlayer( context.getArg( 0 ) );
-                if ( userTarget != null ) {
-                    final UUID p = (( Player ) context.getSender( )).getUniqueId( );
-                    if ( !p.equals( userTarget.getUUID( ) ) ) {
-                        Main.getLang( ).sendMsg( context.getSender( ) , "visit.sent" , "player" , context.getArg( 0 ) );
-                        Main.getInstance( ).getSocket( ).sendVisitRequest( p , userTarget.getUUID( ) );
+    public CommandResponse command(SCommandContext context){
+        switch(context.getArgs().length){
+            case 1:{
+                final User userTarget = Main.getInstance().getPlayers().getPlayer(context.getArg(0));
+                if (userTarget != null){
+                    final UUID p = ((Player) context.getSender()).getUniqueId();
+                    if (!p.equals(userTarget.getUUID())){
+                        Main.getLang().sendMsg(context.getSender(), "visit.sent", "player", context.getArg(0));
+                        Main.getInstance().getSocket().sendVisitRequest(p, userTarget.getUUID());
                     } else {
-                        Main.getLang( ).sendErrorMsg( context.getSender( ) , "visit.self" );
+                        Main.getLang().sendErrorMsg(context.getSender(), "visit.self");
                     }
                 } else {
                     Main.getLang( ).sendErrorMsg( context.getSender( ) , "player.not-fund" , "player" , context.getArg( 0 ) );
                 }
-                return true;
+                return new CommandResponse();
             }
             case 4: {
                 if ( context.getArg( 0 ).equalsIgnoreCase( "accept" ) && context.getArg( 1 ).equalsIgnoreCase( "world" ) ) {
                     if ( !(context.getSender( ) instanceof Player) ) {
-                        return true;
+                        return new CommandResponse();
                     }
                     final Player p = ( Player ) context.getSender( );
                     try {
@@ -63,16 +64,16 @@ public class Visit implements ILyCommand {
                         } else {
                             Main.getLang( ).sendErrorMsg( p , "visit.expired" );
                         }
-                        return true;
+                        return new CommandResponse();
     
                     } catch ( IllegalArgumentException e ) {
                         Main.getLang( ).sendErrorMsg( p , "player.not-fund" , "player" , context.getArg( 2 ) );
-                        return true;
+                        return new CommandResponse();
                     }
                 }
             }
             default:
-                return false;
+                return new CommandResponse("bbb.visit");
         }
     }
     

@@ -4,6 +4,7 @@ import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.common.commands.*;
+import net.lymarket.common.commands.response.CommandResponse;
 import net.lymarket.lyapi.spigot.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -16,20 +17,20 @@ import java.util.Locale;
 public class RankMenu implements ILyCommand {
     
     @Command(name = "rank", permission = "blockbyblock.rank")
-    public boolean command( SCommandContext context ){
+    public CommandResponse command(SCommandContext context){
         
-        if ( context.getArgs( ).length == 0 ) {
-            context.getSender( ).sendMessage( "§b§m----------------------------------------------------" );
-            context.getSender( ).sendMessage( "                                §a§lRank System" );
-            context.getSender( ).sendMessage( "" );
-            if ( context.getSender( ) instanceof Player ) {
-                Player p = ( Player ) context.getSender( );
-                p.spigot( ).sendMessage( Utils.formatTC( "&7Establece el rango a un jugador con este " ) , Utils.hoverOverMessageSuggestCommand( "&dcomando" , Collections.singletonList( "&e/rank set <jugador> <rango>" ) , "/rank set " ) );
+        if (context.getArgs().length == 0){
+            context.getSender().sendMessage("§b§m----------------------------------------------------");
+            context.getSender().sendMessage("                                §a§lRank System");
+            context.getSender().sendMessage("");
+            if (context.getSender() instanceof Player){
+                Player p = (Player) context.getSender();
+                p.spigot().sendMessage(Utils.formatTC("&7Establece el rango a un jugador con este "), Utils.hoverOverMessageSuggestCommand("&dcomando", Collections.singletonList("&e/rank set <jugador> <rango>"), "/rank set "));
             } else {
-                context.getSender( ).sendMessage( "§e- §dEstablece el rango a un jugador §e- §d/rank set (jugador) (rango)" );
+                context.getSender().sendMessage("§e- §dEstablece el rango a un jugador §e- §d/rank set (jugador) (rango)");
             }
             context.getSender( ).sendMessage( "§b§m----------------------------------------------------" );
-            return true;
+            return new CommandResponse();
         }
         
         if ( context.getArg( 0 ).equalsIgnoreCase( "set" ) ) {
@@ -47,9 +48,9 @@ public class RankMenu implements ILyCommand {
             } else {
                 Main.getLang( ).sendErrorMsg( context.getSender( ) , "wrong-command" , "command" , "/rank set (jugador) (rango)" );
             }
-            return true;
+            return new CommandResponse();
         }
-        return false;
+        return new CommandResponse("blockbyblock.rank");
     }
     
     

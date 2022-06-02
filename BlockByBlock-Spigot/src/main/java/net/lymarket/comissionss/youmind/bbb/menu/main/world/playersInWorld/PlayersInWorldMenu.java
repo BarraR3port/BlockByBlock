@@ -54,7 +54,7 @@ public class PlayersInWorldMenu extends UpPaginatedMenu {
     }
     
     public String getMenuName( ){
-        return (members ? "Miembros de " : "Jugadores en: ") + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( ));
+        return (members ? "Miembros de " : "Jugadores en: ") + world.getName().split("-")[0];
     }
     
     public void setMenuItems( ){

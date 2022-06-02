@@ -1,7 +1,10 @@
 package net.lymarket.comissionss.youmind.bbb.listener.plot;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.msg.PlotMsg;
+import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.listener.MainEvents;
+import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.support.common.events.PlotCreateFailed;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
@@ -31,7 +34,10 @@ public final class PlotsPlayerEvent extends MainEvents {
     
     @Override
     public void subPlayerChatEvent( AsyncPlayerChatEvent e ){
-    
+        final String worldName = e.getPlayer().getWorld().getName();
+        final net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot plot = new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot(PlotType.getPlotTypeByWorld(worldName), "", Settings.VERSION);
+        final PlotMsg msg = new PlotMsg(e.getPlayer().getUniqueId(), e.getMessage(), Settings.VERSION, plot);
+        Main.getInstance().getSocket().sendMsgFromPlayer(msg);
     }
     
 }

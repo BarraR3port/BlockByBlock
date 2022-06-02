@@ -53,11 +53,14 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
             for ( String sw : loader.listWorlds( ) ) {
                 final SlimeWorld world = Main.getSlimePlugin( ).loadWorld( loader , sw , true , propertyMap );
                 try {
-                    final BWorld bWorld = getWorld( UUID.fromString( world.getName( ) ) );
-                    Main.getSlimePlugin( ).generateWorld( world , Material.valueOf( bWorld.getBlock_base( ) ) );
-                } catch ( IllegalArgumentException | IndexOutOfBoundsException e ) {
-                    Main.getSlimePlugin( ).generateWorld( world );
+                    final BWorld bWorld = getWorld(UUID.fromString(world.getName()));
+                    Main.getSlimePlugin().generateWorld(world, Material.valueOf(bWorld.getBlock_base()));
+                } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+                    Main.getSlimePlugin().generateWorld(world);
+                } catch (NullPointerException e) {
+                    deleteWorld(world);
                 }
+    
             }
         } catch ( IOException | CorruptedWorldException | NewerFormatException | WorldInUseException |
                   UnknownWorldException | IndexOutOfBoundsException e ) {
@@ -223,15 +226,67 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
         }
         
         Main.getInstance( ).debug( "[WorldDestroyer] World: " + worldName + " was unloaded and destroyed in " + (System.currentTimeMillis( ) - time) + "ms." );
-        
-        
-        if ( isDone ) {
-            json.addProperty( "type" , "WORLD_DELETE_SUCCESS" );
+    
+    
+        if (isDone){
+            json.addProperty("type", "WORLD_DELETE_SUCCESS");
         } else {
-            json.addProperty( "type" , "ERROR" );
-            json.addProperty( "error" , "WORLD_DELETE_FAILED" );
+            json.addProperty("type", "ERROR");
+            json.addProperty("error", "WORLD_DELETE_FAILED");
         }
-        Main.getInstance( ).getSocket( ).sendMessage( json );
+        Main.getInstance().getSocket().sendMessage(json);
+    
+    }
+    
+    private void deleteWorld(SlimeWorld slimeWorld){
+        final String worldName = slimeWorld.getName();
+        final World world = Bukkit.getWorld(worldName);
+        final long time = System.currentTimeMillis();
+        Main.getInstance().debug("Initializing the WorldDestroyer:");
+        Main.getInstance().debug("[WorldDestroyer] Deleting the world: " + worldName);
+        if (world == null){
+            Main.getInstance().debug("[WorldDestroyer] &4ERROR AT: world == null");
+            
+        } else {
+            if (!Bukkit.unloadWorld(world, true)){
+                Main.getInstance().debug("[WorldDestroyer] &4ERROR AT: &e!Bukkit.unloadWorld( world , true )");
+                
+            }
+        }
+        
+        
+        Main.getInstance().debug("[WorldDestroyer] Attempting to unlock world.. " + worldName + ".");
+        try {
+            if (loader != null && loader.isWorldLocked(worldName)){
+                Main.getInstance().debug("[WorldDestroyer] World.. " + worldName + " is locked.");
+                loader.unlockWorld(worldName);
+                loader.deleteWorld(worldName);
+                Main.getInstance().debug("[WorldDestroyer] Attempted to unlock world.. " + worldName + ".");
+            } else {
+                Main.getInstance().debug("[WorldDestroyer] " + worldName + " was not unlocked. This could be because the world is either unlocked or not in the config. This is not an error");
+            }
+        } catch (UnknownWorldException | IOException e) {
+            e.printStackTrace();
+        }
+        Main.getInstance().debug("[WorldDestroyer] Skipping the Home Delete part..");
+        
+        database.deleteOne(TABLE_NAME, Filters.eq("uuid", worldName));
+        
+        try {
+            Main.getInstance().debug("[WorldDestroyer] Deleting the World Folder of: " + worldName + "...");
+            FileUtils.deleteDirectory(new File(worldName));
+            FileUtils.forceDelete(new File(Main.getInstance().getServer().getWorldContainer(), "/slime_worlds/" + worldName + ".slime"));
+            Main.getInstance().debug("[WorldDestroyer] Deleted the World Folder of: " + worldName + ".");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Main.getInstance().debug("[WorldDestroyer] &4ERROR AT: File file = new File( Main.getInstance( ).getDataFolder( ) , /" + worldName);
+            
+        }
+        
+        Main.getInstance().debug("[WorldDestroyer] Removing all perms of the world members, owner and online members...");
+        
+        Main.getInstance().debug("[WorldDestroyer] World: " + worldName + " was unloaded and destroyed in " + (System.currentTimeMillis() - time) + "ms.");
+        
         
     }
     

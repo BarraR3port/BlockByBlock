@@ -166,7 +166,6 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
     
     
         getServer( ).getPluginManager( ).registerEvents( new ProxyMSGManager( ) , this );
-        api.getCommandService( ).registerCommands( new MainCommand( ) );
         api.getCommandService( ).registerCommands( new WorldManagement( ) );
         api.getCommandService( ).registerCommands( new SetSpawn( ) );
         api.getCommandService( ).registerCommands( new DelSpawn( ) );

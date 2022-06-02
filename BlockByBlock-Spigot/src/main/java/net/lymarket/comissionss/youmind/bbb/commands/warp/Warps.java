@@ -5,6 +5,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.menu.main.warp.WarpMenu;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
+import net.lymarket.common.commands.response.CommandResponse;
 import net.lymarket.lyapi.spigot.LyApi;
 import org.bukkit.entity.Player;
 
@@ -13,22 +14,22 @@ import java.util.ArrayList;
 public class Warps implements ILyCommand {
     
     @Command(name = "warps", permission = "blockbyblock.warp.list")
-    public boolean command( SCommandContext context ){
-        if ( !(context.getSender( ) instanceof Player) ) {
-            Main.getLang( ).sendErrorMsg( context.getSender( ) , "cant-execute-commands-from-console" );
-            return true;
+    public CommandResponse command(SCommandContext context){
+        if (!(context.getSender() instanceof Player)){
+            Main.getLang().sendErrorMsg(context.getSender(), "cant-execute-commands-from-console");
+            return new CommandResponse();
         }
-        Player p = ( Player ) context.getSender( );
-        if ( Settings.SERVER_TYPE != ServerType.WORLDS ) {
-            Main.getLang( ).sendErrorMsg( p , "world.not-in-server" );
-            return true;
+        Player p = (Player) context.getSender();
+        if (Settings.SERVER_TYPE != ServerType.WORLDS){
+            Main.getLang().sendErrorMsg(p, "world.not-in-server");
+            return new CommandResponse();
         }
-        if ( context.getArgs( ).length == 0 ) {
+        if (context.getArgs().length == 0){
             new WarpMenu( LyApi.getPlayerMenuUtility( p ) ).open( );
             /*ArrayList < Warp > warps = Main.getInstance( ).getWarps( ).getWarpsByVersion( Settings.VERSION );
             if ( warps == null || warps.isEmpty( ) ) {
                 Main.getLang( ).sendErrorMsg( context.getSender( ) , "warp.no-warps" );
-                return true;
+                return new CommandResponse();
             }
             int warpsPerPage = 7;
             int warpsIHave = warps.size( );
@@ -66,7 +67,7 @@ public class Warps implements ILyCommand {
             Main.getLang( ).sendErrorMsg( context.getSender( ) , "wrong-command" , "command" , "/warps" );
         }
         
-        return true;
+        return new CommandResponse();
     }
     
     @Tab

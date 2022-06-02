@@ -139,8 +139,8 @@ public class WorldManagerMenu extends UpdatableMenu {
         final ArrayList < ItemStack > finalWorlds = new ArrayList <>( );
         
         for ( BWorld world : worlds ) {
-            finalWorlds.add( new ItemBuilder( Items.CREATED_WORLD_BASE.clone( ) )
-                    .setDisplayName( "&bMundo: " + (world.getName( ).contains( "-" ) ? world.getName( ).split( "-" )[0] : world.getName( )) )
+            finalWorlds.add( new ItemBuilder(Items.CREATED_WORLD_BASE.clone())
+                    .setDisplayName("&bMundo: " + world.getName().split("-")[0])
                     .addLoreLine( "&7Click para ir al mundo." )
                     .addLoreLine( "&bInfo:" )
                     .addLoreLine( " &b> &7Versión: &a" + world.getVersion( ) )
