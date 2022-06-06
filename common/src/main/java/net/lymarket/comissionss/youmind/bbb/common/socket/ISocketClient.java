@@ -8,5 +8,5 @@ public interface ISocketClient {
     
     void reconnect(String msg);
     
-    void disable(String reason);
+    void disable(String reason, boolean stopServer);
 }

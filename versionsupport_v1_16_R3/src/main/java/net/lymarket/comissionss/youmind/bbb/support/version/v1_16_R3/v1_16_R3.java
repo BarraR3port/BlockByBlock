@@ -22,7 +22,7 @@ import net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.plot.PlotMa
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class v1_16_R3 extends VersionSupport {
     
     private IPlotManager < Plot > plotManager;
@@ -46,5 +46,10 @@ public class v1_16_R3 extends VersionSupport {
     @Override
     public IPlotManager < Plot > getPlotManager( ){
         return plotManager;
+    }
+    
+    @Override
+    public void saveWorlds( ){
+    
     }
 }

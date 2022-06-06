@@ -1,11 +1,9 @@
 package net.lymarket.comissionss.youmind.bbb.menu.main.warp;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType;
 import net.lymarket.comissionss.youmind.bbb.common.error.WarpNotFoundError;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
-import net.lymarket.comissionss.youmind.bbb.menu.main.plot.PlotMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp;
@@ -17,16 +15,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class WarpMenu extends UpdatableMenu {
     
-    private final String serverVersion;
+    private final String serverName;
     
-    public WarpMenu(IPlayerMenuUtility playerMenuUtility, String serverVersion){
+    public WarpMenu(IPlayerMenuUtility playerMenuUtility, String serverName){
         super(playerMenuUtility);
-        this.serverVersion = serverVersion;
-    }
-    
-    public WarpMenu(IPlayerMenuUtility playerMenuUtility){
-        super(playerMenuUtility);
-        serverVersion = null;
+        this.serverName = serverName;
     }
     
     @Override
@@ -50,17 +43,19 @@ public class WarpMenu extends UpdatableMenu {
     @Override
     public void handleMenu(InventoryClickEvent e){
         final ItemStack item = e.getCurrentItem();
-        
         if (NBTItem.hasTag(item, "warp")){
-            final User user = Main.getInstance().getPlayers().getPlayer(getOwner().getUniqueId());
             try {
                 final WarpType type = WarpType.valueOf(NBTItem.getTag(item, "warp"));
-                final SpigotWarp warp = Main.getInstance().getWarps().getUserWarpByName(type, Settings.SERVER_NAME);
-                if (warp.isPublic() || warp.isMember(getOwner().getUniqueId()) || getOwner().hasPermission("blockbyblock.warp.goto") || user.getRank().isBuilder()){
+                final SpigotWarp warp = Main.getInstance().getWarps().getUserWarpByName(type, serverName);
+                if (warp.getLocation().getServer().equals(Settings.SERVER_NAME)){
                     getOwner().teleport(warp.getBukkitLocation());
                 } else {
-                    Main.getLang().sendErrorMsg(getOwner(), "warp.no-permission-to-go");
+                    Main.getInstance().getSocket().sendJoinWarp(getOwner().getUniqueId(), warp);
                 }
+                /*if (warp.isPublic() || warp.isMember(getOwner().getUniqueId()) || getOwner().hasPermission("blockbyblock.warp.goto") || user.getRank().isBuilder()){
+                } else {
+                    Main.getLang().sendErrorMsg(getOwner(), "warp.no-permission-to-go");
+                }*/
             } catch (IllegalArgumentException error) {
                 Main.getLang().sendErrorMsg(getOwner(), "warp.invalid-name");
             } catch (WarpNotFoundError error) {
@@ -68,14 +63,7 @@ public class WarpMenu extends UpdatableMenu {
             }
             
         } else if (NBTItem.hasTag(item, "ly-menu-close")){
-            if (serverVersion != null){
-                getOwner().closeInventory();
-                new PlotMenu(playerMenuUtility, serverVersion, getOwner().getUniqueId()).open();
-            } else {
-                getOwner().closeInventory();
-                new WorldManagerMenu(playerMenuUtility).open();
-            }
-            
+            new WorldManagerMenu(playerMenuUtility, getOwner().getUniqueId()).open();
         }
         
     }

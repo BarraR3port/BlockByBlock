@@ -12,6 +12,7 @@ import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.listener.MainEvents;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
+import net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -44,36 +45,37 @@ public final class WorldPlayerEvents extends MainEvents {
     
     @Override
     public void subPlayerJoinEvent(PlayerJoinEvent e){
-        final UUID uuid = e.getPlayer().getUniqueId();
+        final Player p = e.getPlayer();
+        final UUID uuid = p.getUniqueId();
         final boolean tpToWorld = Main.getInstance().getWorlds().isPlayerToTP(uuid);
         final boolean tpToHome = Main.getInstance().getHomes().isPlayerToTP(uuid);
-        final boolean isWarpWorld = e.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase("warp");
+        final boolean isWarpWorld = p.getLocation().getWorld().getName().equalsIgnoreCase("warp");
         final BWorld visitWorld = Main.getInstance().getWorlds().getWorldByVisitor(uuid);
         Main.getInstance().debug("Join World Type: ");
         if (visitWorld != null){
             Main.getInstance().debug("Visit World\n");
-            Main.getInstance().debug("Player " + e.getPlayer().getName() + " is in visit world " + visitWorld.getName());
+            Main.getInstance().debug("Player " + p.getName() + " is in visit world " + visitWorld.getName());
             Location loc = Bukkit.getWorld(visitWorld.getUUID().toString()).getSpawnLocation();
             final Player worldOwner = Bukkit.getPlayer(visitWorld.getOwner());
             if (worldOwner != null){
                 loc = worldOwner.getLocation();
             }
             visitWorld.addOnlineMember(uuid);
-            final Player p = Bukkit.getPlayer(visitWorld.getVisitor(uuid).getTarget_uuid());
+            final Player target = Bukkit.getPlayer(visitWorld.getVisitor(uuid).getTarget_uuid());
             visitWorld.removeVisitor(uuid);
             Main.getInstance().getWorlds().saveWorld(visitWorld);
-            if (p != null){
+            if (target != null){
                 final HashMap < String, String > replace = new HashMap <>();
-                replace.put("player", e.getPlayer().getName());
+                replace.put("player", target.getName());
                 replace.put("world", visitWorld.getName().split("-")[0]);
-                Main.getLang().sendMsg(p, "world.visit-join-to-owner", replace);
+                Main.getLang().sendMsg(target, "world.visit-join-to-owner", replace);
             }
             Location finalLoc = loc;
             Main.getInstance().manageVisitorPermissions(uuid, visitWorld.getUUID(), false).thenAccept(a -> {
                 Main.getInstance().getWorlds().removeGuestFromVisitWorldList(uuid);
                 Bukkit.getScheduler().runTask(Main.getInstance(), ( ) -> {
-                    if (e.getPlayer().teleport(finalLoc, PlayerTeleportEvent.TeleportCause.PLUGIN)){
-                        Main.getLang().sendMsg(e.getPlayer(), "world.visit-join-to-visitor", "player", p != null ? p.getName().split("-")[0] : "&atu amigo");
+                    if (target.teleport(finalLoc, PlayerTeleportEvent.TeleportCause.PLUGIN)){
+                        Main.getLang().sendMsg(target, "world.visit-join-to-visitor", "player", target != null ? target.getName().split("-")[0] : "&atu amigo");
                     }
                 });
             });
@@ -87,7 +89,7 @@ public final class WorldPlayerEvents extends MainEvents {
             Main.getInstance().getWorlds().saveWorld(world);
             Main.getInstance().managePermissions(uuid, world.getUUID(), false).thenAccept(a ->
                     Bukkit.getScheduler().runTask(Main.getInstance(), ( ) -> {
-                        if (e.getPlayer().teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN)){
+                        if (p.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN)){
                             System.out.println("TELEPORTINGGGG to " + loc.getWorld().getName());
                             Main.getInstance().getWorlds().removePlayerToTP(uuid);
                         } else {
@@ -102,12 +104,16 @@ public final class WorldPlayerEvents extends MainEvents {
             final BWorld world = Main.getInstance().getWorlds().getWorld(homeLoc.getBWorld());
             world.addOnlineMember(uuid);
             Main.getInstance().getWorlds().saveWorld(world);
-            if (e.getPlayer().teleport(home.getBukkitLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN)){
+            if (p.teleport(home.getBukkitLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN)){
                 Main.getInstance().getHomes().removePlayerToTP(uuid);
                 Main.getInstance().managePermissions(uuid, world.getUUID(), false);
             }
         } else if (isWarpWorld){
-            //todo this
+            Main.getInstance().debug("Tp To Warps\n");
+            final SpigotWarp warp = Main.getInstance().getWarps().getPlayerToTP(uuid);
+            if (p.teleport(warp.getBukkitLocation())){
+                Main.getLang().sendMsg(p, "warps.tp-to-warp", "warp", warp.getType().getName());
+            }
         }
     }
     
@@ -200,13 +206,18 @@ public final class WorldPlayerEvents extends MainEvents {
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent e){
+        Player p = e.getPlayer();
+        for ( Player others : Bukkit.getOnlinePlayers() ){
+            others.showPlayer(Main.getInstance(), p);
+            p.showPlayer(Main.getInstance(), others);
+        }
         final boolean isWarpWorld = e.getTo().getWorld().getName().equalsIgnoreCase("warp");
         if (isWarpWorld){
             return;
         }
         final UUID playerUUID = e.getPlayer().getUniqueId();
         UUID worldUUID;
-        
+    
         try {
             worldUUID = UUID.fromString(e.getPlayer().getWorld().getName());
         } catch (IllegalArgumentException ex) {

@@ -72,7 +72,7 @@ public final class WorldManagement implements ILyCommand {
                         e.printStackTrace();
                     } catch (UserNotFoundException e) {
                         Main.getLang().sendErrorMsg(player, "player.not-found", "player", context.getArg(2));
-                
+    
                     }
                     return new CommandResponse();
                 } else if (context.getArg(0).equalsIgnoreCase("untrust")){
@@ -90,12 +90,12 @@ public final class WorldManagement implements ILyCommand {
                         } else {
                             Main.getLang().sendErrorMsg(player, "world.un-trust-no-permission", "world", world.getName().split("-")[0]);
                         }
-                
+    
                     } catch (IllegalArgumentException | WorldNotFoundError e) {
                         Main.getLang().sendErrorMsg(player, "world.not-found", "world", context.getArg(1));
                     } catch (NullPointerException e) {
                         Main.getLang().sendErrorMsg(player, "player.not-found", "player", context.getArg(2));
-                
+    
                     }
                 }
             } else if (context.getArgs().length == 4){
@@ -113,7 +113,7 @@ public final class WorldManagement implements ILyCommand {
                         } catch (IllegalArgumentException | WorldNotFoundError e) {
                             Main.getLang().sendErrorMsg(player, "world.not-found", "world", context.getArg(2));
                         }
-                
+    
                     } else if (context.getArg(1).equalsIgnoreCase("owner")){
                         try {
                             final UUID uuid = UUID.fromString(context.getArg(2));
@@ -156,20 +156,22 @@ public final class WorldManagement implements ILyCommand {
             list.add("untrust");
         } else if (context.getArgs().length == 2){
             switch(context.getArg(0)){
+                case "set":{
+                    list.add("owner");
+                    list.add("name");
+                    break;
+                }
                 case "delete":
                 case "visit":
                 case "trust":
                 case "untrust":{
                     if (context instanceof Player){
                         final UUID uuid = ((Player) context).getUniqueId();
-                        list.addAll(Main.getInstance().getWorlds().getWorlds().stream().filter(world -> world.getOwner().equals(uuid)).map(BWorld::getUUID).map(UUID::toString).collect(Collectors.toList()));
+                        list.addAll(Main.getInstance().getWorlds().getWorlds().stream().filter(world -> world.getOwner().equals(uuid)).distinct().map(BWorld::getUUID).map(UUID::toString).collect(Collectors.toList()));
                     } else {
                         list.addAll(Main.getInstance().getWorlds().getWorlds().stream().map(BWorld::getUUID).map(UUID::toString).collect(Collectors.toList()));
                     }
                     break;
-                }
-                case "set":{
-                    return list;
                 }
                 default:{
                     list.addAll(Main.getInstance().getPlayers().getPlayersName());
@@ -189,9 +191,6 @@ public final class WorldManagement implements ILyCommand {
                     list.addAll(Main.getInstance().getPlayers().getPlayersUUID(world.getMembers()));
                 } catch (WorldNotFoundError | IllegalArgumentException | NullPointerException ignored) {
                 }
-            } else if (context.getArg(0).equals("set")){
-                list.add("owner");
-                list.add("name");
             }
             
         } else if (context.getArgs().length == 4){

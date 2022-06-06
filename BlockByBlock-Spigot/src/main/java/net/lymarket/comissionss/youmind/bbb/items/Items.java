@@ -69,7 +69,7 @@ public final class Items {
         
         BUILDER_1_12 = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
                 .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMxOTA5NjFhODI2MDhjNDY4ZGU0Y2Q4NDJkNjBlNzUzNjRiYjRhMmUyNDdjMzUxOGYwMDU1YzdiMmMyOTBkYSJ9fX0=")
-                .setDisplayName("&b&lBuilding &61.12")
+                .setDisplayName("&b&lPlots &61.12")
                 .addLoreLine("&7Entra a construir con bloques")
                 .addLoreLine("&7de la 1.12")
                 .addLoreLine("")
@@ -80,7 +80,7 @@ public final class Items {
         
         BUILDER_1_16 = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
                 .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMxOTA5NjFhODI2MDhjNDY4ZGU0Y2Q4NDJkNjBlNzUzNjRiYjRhMmUyNDdjMzUxOGYwMDU1YzdiMmMyOTBkYSJ9fX0=")
-                .setDisplayName("&b&lBuilding &e1.16")
+                .setDisplayName("&b&lPlots &e1.16")
                 .addLoreLine("&7Entra a construir con bloques")
                 .addLoreLine("&7más nuevos.")
                 .addLoreLine("")
@@ -91,7 +91,7 @@ public final class Items {
         
         BUILDER_1_18 = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
                 .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMxOTA5NjFhODI2MDhjNDY4ZGU0Y2Q4NDJkNjBlNzUzNjRiYjRhMmUyNDdjMzUxOGYwMDU1YzdiMmMyOTBkYSJ9fX0=")
-                .setDisplayName("&b&lBuilding &a1.18")
+                .setDisplayName("&b&lPlots &a1.18")
                 .addLoreLine("&7Click para construir con")
                 .addLoreLine("&7los nuevos bloques!")
                 .addLoreLine("")

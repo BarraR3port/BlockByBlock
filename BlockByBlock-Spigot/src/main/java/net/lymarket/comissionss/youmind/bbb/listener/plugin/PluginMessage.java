@@ -35,7 +35,7 @@ public class PluginMessage implements PluginMessageListener {
                     }
                     Settings.SERVER_NAME = servername;
                     return;
-                
+    
                 }
                 case "GetData":{
                     /*int tbPlayers = in.readInt( );

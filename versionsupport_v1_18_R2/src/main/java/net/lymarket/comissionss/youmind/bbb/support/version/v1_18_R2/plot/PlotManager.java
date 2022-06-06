@@ -19,9 +19,7 @@ public class PlotManager extends IPlotManager < Plot > {
     
     private final PlotAPI api = new PlotAPI();
     private final VersionSupport vs;
-    
     private final JavaPlugin plugin;
-    
     
     public PlotManager(JavaPlugin plugin, VersionSupport vs){
         this.vs = vs;

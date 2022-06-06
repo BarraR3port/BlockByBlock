@@ -184,7 +184,7 @@ public class Placeholders extends PlaceholderExpansion {
                     case "world_owner":{
                         return Main.getInstance().getPlayers().getPlayer(world.getOwner()).getName();
                     }
-                
+    
                 }
             } catch (Exception e) {
                 return "Warp";

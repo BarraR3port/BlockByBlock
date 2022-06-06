@@ -3,6 +3,7 @@ package net.lymarket.comissionss.youmind.bbb.commands.warp;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.menu.main.warp.WarpMenu;
+import net.lymarket.comissionss.youmind.bbb.menu.main.world.create.version.VersionChooser;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
 import net.lymarket.common.commands.response.CommandResponse;
@@ -25,7 +26,12 @@ public class Warps implements ILyCommand {
             return new CommandResponse();
         }
         if (context.getArgs().length == 0){
-            new WarpMenu(LyApi.getPlayerMenuUtility(p)).open();
+            if (Settings.SERVER_TYPE.equals(ServerType.WORLDS)){
+                new WarpMenu(LyApi.getPlayerMenuUtility(p), Settings.SERVER_NAME).open();
+                return new CommandResponse();
+            }
+            new VersionChooser(LyApi.getPlayerMenuUtility(p), p.getUniqueId(), null, VersionChooser.VersionChooseType.WARP_CHOSE).open();
+            
             /*ArrayList < Warp > warps = Main.getInstance( ).getWarps( ).getWarpsByVersion( Settings.VERSION );
             if ( warps == null || warps.isEmpty( ) ) {
                 Main.getLang( ).sendErrorMsg( context.getSender( ) , "warp.no-warps" );

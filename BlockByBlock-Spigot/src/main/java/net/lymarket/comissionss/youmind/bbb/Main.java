@@ -18,6 +18,7 @@ import net.lymarket.comissionss.youmind.bbb.commands.spawn.Spawn;
 import net.lymarket.comissionss.youmind.bbb.commands.warp.WarpCmd;
 import net.lymarket.comissionss.youmind.bbb.commands.warp.Warps;
 import net.lymarket.comissionss.youmind.bbb.common.BBBApi;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ProxyStats;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.config.ConfigManager;
@@ -58,6 +59,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, SpigotUser, SpigotHome, SpigotWarp > {
     
     private static LyApi api;
@@ -68,13 +70,12 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
     public HomeManager homes;
     private Config config;
     private Config items;
-    
+    private ProxyStats proxyStats = new ProxyStats();
     private String nms_version;
     private PlayersRepository players;
     private VersionSupport nms;
     private SpigotSocketClient socket;
     private WarpManager warps;
-    
     private ViaAPI < Player > viaVersionApi;
     
     public static LyApi getApi( ){
@@ -129,7 +130,14 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
         this.nms_version = Bukkit.getServer().getClass().getName().split("\\.")[3];
         Settings.init(config);
         Items.init(items);
-    
+        
+        try {
+            slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
+        } catch (Exception e) {
+            e.printStackTrace();
+            getServer().shutdown();
+        }
+        
         try {
             Class < ? > supp = Class.forName("net.lymarket.comissionss.youmind.bbb.support.version." + nms_version + "." + nms_version);
             this.nms = (VersionSupport) supp.getConstructor(Class.forName("org.bukkit.plugin.java.JavaPlugin")).newInstance(this);
@@ -148,23 +156,17 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
                 getServer().shutdown();
             }
         }
-    
-        try {
-            slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
-        } catch (Exception e) {
-            e.printStackTrace();
-            getServer().shutdown();
-        }
-    
+        
+        
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
             new Placeholders(this).register();
         }
-    
+        
         if (Bukkit.getPluginManager().getPlugin("ViaVersion") != null){
             viaVersionApi = Via.getAPI();
         }
-    
-    
+        
+        
         getServer().getPluginManager().registerEvents(new ProxyMSGManager(), this);
         api.getCommandService().registerCommands(new WorldManagement());
         api.getCommandService().registerCommands(new SetSpawn());
@@ -181,7 +183,7 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
         api.getCommandService().registerCommands(new WarpCmd());
         api.getCommandService().registerCommands(new Warps());
         api.getCommandService().registerCommands(new Undo());
-    
+        
         //final MongoDBClient mongo = new MongoDBClient( "mongodb://" + config.getString( "db.host" ) + ":" + config.getString( "db.port" ) , config.getString( "db.database" ) );
         final MongoDBClient mongo = new MongoDBClient(config.getString("db.urli"), "bbb");
         players = new PlayersRepository(mongo, "players");
@@ -195,7 +197,7 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
             getServer().shutdown();
         }
         socket.sendUpdate();
-    
+        
         switch(Settings.SERVER_TYPE){
             case LOBBY:{
                 getServer().getPluginManager().registerEvents(new LobbyPlayerEvents(), this);
@@ -210,15 +212,15 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
                 break;
             }
         }
-    
-        getServer().getScheduler().runTaskTimer(this, ( ) -> {
         
+        getServer().getScheduler().runTaskTimer(this, ( ) -> {
+            
             for ( Player p : Bukkit.getOnlinePlayers() ){
                 if (p.getOpenInventory().getTopInventory().getHolder() instanceof IUpdatableMenu){
                     ((IUpdatableMenu) p.getOpenInventory().getTopInventory().getHolder()).reOpen();
                 }
             }
-        
+            
         }, 20L, 20L);
         //new PacketManager( this );
         
@@ -226,7 +228,8 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
     
     @Override
     public void onDisable( ){
-        socket.disable();
+        nms.saveWorlds();
+        socket.disable(false);
         getServer().getScheduler().cancelTasks(this);
     }
     
@@ -266,10 +269,6 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
     @Override
     public String getNMSVersion( ){
         return nms_version;
-    }
-    
-    public VersionSupport getNMS( ){
-        return nms;
     }
     
     public ViaAPI < Player > getViaVersion( ){
@@ -326,6 +325,33 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
                 user.data().remove(Node.builder(perm).context(MutableContextSet.of("world", world_uuid.toString()).mutableCopy()).build());
             }
         });
+    }
+    
+    public void reconnectToProxy( ){
+        socket.disable(false);
+        try {
+            socket = new SpigotSocketClient(players, worlds, homes, warps, nms).init();
+        } catch (IOException | IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        socket.sendUpdate();
+        getServer().getScheduler().runTaskTimer(this, ( ) -> {
+            
+            for ( Player p : Bukkit.getOnlinePlayers() ){
+                if (p.getOpenInventory().getTopInventory().getHolder() instanceof IUpdatableMenu){
+                    ((IUpdatableMenu) p.getOpenInventory().getTopInventory().getHolder()).reOpen();
+                }
+            }
+            
+        }, 20L, 20L);
+    }
+    
+    public ProxyStats getProxyStats( ){
+        return proxyStats;
+    }
+    
+    public void setProxyStats(ProxyStats proxyStats){
+        this.proxyStats = proxyStats;
     }
     
     @Override

@@ -34,6 +34,7 @@ public class Admin implements ILyCommand {
                 Main.getLang().reloadLang();
                 Settings.init(Main.getInstance().getConfig());
                 Items.init(Main.getInstance().getItems());
+                Main.getInstance().reconnectToProxy();
                 Utils.sendMessage(context.getSender(), "&c&lBlockByBlock reloaded Successfully!");
                 return new CommandResponse();
             } else if (context.getArg(0).equalsIgnoreCase("debug")){

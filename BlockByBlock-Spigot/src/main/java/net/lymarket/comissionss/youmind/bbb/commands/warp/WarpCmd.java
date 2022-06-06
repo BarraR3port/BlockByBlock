@@ -42,18 +42,18 @@ public class WarpCmd implements ILyCommand {
                         }
                         int warpsPerPage = 7;
                         int warpsIHave = warps.size();
-                    
+    
                         int pages = (warpsIHave / warpsPerPage) + (warpsIHave % warpsPerPage == 0 ? 0 : 1);
-                    
+    
                         Utils.sendMessage(context.getSender(), Main.getLang().getMSG("warp.warp-list"));
-                    
+    
                         for ( int i = 1; i <= pages; i++ ){
                             int max = Math.min(i * warpsPerPage, warpsIHave);
                             int min = Math.min((i - 1) * warpsPerPage, warpsIHave);
                             TextComponent text = new TextComponent("");
-                        
+        
                             Utils.sendMessage(p, Utils.formatTC(Main.getLang().getMSG("warp.warps-of-page").replace("%currentPage%", String.valueOf(i)).replace("%pages%", String.valueOf(pages))));
-                        
+        
                             for ( int a = min; a < max; a++ ){
                                 List < String > args = Main.getLang().getConfig().getStringList("warp.warps-of-description");
                                 final Warp w = warps.get(a);
@@ -113,7 +113,7 @@ public class WarpCmd implements ILyCommand {
                             }
                         } catch (IllegalArgumentException e) {
                             Main.getLang().sendErrorMsg(p, "warp.invalid-name");
-                        
+    
                         }
                         return new CommandResponse();
                     }
@@ -140,7 +140,7 @@ public class WarpCmd implements ILyCommand {
                                     );
                                 }
                                 text.addExtra(Utils.hoverOverMessageRunCommand("&a" + warp.getType().getName(), replaced, "/warp goto" + warp.getUUID()));
-                            
+    
                                 Main.getLang().sendMsg(p, "warp.created", "warp", text);
                                 return new CommandResponse();
                             } catch (IllegalArgumentException e) {
@@ -150,7 +150,7 @@ public class WarpCmd implements ILyCommand {
                         return new CommandResponse("blockbyblock.warp.create");
                     }
                 }
-            
+    
             }
             default:{
                 Utils.sendMessage(p, "&e&lWarps");

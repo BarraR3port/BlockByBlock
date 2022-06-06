@@ -21,8 +21,7 @@ public class Visit implements ILyCommand {
                 if (userTarget != null){
                     final UUID p = ((Player) context.getSender()).getUniqueId();
                     if (!p.equals(userTarget.getUUID())){
-                        Main.getLang().sendMsg(context.getSender(), "visit.sent", "player", context.getArg(0));
-                        Main.getInstance().getSocket().sendVisitRequest(p, userTarget.getUUID());
+                        Main.getInstance().getSocket().sendVisitRequest(p, userTarget.getUUID(), context.getArg(0));
                     } else {
                         Main.getLang().sendErrorMsg(context.getSender(), "visit.self");
                     }
@@ -40,32 +39,18 @@ public class Visit implements ILyCommand {
                     try {
                         UUID owner_uuid = UUID.fromString(context.getArg(2));
                         UUID world_uuid = UUID.fromString(context.getArg(3));
-                
+    
                         final BWorld world = Main.getInstance().getWorlds().getWorld(world_uuid);
-                
+    
                         if (world.isVisitor(owner_uuid)){
                             final WorldVisitRequest rq = world.getVisitor(owner_uuid);
                             Main.getInstance().debug("Visit Accept");
                             Main.getInstance().getWorlds().manageVisitJoinWorld(rq.accept());
-                            /*if ( rq.getGuest_server( ).equalsIgnoreCase( Settings.SERVER_NAME ) ) {
-                                final Location loc = Bukkit.getWorld( world.getUUID( ).toString( ) ).getSpawnLocation( );
-                                world.addOnlineMember( owner_uuid );
-                                world.removeVisitor( owner_uuid );
-                                Main.getInstance( ).getWorlds( ).addGuestToVisitWorldList( owner_uuid , world );
-                                Main.getInstance( ).manageVisitorPermissions( owner_uuid , world.getUUID( ) , false ).thenAccept( a -> {
-                                    final Player guest = Bukkit.getPlayer( owner_uuid );
-                                    Bukkit.getScheduler( ).runTask( Main.getInstance( ) , ( ) -> guest.teleport( loc , PlayerTeleportEvent.TeleportCause.PLUGIN ) );
-                                } );
-                            } else {
-                                Main.getInstance( ).debug( "Different World" );
-                                rq.accept( );
-                                Main.getInstance( ).getWorlds( ).manageVisitJoinWorld( rq );
-                            }*/
                         } else {
                             Main.getLang().sendErrorMsg(p, "visit.expired");
                         }
                         return new CommandResponse();
-                
+    
                     } catch (IllegalArgumentException e) {
                         Main.getLang().sendErrorMsg(p, "player.not-fund", "player", context.getArg(2));
                         return new CommandResponse();

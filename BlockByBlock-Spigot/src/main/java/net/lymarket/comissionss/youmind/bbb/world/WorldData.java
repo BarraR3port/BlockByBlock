@@ -165,11 +165,11 @@ public class WorldData {
         } catch (IllegalArgumentException ex) {
             try {
                 int envId = Integer.parseInt(environment);
-            
+    
                 if (envId < -1 || envId > 1){
                     throw new NumberFormatException(environment);
                 }
-            
+    
                 environment = World.Environment.getEnvironment(envId).name();
             } catch (NumberFormatException ex2) {
                 throw new IllegalArgumentException("unknown environment '" + this.environment + "'");

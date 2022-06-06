@@ -8,7 +8,6 @@ import net.lymarket.comissionss.youmind.bbb.common.data.user.Stats;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
-import net.lymarket.comissionss.youmind.bbb.menu.main.warp.WarpMenu;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.Menu;
 import net.lymarket.lyapi.spigot.utils.ItemBuilder;
@@ -67,20 +66,13 @@ public class PlotMenu extends Menu {
                 .build());
     
         inventory.setItem(45, super.CLOSE_ITEM);
-    
-        inventory.setItem(53, new ItemBuilder(XMaterial.ENDER_PEARL.parseItem())
-                .setDisplayName("&bWarps")
-                .addTag("type", "warps")
-                .build());
     }
     
     @Override
     public void handleMenu(InventoryClickEvent e){
         final ItemStack item = e.getCurrentItem();
-        
-        if (NBTItem.hasTag(item, "type")){
-            new WarpMenu(playerMenuUtility, serverVersion).open();
-        } else if (NBTItem.hasTag(item, "plot-type")){
+    
+        if (NBTItem.hasTag(item, "plot-type")){
             final PlotType plotType = PlotType.valueOf(NBTItem.getTag(item, "plot-type"));
             if (plotType.equals(PlotType.P1001)){
                 if (user.getRank().equals(Rank.VISITOR)){

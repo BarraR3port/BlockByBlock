@@ -97,6 +97,7 @@ warp:
   deleted: "&aHas borrado el warp &e%warp%&a."
   warps-of-page: "&7[&dPAG: &5%currentPage%&7/&5%pages%&7] "
   teleported-to-world: "&aEntraste al mundo de warps."
+  tp-to-warp: "&aHas teletransportado al warp &e%warp%&a."
   warp-list: "&7Warps:"
   warps-of-description:
     - "&7Click para tepearte a la warp &b%warp%&7."

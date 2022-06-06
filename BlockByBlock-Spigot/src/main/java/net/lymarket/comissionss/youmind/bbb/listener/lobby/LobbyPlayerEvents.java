@@ -10,6 +10,7 @@ import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.lyapi.spigot.LyApi;
 import net.lymarket.lyapi.spigot.utils.NBTItem;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -35,11 +36,14 @@ public final class LobbyPlayerEvents extends MainEvents {
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent e){
+        Player p = e.getPlayer();
+        for ( Player others : Bukkit.getOnlinePlayers() ){
+            others.showPlayer(Main.getInstance(), p);
+            p.showPlayer(Main.getInstance(), others);
+        }
         try {
-            
             final World world = e.getTo().getWorld();
             final UUID playerUUID = e.getPlayer().getUniqueId();
-            
             final SpigotUser user = Main.getInstance().getPlayers().getPlayer(playerUUID);
             final Location loc = e.getTo();
             user.setLastLocation(new Loc(Settings.SERVER_NAME, world.getName(), loc.getX(), loc.getY(), loc.getZ()));

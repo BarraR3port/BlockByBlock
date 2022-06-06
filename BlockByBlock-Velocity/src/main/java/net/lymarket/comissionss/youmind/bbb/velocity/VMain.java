@@ -1,6 +1,5 @@
 package net.lymarket.comissionss.youmind.bbb.velocity;
 
-import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -105,14 +104,7 @@ public final class VMain extends LyApiVelocity {
     }
     
     private void sendInfoToServers( ){
-        getServerSocketManager().getSocketByServer().forEach((server, socket) -> {
-            if (server.startsWith("PW-")){
-                final JsonObject js = new JsonObject();
-                js.addProperty("type", "UPDATE_ONLINE_PLAYERS_IN_WORLDS");
-                socket.sendMessage(js);
-            }
-        });
-    
+        getServerSocketManager().getSocketByServer().forEach((server, socket) -> socket.sendProxyServerStats());
     }
     
     @Internal

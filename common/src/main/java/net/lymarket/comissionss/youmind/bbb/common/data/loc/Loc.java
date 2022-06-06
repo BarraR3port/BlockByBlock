@@ -1,5 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.common.data.loc;
 
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.common.Api;
 
 import java.util.UUID;
@@ -106,6 +107,26 @@ public class Loc {
     
     public boolean isInBWorld( ){
         return Server.startsWith("PW-") || BWorld != null;
+    }
+    
+    public ServerType getCurrentServerType( ){
+        if (Server.startsWith("PP-")){
+            return ServerType.PLOT;
+        } else if (Server.startsWith("PW-")){
+            return ServerType.WORLDS;
+        } else {
+            return ServerType.LOBBY;
+        }
+    }
+    
+    public String getCurrentServerTypeFormatted( ){
+        if (Server.startsWith("PP-")){
+            return Plot;
+        } else if (Server.startsWith("PW-")){
+            return World.split("-")[0];
+        } else {
+            return "Lobby";
+        }
     }
     
     public UUID getBWorld( ){

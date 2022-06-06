@@ -33,7 +33,7 @@ public class Homes implements ILyCommand {
         if (context.getArgs().length == 0){
             Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), ( ) -> {
                 final List < SpigotHome > homes = Main.getInstance().getHomes().getHomesByUserAndVersion(p.getUniqueId(), Settings.VERSION);
-            
+    
                 if (homes == null || homes.isEmpty()){
                     Main.getLang().sendErrorMsg(context.getSender(), "home.no-homes");
                     return;
@@ -42,10 +42,10 @@ public class Homes implements ILyCommand {
                 p.spigot().sendMessage(Utils.formatTC(Main.getLang().getMSG("home.homes-of", "player", p.getName())));
                 int friendsPerPage = 7;
                 int friendsIHave = homes.size();
-            
+    
                 int pages = (friendsIHave / friendsPerPage) + (friendsIHave % friendsPerPage == 0 ? 0 : 1);
-            
-            
+    
+    
                 for ( int i = 1; i <= pages; i++ ){
                     int max = Math.min(i * friendsPerPage, friendsIHave);
                     int min = Math.min((i - 1) * friendsPerPage, friendsIHave);
@@ -77,7 +77,7 @@ public class Homes implements ILyCommand {
             if (targetUser != null){
                 Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), ( ) -> {
                     ArrayList < SpigotHome > homes = Main.getInstance().getHomes().getHomesByUser(targetUser.getUUID());
-                
+    
                     if (homes == null){
                         Main.getLang().sendErrorMsg(context.getSender(), "home.no-homes-other");
                         return;
@@ -85,11 +85,11 @@ public class Homes implements ILyCommand {
                     //todo improve this system and maybe make an GUI of it
                     int homesPerPage = 7;
                     int homesIHave = homes.size();
-                
+    
                     int pages = (homesIHave / homesPerPage) + (homesIHave % homesPerPage == 0 ? 0 : 1);
-                
+    
                     p.spigot().sendMessage(Utils.formatTC(Main.getLang().getMSG("home.homes-of", "player", targetUser.getName())));
-                
+    
                     for ( int i = 1; i <= pages; i++ ){
                         int max = Math.min(i * homesPerPage, homesIHave);
                         int min = Math.min((i - 1) * homesPerPage, homesIHave);

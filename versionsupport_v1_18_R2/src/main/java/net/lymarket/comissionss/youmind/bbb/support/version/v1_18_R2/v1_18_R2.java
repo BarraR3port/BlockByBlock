@@ -47,4 +47,8 @@ public class v1_18_R2 extends VersionSupport {
     public IPlotManager < Plot > getPlotManager( ){
         return plotManager;
     }
+    
+    @Override
+    public void saveWorlds( ){
+    }
 }

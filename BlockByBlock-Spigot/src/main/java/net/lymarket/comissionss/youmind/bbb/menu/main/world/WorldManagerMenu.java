@@ -2,6 +2,7 @@ package net.lymarket.comissionss.youmind.bbb.menu.main.world;
 
 import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.MainMenu;
@@ -9,6 +10,7 @@ import net.lymarket.comissionss.youmind.bbb.menu.main.warp.WarpMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.create.version.VersionChooser;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.edit.WorldEditorMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.PlayersInWorldMenu;
+import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.UpdatableMenu;
@@ -67,7 +69,12 @@ public class WorldManagerMenu extends UpdatableMenu {
         final ItemStack item = e.getCurrentItem();
         final Player p = (Player) e.getWhoClicked();
         if (NBTItem.hasTag(item, "type")){
-            new WarpMenu(playerMenuUtility).open();
+            if (Settings.SERVER_TYPE.equals(ServerType.WORLDS)){
+                new WarpMenu(playerMenuUtility, Settings.SERVER_NAME).open();
+                return;
+            }
+            new VersionChooser(playerMenuUtility, targetUserUUID, this, VersionChooser.VersionChooseType.WARP_CHOSE).open();
+    
         } else if (NBTItem.hasTag(item, "world-uuid")){
             final String server_target = NBTItem.getTag(item, "world-server");
             final UUID world_uuid = UUID.fromString(NBTItem.getTag(item, "world-uuid"));
@@ -114,7 +121,7 @@ public class WorldManagerMenu extends UpdatableMenu {
                 }
             }
         } else if (NBTItem.hasTag(item, "world-available") && p.getUniqueId().equals(targetUserUUID)){
-            new VersionChooser(playerMenuUtility, targetUserUUID, this).open();
+            new VersionChooser(playerMenuUtility, targetUserUUID, this, VersionChooser.VersionChooseType.WORLD_CREATION).open();
         } else if (NBTItem.hasTag(item, "ly-menu-close")){
             new MainMenu(playerMenuUtility, targetUserUUID).open();
         }
@@ -165,8 +172,11 @@ public class WorldManagerMenu extends UpdatableMenu {
             }
         }
     
-    
         inventory.setItem(18, super.CLOSE_ITEM);
+        inventory.setItem(26, new ItemBuilder(XMaterial.ENDER_PEARL.parseItem())
+                .setDisplayName("&bWarps")
+                .addTag("type", "warps")
+                .build());
     }
     
     

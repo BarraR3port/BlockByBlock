@@ -27,7 +27,7 @@ public abstract class VersionSupport< S, U, H, W > {
                 registerWorldEvents();
                 break;
             }
-        
+    
         }
         
         
@@ -42,4 +42,6 @@ public abstract class VersionSupport< S, U, H, W > {
     public abstract void registerWorldEvents( );
     
     public abstract IPlotManager getPlotManager( );
+    
+    public abstract void saveWorlds( );
 }

@@ -32,4 +32,9 @@ public class v1_12_R1 extends VersionSupport {
     public IPlotManager < Plot > getPlotManager( ){
         return plotManager;
     }
+    
+    @Override
+    public void saveWorlds( ){
+    
+    }
 }

@@ -2,6 +2,7 @@ package net.lymarket.comissionss.youmind.bbb.common.socket;
 
 import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.msg.Msg;
+import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
 import net.lymarket.comissionss.youmind.bbb.common.db.IBWorldManager;
 import net.lymarket.comissionss.youmind.bbb.common.db.IHomeManager;
@@ -46,6 +47,8 @@ public abstract class ISocket< V, U, H, W > implements SocketMSG {
     public abstract ISocketClient getSocket( );
     
     public abstract void sendJoinHome(UUID owner, Home home);
+    
+    public abstract void sendJoinWarp(UUID owner, Warp warp);
     
     public abstract void sendWorldVisitResponse(WorldVisitRequest request);
     

@@ -24,7 +24,7 @@ public interface SocketMSG {
     
     void sendJoinPlotRequest(UUID owner, String server_version, String plotID, PlotType plotType, int item_slot);
     
-    void sendVisitRequest(UUID owner_uuid, UUID target);
+    void sendVisitRequest(UUID owner_uuid, UUID target_uuid, String target_name);
     
     void sendMSGToPlayer(UUID target, String key);
     

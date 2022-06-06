@@ -9,7 +9,10 @@ import net.lymarket.comissionss.youmind.bbb.common.data.msg.Msg;
 import net.lymarket.comissionss.youmind.bbb.common.data.msg.PlotMsg;
 import net.lymarket.comissionss.youmind.bbb.common.data.msg.WorldMsg;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ProxyStats;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
+import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.WorldVisitRequest;
 import net.lymarket.comissionss.youmind.bbb.common.socket.ISocket;
@@ -40,7 +43,7 @@ import java.util.stream.Collectors;
 public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, SpigotHome, SpigotWarp > {
     
     private final VersionSupport < SlimeWorld, SpigotUser, SpigotHome, SpigotWarp > vs;
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     private ProxySocket mainSocket;
     
     public SpigotSocketClient(PlayersRepository players, WorldManager worlds, HomeManager homes, WarpManager warps, VersionSupport < SlimeWorld, SpigotUser, SpigotHome, SpigotWarp > versionSupport){
@@ -154,12 +157,13 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
     }
     
     @Override
-    public void sendVisitRequest(UUID owner_uuid, UUID target_uuid){
+    public void sendVisitRequest(UUID owner_uuid, UUID target_uuid, String target_name){
         JsonObject js = new JsonObject();
         js.addProperty("type", "SEND_VISIT_REQUEST");
         js.addProperty("current_server", Settings.SERVER_NAME);
         js.addProperty("owner_uuid", owner_uuid.toString());
         js.addProperty("target_uuid", target_uuid.toString());
+        js.addProperty("target_name", target_name);
         sendMessage(js);
     }
     
@@ -211,6 +215,17 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
         js.addProperty("current_server", Settings.SERVER_NAME);
         js.addProperty("server_target", home.getLocation().getServer());
         js.addProperty("home_uuid", home.getUUID().toString());
+        js.addProperty("owner_uuid", owner.toString());
+        sendMessage(js);
+    }
+    
+    @Override
+    public void sendJoinWarp(UUID owner, Warp warp){
+        JsonObject js = new JsonObject();
+        js.addProperty("type", "JOIN_WARP");
+        js.addProperty("current_server", Settings.SERVER_NAME);
+        js.addProperty("server_target", warp.getLocation().getServer());
+        js.addProperty("warp_uuid", warp.getUUID().toString());
         js.addProperty("owner_uuid", owner.toString());
         sendMessage(js);
     }
@@ -302,8 +317,8 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
     /**
      * Close active sockets.
      */
-    public void disable( ){
-        mainSocket.disable("Close active sockets");
+    public void disable(boolean stopServer){
+        mainSocket.disable("Close active sockets", stopServer);
     }
     
     private class ProxySocket implements ISocketClient {
@@ -468,8 +483,8 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                     
                                     json.remove("type");
                                     json.addProperty("type", "JOIN_WORLD_REQUEST_POST");
-                                    
-                                    if (world.getOwner().equals(owner_uuid) || world.getMembers().contains(owner_uuid)){
+    
+                                    if (world.getOwner().equals(owner_uuid) || world.getMembers().contains(owner_uuid) || getPlayers().getPlayer(owner_uuid).getRank().isAdmin()){
                                         getWorlds().addPlayerToTP(owner_uuid, world);
                                         json.addProperty("response", true);
                                     } else {
@@ -614,31 +629,38 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                     
                                 }
                                 case "UPDATE_ONLINE_PLAYERS_IN_WORLDS":{
-                                    Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), ( ) ->
-                                            getWorlds().getWorldsByServer().forEach(world -> {
-                                                boolean save = false;
-                                                final ArrayList < UUID > playersToAdd = new ArrayList <>();
-                                                final World bukkitWorld = Bukkit.getWorld(world.getUUID().toString());
-                                                if (bukkitWorld == null){
-                                                    if (world.getOnlineMembers().size() > 0){
-                                                        world.setOnlineMembers(new ArrayList <>());
-                                                        save = true;
-                                                    }
-                                                } else {
-                                                    if (bukkitWorld.getPlayers().size() != world.getOnlineMembers().size()){
-                                                        playersToAdd.addAll(bukkitWorld.getPlayers().stream().map(Player::getUniqueId).collect(Collectors.toList()));
-                                                    }
-                                                    if (playersToAdd.size() > 0){
-                                                        world.setOnlineMembers(playersToAdd);
-                                                        save = true;
-                                                    }
-                                                    
+                                    if (!json.has("stats")) continue;
+                                    Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), ( ) -> {
+                                                ProxyStats proxyStats = gson.fromJson(json.getAsJsonObject("stats"), ProxyStats.class);
+                                                Main.getInstance().setProxyStats(proxyStats);
+                                                if (Settings.SERVER_TYPE.equals(ServerType.WORLDS)){
+                                                    getWorlds().getWorldsByServer().forEach(world -> {
+                                                        boolean save = false;
+                                                        final ArrayList < UUID > playersToAdd = new ArrayList <>();
+                                                        final World bukkitWorld = Bukkit.getWorld(world.getUUID().toString());
+                                                        if (bukkitWorld == null){
+                                                            if (world.getOnlineMembers().size() > 0){
+                                                                world.setOnlineMembers(new ArrayList <>());
+                                                                save = true;
+                                                            }
+                                                        } else {
+                                                            if (bukkitWorld.getPlayers().size() != world.getOnlineMembers().size()){
+                                                                playersToAdd.addAll(bukkitWorld.getPlayers().stream().map(Player::getUniqueId).collect(Collectors.toList()));
+                                                            }
+                                                            if (playersToAdd.size() > 0){
+                                                                world.setOnlineMembers(playersToAdd);
+                                                                save = true;
+                                                            }
+                            
+                                                        }
+                                                        if (save){
+                                                            getWorlds().saveWorld(world);
+                                                        }
+                        
+                                                    });
                                                 }
-                                                if (save){
-                                                    getWorlds().saveWorld(world);
-                                                }
-                                                
-                                            }));
+                                            }
+                                    );
                                 }
                                 case "VISIT_REQUEST_PREV":{
                                     if (!json.has("current_server")) continue;
@@ -695,9 +717,9 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         Bukkit.getScheduler().runTask(Main.getInstance(), ( ) -> Main.getLang().sendErrorMsg(p, reason));
                                     }
                                 }
-                                
+    
                                 case "JOIN_HOME_PREV":{
-                                    
+        
                                     if (!json.has("current_server")) continue;
                                     if (!json.has("server_target")) continue;
                                     if (!json.has("home_uuid")) continue;
@@ -729,10 +751,41 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         continue;
                                     }
                                 }
+                                case "JOIN_WARP_PREV":{
+                                    if (!json.has("current_server")) continue;
+                                    if (!json.has("server_target")) continue;
+                                    if (!json.has("warp_uuid")) continue;
+                                    if (!json.has("owner_uuid")) continue;
+                                    try {
+                                        final String currentServer = json.get("current_server").getAsString();
+                                        final String targetServer = json.get("server_target").getAsString();
+                                        final UUID owner_uuid = UUID.fromString(json.get("owner_uuid").getAsString());
+                                        final SpigotWarp warp = getWarps().getWarp(UUID.fromString(json.get("warp_uuid").getAsString()));
+                                        if (currentServer.equalsIgnoreCase(targetServer)){
+                                            Bukkit.getScheduler().runTask(Main.getInstance(), ( ) -> {
+                                                final Player player = Bukkit.getPlayer(owner_uuid);
+                                                player.teleport(warp.getBukkitLocation());
+                                                Main.getLang().sendMsg(player, "warps.tp-to-warp", "warp", warp.getType().getName());
+                                            });
+                                        } else {
+                                            getWarps().addPlayerToTP(owner_uuid, warp);
+                                            json.remove("type");
+                                            json.addProperty("type", "JOIN_WARP_POST");
+                                            json.addProperty("tp", true);
+                                            sendMessage(json);
+                                        }
+                                        continue;
+                                    } catch (Exception e) {
+                                        json.remove("type");
+                                        json.addProperty("type", "JOIN_WARP_POST");
+                                        json.addProperty("tp", false);
+                                        sendMessage(json);
+                                        continue;
+                                    }
+                                }
                                 case "ERROR":{
                                     if (!json.has("error")) continue;
                                     final String error = json.get("error").getAsString();
-                                    Main.getInstance().getLogger().severe(error);
                                     switch(error){
                                         case "SERVER_NOT_ONLINE":{
                                             if (!json.has("owner_uuid")) continue;
@@ -754,15 +807,51 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                                 replace.put("server", server_target);
                                                 replace.put("world", world_uuid);
                                                 sendMSGToPlayer(owner_uuid, "error.world.delete-failed", replace);
-                                                
+                    
                                             } catch (NullPointerException ignored) {
                                             }
                                         }
                                     }
                                 }
+                                case "SUCCESS_MSG":{
+                                    if (!json.has("success_type")) continue;
+                                    final String success_type = json.get("success_type").getAsString();
+                                    if (success_type.equals("VISIT_REQUEST")){
+                                        final UUID owner_uuid = UUID.fromString(json.get("owner_uuid").getAsString());
+                                        final String target_name = json.get("target_name").getAsString();
+                                        Main.getLang().sendMsg(Bukkit.getPlayer(owner_uuid), "visit.sent", "player", target_name);
+                                    }
+                                    /*switch(success_type){
+                                        case "VISIT_REQUEST":{
+                                            if (!json.has("owner_uuid")) continue;
+                                            if (!json.has("server_target")) continue;
+                                            final UUID owner_uuid = UUID.fromString(json.get("owner_uuid").getAsString());
+                                            final String server_target = json.get("server_target").getAsString();
+                                            sendMSGToPlayer(owner_uuid, "error.server.not-online", "server", server_target);
+                                        }
+                                        case "WORLD_DELETE_FAILED":{
+                                            if (!json.has("owner_uuid")) continue;
+                                            if (!json.has("current_server")) continue;
+                                            if (!json.has("server_target")) continue;
+                                            if (!json.has("world_uuid")) continue;
+                                            final UUID owner_uuid = UUID.fromString(json.get("owner_uuid").getAsString());
+                                            final String server_target = json.get("server_target").getAsString();
+                                            final String world_uuid = json.get("world_uuid").getAsString();
+                                            try {
+                                                final HashMap < String, String > replace = new HashMap <>();
+                                                replace.put("server", server_target);
+                                                replace.put("world", world_uuid);
+                                                sendMSGToPlayer(owner_uuid, "error.world.delete-failed", replace);
+                
+                                            } catch (NullPointerException ignored) {
+                                            }
+                                        }
+                                    }
+*/
+                                }
                             }
                         } else {
-                            disable("in.hasNext()");
+                            reconnect("in.hasNext()");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -803,11 +892,11 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
             try {
                 init();
             } catch (Exception e) {
-                disable(msg);
+                disable(msg, false);
             }
         }
-        
-        public void disable(String reason){
+    
+        public void disable(String reason, boolean stopServer){
             compute = false;
             Main.getInstance().debug("Disabling socket: " + socket.toString());
             Main.getInstance().debug("Disabling socket Reason: " + reason);
@@ -818,7 +907,9 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
             }
             in = null;
             out = null;
-            Bukkit.shutdown();
+            if (stopServer){
+                Bukkit.shutdown();
+            }
         }
     }
 }

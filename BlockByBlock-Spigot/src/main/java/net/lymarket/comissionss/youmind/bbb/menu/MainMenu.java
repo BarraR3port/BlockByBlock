@@ -2,6 +2,7 @@ package net.lymarket.comissionss.youmind.bbb.menu;
 
 import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ProxyStats;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.Stats;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.main.plot.PlotMenu;
@@ -82,6 +83,8 @@ public class MainMenu extends Menu {
             super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
         } else if (NBTItem.hasTag(item, "world")){
             new WorldManagerMenu(playerMenuUtility, targetUserUUID).open();
+        } else if (NBTItem.hasTag(item, "type")){
+            Main.getInstance().getSocket().sendJoinServer(targetUserUUID, "lobby");
         } else if (NBTItem.hasTag(item, "ly-menu-close")){
             getOwner().closeInventory();
         }
@@ -101,29 +104,46 @@ public class MainMenu extends Menu {
             user.setUUID(getOwner().getUniqueId());
             Main.getInstance().getPlayers().savePlayer(user);
         }
-        final Stats stats = user.getStats();
-        inventory.setItem(20, Items.BUILDER_1_12);
+        final Stats userStats = user.getStats();
+        final ProxyStats proxyStats = Main.getInstance().getProxyStats();
+        inventory.setItem(20, new ItemBuilder(Items.BUILDER_1_12.clone())
+                .addLoreLine("")
+                .addLoreLine("&7Jugadores en linea: &a" + proxyStats.getPlot_1_12_player_size())
+                .build());
     
-        inventory.setItem(22, Items.BUILDER_1_16);
+        inventory.setItem(22, new ItemBuilder(Items.BUILDER_1_16.clone())
+                .addLoreLine("")
+                .addLoreLine("&7Jugadores en linea: &a" + proxyStats.getPlot_1_16_player_size())
+                .build());
     
-        inventory.setItem(24, Items.BUILDER_1_18);
+        inventory.setItem(24, new ItemBuilder(Items.BUILDER_1_18.clone())
+                .addLoreLine("")
+                .addLoreLine("&7Jugadores en linea: &a" + proxyStats.getPlot_1_18_player_size())
+                .build());
     
         inventory.setItem(40, new ItemBuilder(Items.WORLDS.clone())
                 .addLoreLine("&7Mundos: &a" + Main.getInstance().getWorlds().getWorldsByUser(targetUserUUID).size())
+                .addLoreLine("")
+                .addLoreLine("&7Jugadores en linea: &a" + (proxyStats.getWorld_1_12_player_size() + proxyStats.getWorld_1_16_player_size() + proxyStats.getWorld_1_18_player_size()))
                 .build());
     
         inventory.setItem(53, new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
                 .setHeadSkin(user.getSkin())
                 .setDisplayName("&b&lStats")
                 .addLoreLine("")
-                .addLoreLine("&aTiempo Jugado: " + stats.getFormattedTimePlayed())
-                .addLoreLine("&aBloques destruidos: " + stats.getBLOCKS_BROKEN())
-                .addLoreLine("&aBloques Colocados: " + stats.getBLOCKS_PLACED())
-                .addLoreLine("&aElo: " + (stats.getELO() > 0 ? "&a" + stats.getELO() : "&c" + stats.getELO()))
+                .addLoreLine("&aTiempo Jugado: " + userStats.getFormattedTimePlayed())
+                .addLoreLine("&aBloques destruidos: " + userStats.getBLOCKS_BROKEN())
+                .addLoreLine("&aBloques Colocados: " + userStats.getBLOCKS_PLACED())
+                .addLoreLine("&aElo: " + (userStats.getELO() > 0 ? "&a" + userStats.getELO() : "&c" + userStats.getELO()))
+                .addLoreLine("&eLocation: " + (user.getLastLocation().getServer()))
+                .addLoreLine("&e" + user.getLastLocation().getCurrentServerType().getName() + ":" + (user.getLastLocation().getCurrentServerTypeFormatted()))
                 .addTag("stats", "stats")
                 .build());
     
-    
+        inventory.setItem(26, new ItemBuilder(XMaterial.NETHER_STAR.parseItem())
+                .setDisplayName("&bLobby")
+                .addTag("type", "lobby")
+                .build());
         inventory.setItem(45, super.CLOSE_ITEM);
     
     }
