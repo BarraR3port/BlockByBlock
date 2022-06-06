@@ -631,9 +631,9 @@ public class ProxySocketServer implements Runnable {
                                         if (!json.has("server_target")) continue;
                                         if (!json.has("world_uuid")) continue;
                                         final String current_server = json.get("current_server").getAsString();
-                
+    
                                         ServerSocketManager.getSocketByServer(current_server).ifPresent(socket -> socket.sendMessage(json));
-                
+    
                                     }
                                     case "SERVER_NOT_ONLINE":{
                                         if (!json.has("owner_uuid")) continue;

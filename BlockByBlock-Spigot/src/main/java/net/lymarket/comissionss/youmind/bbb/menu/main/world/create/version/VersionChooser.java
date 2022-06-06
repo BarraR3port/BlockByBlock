@@ -73,7 +73,7 @@ public class VersionChooser extends Menu {
                 case WARP_CHOSE:{
                     new WarpMenu(playerMenuUtility, serverName).open();
                 }
-        
+    
                 default:
                     WORLD_CREATION:
                     {

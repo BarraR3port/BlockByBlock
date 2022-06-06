@@ -651,12 +651,12 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                                                 world.setOnlineMembers(playersToAdd);
                                                                 save = true;
                                                             }
-                            
+    
                                                         }
                                                         if (save){
                                                             getWorlds().saveWorld(world);
                                                         }
-                        
+    
                                                     });
                                                 }
                                             }
@@ -807,7 +807,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                                 replace.put("server", server_target);
                                                 replace.put("world", world_uuid);
                                                 sendMSGToPlayer(owner_uuid, "error.world.delete-failed", replace);
-                    
+    
                                             } catch (NullPointerException ignored) {
                                             }
                                         }
