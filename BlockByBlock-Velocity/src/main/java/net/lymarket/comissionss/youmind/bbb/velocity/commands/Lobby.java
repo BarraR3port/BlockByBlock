@@ -9,7 +9,7 @@ import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
 public class Lobby implements SimpleCommand {
     public Lobby(CommandManager commandManager){
     
-        final CommandMeta meta = commandManager.metaBuilder("lobby").aliases("hub", "h").build();
+        final CommandMeta meta = commandManager.metaBuilder("lobby").aliases("hub").build();
         commandManager.register(meta, this);
     }
     

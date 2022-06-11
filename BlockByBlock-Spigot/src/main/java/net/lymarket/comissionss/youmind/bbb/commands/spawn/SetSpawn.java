@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.commands.spawn;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
 import net.lymarket.common.commands.response.CommandResponse;
 import org.bukkit.Location;
@@ -26,8 +27,10 @@ public final class SetSpawn implements ILyCommand {
                     return new CommandResponse("blockbyblock.admin.setspawn");
                 return new CommandResponse("blockbyblock.admin");
             }
+            Main.getLang().sendMsg(p, "spawn.set", "location", p.getLocation().getBlockX() + " " + p.getLocation().getBlockY() + " " + p.getLocation().getBlockZ());
             final Location loc = p.getLocation();
             p.getWorld().setSpawnLocation(loc);
+            Settings.SPAWN_LOCATION = loc;
             Main.getInstance().getConfig().set("spawn.location", loc);
             Main.getInstance().getConfig().saveData();
             

@@ -689,6 +689,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                                 sendMSGToPlayer(owner_uuid, "error.player.not-available-to-be-visited", "player", targetUser.getName());
                                                 continue;
                                             } else {
+                                                sendMSGToPlayer(owner_uuid, "visit.sent", "player", targetUser.getName());
                                                 vs.getPlotManager().manageVisitJoinPlot(owner_uuid, targetUser, currentServer, Settings.SERVER_NAME);
                                             }
                                             continue;
@@ -698,6 +699,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                                 sendMSGToPlayer(owner_uuid, "error.player.not-available-to-be-visited", "player", targetUser.getName());
                                                 continue;
                                             } else {
+                                                sendMSGToPlayer(owner_uuid, "visit.sent", "player", targetUser.getName());
                                                 final WorldVisitRequest request = new WorldVisitRequest(owner_uuid, target_uuid, null, currentServer, Settings.SERVER_NAME);
                                                 getWorlds().manageVisitJoinWorld(request);
                                             }

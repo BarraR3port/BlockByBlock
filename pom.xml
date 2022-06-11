@@ -8,7 +8,7 @@
     <groupId>net.lymarket.comissionss.youmind</groupId>
     <artifactId>BlockByBlock</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.1-BETA</version>
+    <version>0.4.3-BETA</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

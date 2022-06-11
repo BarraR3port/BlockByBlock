@@ -2,6 +2,7 @@ package net.lymarket.comissionss.youmind.bbb.listener;
 
 import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import org.bukkit.GameMode;
 import org.bukkit.entity.EntityType;
@@ -113,8 +114,16 @@ public abstract class MainEvents implements Listener {
     
     @EventHandler
     public void onPlayerMoveEvent(PlayerMoveEvent e){
-        if (e.getTo().getBlockY() <= -40){
-            e.getPlayer().teleport(e.getPlayer().getWorld().getSpawnLocation());
+        if (!Settings.DEBUG){
+            if (e.getTo().getBlockY() <= -80){
+                e.getPlayer().teleport(e.getPlayer().getWorld().getSpawnLocation());
+            }
         }
     }
+    
+    @EventHandler
+    public void onPlayerPortal(PlayerPortalEvent e){
+        e.setCancelled(true);
+    }
+    
 }

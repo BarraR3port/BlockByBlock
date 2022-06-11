@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.4.1-BETA</version>
+        <version>0.4.3-BETA</version>
     </parent>
 
     <artifactId>BlockByBlock-Spigot</artifactId>
@@ -64,6 +64,162 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--<plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <id>obfuscate</id>
+                        <configuration>
+                            <tasks>
+                                <property name="runtime_classpath" refid="maven.runtime.classpath"/>
+                                &lt;!&ndash;suppress UnresolvedMavenProperty &ndash;&gt;
+                                <taskdef name="yguard" classname="com.yworks.yguard.YGuardTask"
+                                         classpath="${runtime_classpath}"/>
+                                <yguard>
+                                    <inoutpair in="${project.build.directory}/${project.build.finalName}.jar"
+                                               out="${project.build.directory}/${project.build.finalName}-OBF.jar"/>
+                                    <rename mainclass="net.lymarket.comissionss.youmind.bbb.Main"
+                                            logfile="${project.build.directory}/yguard.log.xml"
+                                            scramble="true">
+                                        <keep>
+                                            <class classes="protected" methods="protected" fields="protected">
+                                                <patternset>
+                                                    <include name="net.minecraft.server.MinecraftServer"/>
+                                                    <include name="net.minecraft.realms.**"/>
+                                                    <include name="net.minecraft.client.ClientBrandRetriever"/>
+                                                    <include name="net.minecraft.client.main.Main"/>
+                                                    <include name="org.apache.logging.log4j.**"/>
+                                                    <include name="net.lymarket.lyapi.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType"/>
+                                                    <include name="net.lymarket.common.**"/>
+                                                    <include name="com.yworks.**"/>
+                                                    <include name="org.spigotmc.**"/>
+                                                    <include name="com.google.**"/>
+                                                    <include name="com.mongodb.**"/>
+                                                    <include name="org.bukkit.**"/>
+                                                    <include name="okio.**"/>
+                                                    <include name="okhttp3.**"/>
+                                                    <include name="org.apache.**"/>
+                                                    <include name="org.bson.**"/>
+                                                    <include name="org.objectweb.asm.**"/>
+                                                    <include name="org.slf4j.**"/>
+                                                    <include name="kotlin.**"/>
+                                                    <include name="lombok.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.Main"/>
+                                                    <include name="xyz.xenondevs.particle.**"/>
+                                                    <include name="com.cryptomorin.xseries.**"/>
+                                                </patternset>
+                                            </class>
+                                            <class classes="private" methods="private" fields="private">
+                                                <patternset>
+                                                    <include name="net.lymarket.lyapi.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
+                                                    <include name="net.lymarket.common.**"/>
+                                                    <include name="xyz.xenondevs.particle.**"/>
+                                                    <include name="com.cryptomorin.xseries.**"/>
+                                                    <include name="org.spigotmc.**"/>
+                                                    <include name="com.google.**"/>
+                                                    <include name="com.mongodb.**"/>
+                                                    <include name="org.bukkit.**"/>
+                                                    <include name="okio.**"/>
+                                                    <include name="okhttp3.**"/>
+                                                    <include name="org.apache.**"/>
+                                                    <include name="org.bson.**"/>
+                                                    <include name="org.objectweb.asm.**"/>
+                                                    <include name="org.slf4j.**"/>
+                                                    <include name="kotlin.**"/>
+                                                    <include name="lombok.**"/>
+                                                </patternset>
+                                            </class>
+
+                                            <class classes="public" methods="public" fields="public">
+                                                <patternset>
+                                                    <include name="net.lymarket.lyapi.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
+                                                    <include name="net.lymarket.common.**"/>
+                                                    <include name="xyz.xenondevs.particle.*"/>
+                                                    <include name="com.cryptomorin.xseries.*"/>
+                                                    <include name="org.spigotmc.**"/>
+                                                    <include name="com.google.**"/>
+                                                    <include name="com.mongodb.**"/>
+                                                    <include name="org.bukkit.**"/>
+                                                    <include name="okio.**"/>
+                                                    <include name="okhttp3.**"/>
+                                                    <include name="org.apache.**"/>
+                                                    <include name="org.bson.**"/>
+                                                    <include name="org.objectweb.asm.**"/>
+                                                    <include name="org.slf4j.**"/>
+                                                    <include name="kotlin.**"/>
+                                                    <include name="lombok.**"/>
+                                                </patternset>
+                                            </class>
+
+                                            <package>
+                                                <patternset>
+                                                    <include name="org.apache.logging.log4j."/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.Main"/>
+                                                    <include name="org.bukkit.*"/>
+                                                    <include name="net.lymarket.lyapi.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
+                                                    <include name="net.lymarket.common.**"/>
+                                                    <include name="xyz.xenondevs.particle.**"/>
+                                                    <include name="com.cryptomorin.xseries.**"/>
+                                                    <include name="org.spigotmc.**"/>
+                                                    <include name="com.google.**"/>
+                                                    <include name="com.mongodb.**"/>
+                                                    <include name="org.bukkit.**"/>
+                                                    <include name="okio.**"/>
+                                                    <include name="okhttp3.**"/>
+                                                    <include name="org.apache.**"/>
+                                                    <include name="org.bson.**"/>
+                                                    <include name="org.objectweb.asm.**"/>
+                                                    <include name="org.slf4j.**"/>
+                                                    <include name="kotlin.**"/>
+                                                    <include name="lombok.**"/>
+                                                </patternset>
+                                            </package>
+                                        </keep>
+                                        <property name="naming-scheme" value="small"/>
+                                        <property name="obfuscation-prefix" value="net.lymarket.comissionss.youmind.bbb.obfuscated"/>
+                                        <property name="language-conformity" value="legal"/>
+
+                                    </rename>
+                                </yguard>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
         </plugins>
 
         <resources>
@@ -129,12 +285,14 @@
     </repositories>
 
     <dependencies>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-chat</artifactId>
@@ -259,9 +417,16 @@
         <dependency>
             <groupId>com.viaversion</groupId>
             <artifactId>viaversion-api</artifactId>
-            <version>LATEST</version>
+            <version>4.3.1</version>
             <scope>provided</scope>
         </dependency>
+        <!--
+                <dependency>
+                    <groupId>com.yworks</groupId>
+                    <artifactId>yguard</artifactId>
+                    <version>3.1.0</version>
+                    <scope>compile</scope>
+                </dependency>-->
 
     </dependencies>
 </project>

@@ -4,9 +4,9 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
-import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
+import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -108,15 +108,87 @@ public class Placeholders extends PlaceholderExpansion {
             case "gamemode":{
                 return String.valueOf(player.getGameMode());
             }
+            case "version":{
+                return plugin.getDescription().getVersion();
+            }
+            case "server_version":{
+                return Settings.VERSION;
+            }
+            case "lobby_size":{
+                return String.valueOf(Main.getInstance().getProxyStats().getLobby_player_size());
+            }
+            case "plots_112_size":{
+                return String.valueOf(Main.getInstance().getProxyStats().getPlot_1_12_player_size());
+            }
+            case "plots_112_online":{
+                return String.valueOf(Main.getInstance().getProxyStats().isPlot_1_12_online());
+            }
+            case "plots_112_online_formatted":{
+                return Main.getInstance().getProxyStats().isPlot_1_12_online() ? "&aABIERTO" : "&cCERRADO";
+            }
+            case "plots_116_size":{
+                return String.valueOf(Main.getInstance().getProxyStats().getPlot_1_16_player_size());
+            }
+            case "plots_116_online":{
+                return String.valueOf(Main.getInstance().getProxyStats().isPlot_1_16_online());
+            }
+            case "plots_116_online_formatted":{
+                return Main.getInstance().getProxyStats().isPlot_1_16_online() ? "&aABIERTO" : "&cCERRADO";
+            }
+            case "plots_118_size":{
+                return String.valueOf(Main.getInstance().getProxyStats().getPlot_1_18_player_size());
+            }
+            case "plots_118_online":{
+                return String.valueOf(Main.getInstance().getProxyStats().isPlot_1_18_online());
+            }
+            case "plots_118_online_formatted":{
+                return Main.getInstance().getProxyStats().isPlot_1_18_online() ? "&aABIERTO" : "&cCERRADO";
+            }
+            case "world_112_size":{
+                return String.valueOf(Main.getInstance().getProxyStats().getWorld_1_12_player_size());
+            }
+            case "world_112_online":{
+                return String.valueOf(Main.getInstance().getProxyStats().isWorld_1_12_online());
+            }
+            case "world_112_online_formatted":{
+                return Main.getInstance().getProxyStats().isWorld_1_12_online() ? "&aABIERTO" : "&cCERRADO";
+            }
+            case "world_116_size":{
+                return String.valueOf(Main.getInstance().getProxyStats().getWorld_1_16_player_size());
+            }
+            case "world_116_online":{
+                return String.valueOf(Main.getInstance().getProxyStats().isWorld_1_16_online());
+            }
+            case "world_116_online_formatted":{
+                return Main.getInstance().getProxyStats().isWorld_1_16_online() ? "&aABIERTO" : "&cCERRADO";
+            }
+            case "world_118_size":{
+                return String.valueOf(Main.getInstance().getProxyStats().getWorld_1_18_player_size());
+            }
+            case "world_118_online":{
+                return String.valueOf(Main.getInstance().getProxyStats().isWorld_1_18_online());
+            }
+            case "world_118_online_formatted":{
+                return Main.getInstance().getProxyStats().isWorld_1_18_online() ? "&aABIERTO" : "&cCERRADO";
+            }
         
         }
     
-        final User p = Main.getInstance().getPlayers().getLocalStoredPlayer(player.getUniqueId());
+        final SpigotUser p = Main.getInstance().getPlayers().getLocalStoredPlayer(player.getUniqueId());
     
         if (p == null) return "Jugador no encontrado";
         //%lydark_lycoins%
     
         switch(identifier){
+            case "location_server":{
+                return p.getLastLocation().getServer();
+            }
+            case "location_server_type":{
+                return p.getLastLocation().getCurrentServerType().toString();
+            }
+            case "location_server_formatted":{
+                return p.getLastLocation().getCurrentServerTypeFormatted();
+            }
             case "stats_blocks_placed":{
                 return String.valueOf(p.getStats().getBLOCKS_PLACED());
             }
@@ -135,12 +207,13 @@ public class Placeholders extends PlaceholderExpansion {
             case "rank_tab":{
                 return p.getRank().getTabPrefix();
             }
+            case "rank_score_board":{
+                return p.getRank().getScoreBoardName();
+            }
             case "rank_prefix":{
                 return p.getRank().getPrefix();
             }
-            case "version":{
-                return plugin.getDescription().getVersion();
-            }
+            
             /*case "lycoins_formatted": {
                 DecimalFormat df = new DecimalFormat( "#.##" );
                 if ( p.getLyCoins( ).getCoins( ) > 1000000 ) {

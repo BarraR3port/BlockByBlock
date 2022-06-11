@@ -50,12 +50,28 @@ public class WarpMenu extends UpdatableMenu {
                 if (warp.getLocation().getServer().equals(Settings.SERVER_NAME)){
                     getOwner().teleport(warp.getBukkitLocation());
                 } else {
+                    switch(serverName){
+                        case "PW-112-1":{
+                            if (!Main.getInstance().getProxyStats().isWorld_1_12_online()){
+                                super.checkSomething(getOwner(), e.getSlot(), item, "&cServer Offline.", "", this.getMenuUUID());
+                                return;
+                            }
+                        }
+                        case "PW-116-1":{
+                            if (!Main.getInstance().getProxyStats().isWorld_1_16_online()){
+                                super.checkSomething(getOwner(), e.getSlot(), item, "&cServer Offline.", "", this.getMenuUUID());
+                                return;
+                            }
+                        }
+                        case "PW-118-1":{
+                            if (!Main.getInstance().getProxyStats().isWorld_1_18_online()){
+                                super.checkSomething(getOwner(), e.getSlot(), item, "&cServer Offline.", "", this.getMenuUUID());
+                                return;
+                            }
+                        }
+                    }
                     Main.getInstance().getSocket().sendJoinWarp(getOwner().getUniqueId(), warp);
                 }
-                /*if (warp.isPublic() || warp.isMember(getOwner().getUniqueId()) || getOwner().hasPermission("blockbyblock.warp.goto") || user.getRank().isBuilder()){
-                } else {
-                    Main.getLang().sendErrorMsg(getOwner(), "warp.no-permission-to-go");
-                }*/
             } catch (IllegalArgumentException error) {
                 Main.getLang().sendErrorMsg(getOwner(), "warp.invalid-name");
             } catch (WarpNotFoundError error) {

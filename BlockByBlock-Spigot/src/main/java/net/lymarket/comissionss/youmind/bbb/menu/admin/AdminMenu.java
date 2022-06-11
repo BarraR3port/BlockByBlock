@@ -56,7 +56,7 @@ public class AdminMenu extends UpdatableMenu {
                         .addLoreLine("&7Plots actuales de 31x31:")
                         .addLoreLine(" &b> &a" + target.getPlots31(version).size())
                         .addLoreLine("&7Máximo de Plots: ")
-                        .addLoreLine(" &b> &a" + (changed ? rank.getMAX_PLOTS_31() + stats.getMAX_PLOTS_31() : rank.getMAX_PLOTS_31()))
+                        .addLoreLine(" &b> &a" + getFormattedAmount(changed ? rank.getMAX_PLOTS_31() + stats.getMAX_PLOTS_31() : rank.getMAX_PLOTS_31()))
                         .build());
         inventory.setItem(28, minus);
     
@@ -69,7 +69,7 @@ public class AdminMenu extends UpdatableMenu {
                         .addLoreLine("&7Plots actuales de 101x101:")
                         .addLoreLine(" &b> &a" + target.getPlots101(version).size())
                         .addLoreLine("&7Máximo de Plots: ")
-                        .addLoreLine(" &b> &a" + (changed ? rank.getMAX_PLOTS_101() + stats.getMAX_PLOTS_101() : rank.getMAX_PLOTS_101()))
+                        .addLoreLine(" &b> &a" + getFormattedAmount(changed ? rank.getMAX_PLOTS_101() + stats.getMAX_PLOTS_101() : rank.getMAX_PLOTS_101()))
                         .build());
         inventory.setItem(29, minus);
     
@@ -92,7 +92,7 @@ public class AdminMenu extends UpdatableMenu {
                         .setDisplayName("&eMundos actuales: ")
                         .addLoreLine(" &b> " + (currentWorlds > 0 ? "&a" : "&c") + currentWorlds)
                         .addLoreLine("&7Máximo de Mundos: ")
-                        .addLoreLine(" &b> &a" + (changed ? rank.getMAX_WORLDS() + stats.getADDITIONAL_WORLDS() : rank.getMAX_WORLDS()))
+                        .addLoreLine(" &b> &a" + getFormattedAmount(changed ? rank.getMAX_WORLDS() + stats.getADDITIONAL_WORLDS() : rank.getMAX_WORLDS()))
                         .build());
         inventory.setItem(32, minus);
     
@@ -105,7 +105,7 @@ public class AdminMenu extends UpdatableMenu {
                         .addLoreLine("&7Plots actuales de 501x501:")
                         .addLoreLine(" &b> &a" + target.getPlots501(version).size())
                         .addLoreLine("&7Máximo de Plots: ")
-                        .addLoreLine(" &b> &a" + (changed ? rank.getMAX_PLOTS_501() + stats.getMAX_PLOTS_501() : rank.getMAX_PLOTS_501()))
+                        .addLoreLine(" &b> &a" + getFormattedAmount(changed ? rank.getMAX_PLOTS_501() + stats.getMAX_PLOTS_501() : rank.getMAX_PLOTS_501()))
                         .build());
         inventory.setItem(33, minus);
     
@@ -118,7 +118,7 @@ public class AdminMenu extends UpdatableMenu {
                         .addLoreLine("&7Plots actuales de 1001x1001:")
                         .addLoreLine(" &b> &a" + target.getPlots1001(version).size())
                         .addLoreLine("&7Máximo de Plots: ")
-                        .addLoreLine(" &b> &a" + (changed ? rank.getMAX_PLOTS_1001() + stats.getMAX_PLOTS_1001() : rank.getMAX_PLOTS_1001()))
+                        .addLoreLine(" &b> &a" + getFormattedAmount(changed ? rank.getMAX_PLOTS_1001() + stats.getMAX_PLOTS_1001() : rank.getMAX_PLOTS_1001()))
                         .build());
         inventory.setItem(34, minus);
     
@@ -126,12 +126,11 @@ public class AdminMenu extends UpdatableMenu {
     
         inventory.setItem(49, new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
                 .setHeadSkin(target.getSkin())
-                .setDisplayName("&b&lStats")
+                .setDisplayName("&b&lEditar Rango")
                 .addLoreLine("")
-                .addLoreLine("&aTiempo Jugado: " + stats.getFormattedTimePlayed())
-                .addLoreLine("&aBloques destruidos: " + stats.getBLOCKS_BROKEN())
-                .addLoreLine("&aBloques Colocados: " + stats.getBLOCKS_PLACED())
-                .addLoreLine("&aElo: " + (stats.getELO() > 0 ? "&a" + stats.getELO() : "&c" + stats.getELO()))
+                .addLoreLine("&7Click para editar el rango de este usuario.")
+                .addLoreLine("")
+                .addLoreLine(" &b> &7Rango Actual: " + target.getRank().getScoreBoardName())
                 .addTag("stats", "stats")
                 .build());
     
@@ -142,6 +141,14 @@ public class AdminMenu extends UpdatableMenu {
     @Override
     public void onReOpen( ){
         target = Main.getInstance().getPlayers().getPlayer(target.getUUID());
+    }
+    
+    
+    private String getFormattedAmount(int amount){
+        if (amount > 100){
+            return "&a∞";
+        }
+        return String.valueOf(amount);
     }
     
     public void handleMenu(InventoryClickEvent e){

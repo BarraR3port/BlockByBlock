@@ -3,13 +3,15 @@ package net.lymarket.comissionss.youmind.bbb.common.data.rank;
 import java.util.Arrays;
 
 public enum Rank {
-    ADMIN("admin", "&c&l「Admin⏌", "&c&l「Admin⏌", Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, 5),
-    DEV("dev", "&d&l「Dev⏌", " &d&l「Dev⏌", Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, 5),
-    BUILDER("builder", "&9「B⏌", "&9&l「Builder⏌", 15, 10, 3, 1, 3),
-    VISITOR("default", "&7「Visitor⏌", "&7「Visitor⏌", 15, 5, 2, 0, 0);
+    ADMIN("admin", "&c&l「Admin⏌", "&c&l「Admin⏌", "&c&lAdmin", Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, 5),
+    DEV("dev", "&d&l「Dev⏌", "&d&l「Dev⏌", "&d&lDeveloper", Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, 5),
+    BUILDER("builder", "&9「B⏌", "&9&l「Builder⏌", "&9&lBuilder", 15, 10, 3, 1, 3),
+    VISITOR("default", "&7「Visitor⏌", "&7「Visitor⏌", "&7Visitor", 15, 5, 2, 0, 0);
     
     private final String lpName;
     private final String prefix;
+    
+    private final String lpScoreBoardName;
     private final String tabPrefix;
     
     private final int max31Plots;
@@ -22,10 +24,11 @@ public enum Rank {
     
     private final int maxWorlds;
     
-    Rank(String lpName, String prefix, String tabPrefix, int max31Plots, int max101Plots, int max501Plots, int max1001Plots, int maxWorlds){
+    Rank(String lpName, String prefix, String tabPrefix, String lpScoreBoardName, int max31Plots, int max101Plots, int max501Plots, int max1001Plots, int maxWorlds){
         this.lpName = lpName;
         this.prefix = prefix;
         this.tabPrefix = tabPrefix;
+        this.lpScoreBoardName = lpScoreBoardName;
         this.max31Plots = max31Plots;
         this.max101Plots = max101Plots;
         this.max501Plots = max501Plots;
@@ -50,16 +53,16 @@ public enum Rank {
         return this.tabPrefix;
     }
     
+    public String getScoreBoardName( ){
+        return lpScoreBoardName;
+    }
+    
     public boolean isBuilder( ){
         return this == BUILDER || this == DEV || this == ADMIN;
     }
     
-    public boolean isDev( ){
-        return this == DEV || this == ADMIN;
-    }
-    
     public boolean isAdmin( ){
-        return this == ADMIN;
+        return this == ADMIN || this == DEV;
     }
     
     public int getMAX_PLOTS_31( ){

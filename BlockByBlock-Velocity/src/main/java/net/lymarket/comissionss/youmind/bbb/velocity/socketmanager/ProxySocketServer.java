@@ -20,15 +20,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Base64;
-import java.util.Locale;
 import java.util.Scanner;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProxySocketServer implements Runnable {
     
@@ -55,77 +51,11 @@ public class ProxySocketServer implements Runnable {
         }
     }
     
-    public void sendProxyServerStats( ){
-        CompletableFuture < ProxyStats > proxyStats;
-        AtomicInteger lobby_player_size = new AtomicInteger();
-        AtomicInteger world_1_12_player_size = new AtomicInteger();
-        AtomicBoolean world_1_12_online = new AtomicBoolean(false);
-        AtomicInteger world_1_16_player_size = new AtomicInteger();
-        AtomicBoolean world_1_16_online = new AtomicBoolean(false);
-        AtomicInteger world_1_18_player_size = new AtomicInteger();
-        AtomicBoolean world_1_18_online = new AtomicBoolean(false);
-        AtomicInteger plot_1_12_player_size = new AtomicInteger();
-        AtomicBoolean plot_1_12_online = new AtomicBoolean(false);
-        AtomicInteger plot_1_16_player_size = new AtomicInteger();
-        AtomicBoolean plot_1_16_online = new AtomicBoolean(false);
-        AtomicInteger plot_1_18_player_size = new AtomicInteger();
-        AtomicBoolean plot_1_18_online = new AtomicBoolean(false);
-        VMain.getInstance().getProxy().getAllServers().forEach(server -> server.ping().whenComplete((ping, err) -> {
-            if (ping != null){
-                switch(server.getServerInfo().getName().toLowerCase(Locale.ROOT)){
-                    case "lobby" -> lobby_player_size.set(server.getPlayersConnected().size());
-                    case "pw-112-1" -> {
-                        world_1_12_player_size.set(server.getPlayersConnected().size());
-                        world_1_12_online.set(true);
-                        
-                    }
-                    case "pw-116-1" -> {
-                        world_1_16_player_size.set(server.getPlayersConnected().size());
-                        world_1_16_online.set(true);
-                        
-                    }
-                    case "pw-118-1" -> {
-                        world_1_18_player_size.set(server.getPlayersConnected().size());
-                        world_1_18_online.set(true);
-                        
-                    }
-                    case "pp-112-1" -> {
-                        plot_1_12_player_size.set(server.getPlayersConnected().size());
-                        plot_1_12_online.set(true);
-                        
-                    }
-                    case "pp-116-1" -> {
-                        plot_1_16_player_size.set(server.getPlayersConnected().size());
-                        plot_1_16_online.set(true);
-                        
-                    }
-                    case "pp-118-1" -> {
-                        plot_1_18_player_size.set(server.getPlayersConnected().size());
-                        plot_1_18_online.set(true);
-                        
-                    }
-                }
-            }
-        }));
-        
-        final ProxyStats stats = new ProxyStats(lobby_player_size.get(),
-                world_1_12_player_size.get(),
-                world_1_12_online.get(),
-                world_1_16_player_size.get(),
-                world_1_16_online.get(),
-                world_1_18_player_size.get(),
-                world_1_18_online.get(),
-                plot_1_12_player_size.get(),
-                plot_1_12_online.get(),
-                plot_1_16_player_size.get(),
-                plot_1_16_online.get(),
-                plot_1_18_player_size.get(),
-                plot_1_18_online.get());
+    public void sendProxyServerStats(ProxyStats stats){
         final JsonObject js = new JsonObject();
         js.addProperty("type", "UPDATE_ONLINE_PLAYERS_IN_WORLDS");
         js.addProperty("stats", gson.toJson(stats));
         sendMessage(js);
-        
     }
     
     
@@ -202,7 +132,7 @@ public class ProxySocketServer implements Runnable {
                                             .hoverEvent(null)
                                             .clickEvent(null);
                                     //? [FINAL MSG]
-                                    Component finalMsg = server.append(name).append(msg).asComponent();
+                                    Component finalMsg = server.append(name).append(msg.hoverEvent(null).clickEvent(null)).asComponent();
                                     for ( Player player : VMain.getInstance().getProxy().getAllPlayers() ){
                                         player.sendMessage(finalMsg);
                                     }
@@ -223,7 +153,7 @@ public class ProxySocketServer implements Runnable {
                                             .hoverEvent(null)
                                             .clickEvent(null);
                                     //? [FINAL MSG]
-                                    Component finalMsg = server.append(name).append(msg).asComponent();
+                                    Component finalMsg = server.append(name).append(msg.hoverEvent(null).clickEvent(null)).asComponent();
                                     for ( Player player : VMain.getInstance().getProxy().getAllPlayers() ){
                                         player.sendMessage(finalMsg);
                                     }
@@ -245,7 +175,7 @@ public class ProxySocketServer implements Runnable {
                                             .hoverEvent(null)
                                             .clickEvent(null);
                                     //? [FINAL MSG]
-                                    Component finalMsg = server.append(name).append(msg);
+                                    Component finalMsg = server.append(name).append(msg.hoverEvent(null).clickEvent(null));
                                     for ( Player player : VMain.getInstance().getProxy().getAllPlayers() ){
                                         player.sendMessage(finalMsg);
                                     }

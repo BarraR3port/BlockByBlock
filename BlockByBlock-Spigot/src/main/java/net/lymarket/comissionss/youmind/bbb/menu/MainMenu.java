@@ -48,32 +48,45 @@ public class MainMenu extends Menu {
         if (NBTItem.hasTag(item, "server-version")){
             final String version = NBTItem.getTag(item, "server-version");
             final Player p = (Player) e.getWhoClicked();
+            /*int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
+            Main.getInstance().debug("Player version: " + playerVersion);
+            Main.getInstance().debug("Player version 2: " + Main.getInstance().getViaVersion().getConnection(p.getUniqueId()).getProtocolInfo().getProtocolVersion());
+            */
             switch(version){
                 case "1.12":{
-                    int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
-                    if (playerVersion >= 340){
+                    if (Main.getInstance().getProxyStats().isPlot_1_12_online()){
+                        //if (playerVersion >= 340){
                         new PlotMenu(playerMenuUtility, version, targetUserUUID).open();
                         return;
+                        /*} else {
+                            super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                        }*/
                     } else {
-                        super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                        super.checkSomething(p, e.getSlot(), item, "&cServer Offline.", "", this.getMenuUUID());
                     }
                 }
                 case "1.16":{
-                    int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
-                    if (playerVersion >= 754){
+                    if (Main.getInstance().getProxyStats().isPlot_1_16_online()){
+                        //if (playerVersion >= 754){
                         new PlotMenu(playerMenuUtility, version, targetUserUUID).open();
                         return;
+                        /*} else {
+                            super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                        }*/
                     } else {
-                        super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                        super.checkSomething(p, e.getSlot(), item, "&cServer Offline.", "", this.getMenuUUID());
                     }
                 }
                 case "1.18":{
-                    int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
-                    if (playerVersion >= 758){
+                    if (Main.getInstance().getProxyStats().isPlot_1_18_online()){
+                        //if (playerVersion >= 758){
                         new PlotMenu(playerMenuUtility, version, targetUserUUID).open();
                         return;
+                        /*} else {
+                            super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                        }*/
                     } else {
-                        super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                        super.checkSomething(p, e.getSlot(), item, "&cServer Offline.", "", this.getMenuUUID());
                     }
                 }
                 default:{
@@ -108,21 +121,31 @@ public class MainMenu extends Menu {
         final ProxyStats proxyStats = Main.getInstance().getProxyStats();
         inventory.setItem(20, new ItemBuilder(Items.BUILDER_1_12.clone())
                 .addLoreLine("")
+                .addLoreLine("&7Estado: " + (Main.getInstance().getProxyStats().isPlot_1_12_online() ? "&aACTIVO" : "&cCERRADO"))
+                .addLoreLine("")
                 .addLoreLine("&7Jugadores en linea: &a" + proxyStats.getPlot_1_12_player_size())
                 .build());
     
         inventory.setItem(22, new ItemBuilder(Items.BUILDER_1_16.clone())
+                .addLoreLine("")
+                .addLoreLine("&7Estado: " + (Main.getInstance().getProxyStats().isPlot_1_16_online() ? "&aACTIVO" : "&cCERRADO"))
                 .addLoreLine("")
                 .addLoreLine("&7Jugadores en linea: &a" + proxyStats.getPlot_1_16_player_size())
                 .build());
     
         inventory.setItem(24, new ItemBuilder(Items.BUILDER_1_18.clone())
                 .addLoreLine("")
+                .addLoreLine("&7Estado: " + (Main.getInstance().getProxyStats().isPlot_1_18_online() ? "&aACTIVO" : "&cCERRADO"))
+                .addLoreLine("")
                 .addLoreLine("&7Jugadores en linea: &a" + proxyStats.getPlot_1_18_player_size())
                 .build());
     
         inventory.setItem(40, new ItemBuilder(Items.WORLDS.clone())
                 .addLoreLine("&7Mundos: &a" + Main.getInstance().getWorlds().getWorldsByUser(targetUserUUID).size())
+                .addLoreLine("")
+                .addLoreLine("&7Estado: " + (Main.getInstance().getProxyStats().isWorld_1_12_online() ||
+                        Main.getInstance().getProxyStats().isWorld_1_16_online() ||
+                        Main.getInstance().getProxyStats().isWorld_1_18_online() ? "&aACTIVO" : "&cCERRADO"))
                 .addLoreLine("")
                 .addLoreLine("&7Jugadores en linea: &a" + (proxyStats.getWorld_1_12_player_size() + proxyStats.getWorld_1_16_player_size() + proxyStats.getWorld_1_18_player_size()))
                 .build());

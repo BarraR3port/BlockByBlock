@@ -68,40 +68,35 @@ public final class Items {
         LOBBY_BOOK.setItemMeta(bookMeta);
         
         BUILDER_1_12 = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
-                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMxOTA5NjFhODI2MDhjNDY4ZGU0Y2Q4NDJkNjBlNzUzNjRiYjRhMmUyNDdjMzUxOGYwMDU1YzdiMmMyOTBkYSJ9fX0=")
+                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2NhZDgxN2ViMDllNTQ2M2Y2OTg3ZTVlNDljZDY2ZTk0NWM4YzQyODg5NjMwYjdhMjEzNzc4OTJkMmY5ZjUzMiJ9fX0=")
                 .setDisplayName("&b&lPlots &61.12")
                 .addLoreLine("&7Entra a construir con bloques")
                 .addLoreLine("&7de la 1.12")
-                .addLoreLine("")
-                .addLoreLine("&7Estado: &aACTIVO")
                 .addLoreLine("")
                 .addTag("server-version", "1.12")
                 .build();
         
         BUILDER_1_16 = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
-                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMxOTA5NjFhODI2MDhjNDY4ZGU0Y2Q4NDJkNjBlNzUzNjRiYjRhMmUyNDdjMzUxOGYwMDU1YzdiMmMyOTBkYSJ9fX0=")
+                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2NhZDgxN2ViMDllNTQ2M2Y2OTg3ZTVlNDljZDY2ZTk0NWM4YzQyODg5NjMwYjdhMjEzNzc4OTJkMmY5ZjUzMiJ9fX0=")
                 .setDisplayName("&b&lPlots &e1.16")
                 .addLoreLine("&7Entra a construir con bloques")
                 .addLoreLine("&7más nuevos.")
-                .addLoreLine("")
-                .addLoreLine("&7Estado: &aACTIVO")
                 .addLoreLine("")
                 .addTag("server-version", "1.16")
                 .build();
         
         BUILDER_1_18 = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
-                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMxOTA5NjFhODI2MDhjNDY4ZGU0Y2Q4NDJkNjBlNzUzNjRiYjRhMmUyNDdjMzUxOGYwMDU1YzdiMmMyOTBkYSJ9fX0=")
+                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2NhZDgxN2ViMDllNTQ2M2Y2OTg3ZTVlNDljZDY2ZTk0NWM4YzQyODg5NjMwYjdhMjEzNzc4OTJkMmY5ZjUzMiJ9fX0=")
                 .setDisplayName("&b&lPlots &a1.18")
                 .addLoreLine("&7Click para construir con")
                 .addLoreLine("&7los nuevos bloques!")
-                .addLoreLine("")
-                .addLoreLine("&7Estado: &aACTIVO")
                 .addLoreLine("")
                 .addTag("server-version", "1.18")
                 .build();
         
         WORLDS = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
-                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjgwZDMyOTVkM2Q5YWJkNjI3NzZhYmNiOGRhNzU2ZjI5OGE1NDVmZWU5NDk4YzRmNjlhMWMyYzc4NTI0YzgyNCJ9fX0=")
+                //.setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjgwZDMyOTVkM2Q5YWJkNjI3NzZhYmNiOGRhNzU2ZjI5OGE1NDVmZWU5NDk4YzRmNjlhMWMyYzc4NTI0YzgyNCJ9fX0=")
+                .setHeadSkin("ewogICJ0aW1lc3RhbXAiIDogMTU5NDUxNTc5OTE5OCwKICAicHJvZmlsZUlkIiA6ICJhYTZhNDA5NjU4YTk0MDIwYmU3OGQwN2JkMzVlNTg5MyIsCiAgInByb2ZpbGVOYW1lIiA6ICJiejE0IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzYzZjRkNTU1ZmIzYjkzNTdhZjc1ODJmMjczODAwZjFkYTRhYzY5YjA0MjEwYzNhYTM0ZTYzZGIyYTQyMzViYmYiCiAgICB9CiAgfQp9")
                 .setDisplayName("&b&lWorlds Menu")
                 .addLoreLine("&7Click para ver tus lista")
                 .addLoreLine("&7de mundos o para crear mundos.")
@@ -110,7 +105,7 @@ public final class Items {
                 .build();
         
         PLOTS = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
-                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTNkOGViYjExZjVhMDVjN2FmMjJiMTcyOTc0ZDZiMWUzYzI3OGY4OGJiOTAxOTc3NzY2MTU0M2FkNjJiZDBhYSJ9fX0=")
+                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2NhZDgxN2ViMDllNTQ2M2Y2OTg3ZTVlNDljZDY2ZTk0NWM4YzQyODg5NjMwYjdhMjEzNzc4OTJkMmY5ZjUzMiJ9fX0=")
                 .setDisplayName("&7Plots Menu")
                 .addLoreLine("&7Click para ver y entrar a")
                 .addLoreLine("&7una de tus plots")
@@ -130,12 +125,14 @@ public final class Items {
                 .addLoreLine("&7para acceder a este slot.")
                 .addTag("world-unavailable", "world-unavailable")
                 .build();
-        
+    
         CREATED_WORLD_BASE = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
-                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjgwZDMyOTVkM2Q5YWJkNjI3NzZhYmNiOGRhNzU2ZjI5OGE1NDVmZWU5NDk4YzRmNjlhMWMyYzc4NTI0YzgyNCJ9fX0=").build();
-        
+                //.setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjgwZDMyOTVkM2Q5YWJkNjI3NzZhYmNiOGRhNzU2ZjI5OGE1NDVmZWU5NDk4YzRmNjlhMWMyYzc4NTI0YzgyNCJ9fX0=").build();
+                .setHeadSkin("ewogICJ0aW1lc3RhbXAiIDogMTU5NDUxNTc5OTE5OCwKICAicHJvZmlsZUlkIiA6ICJhYTZhNDA5NjU4YTk0MDIwYmU3OGQwN2JkMzVlNTg5MyIsCiAgInByb2ZpbGVOYW1lIiA6ICJiejE0IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzYzZjRkNTU1ZmIzYjkzNTdhZjc1ODJmMjczODAwZjFkYTRhYzY5YjA0MjEwYzNhYTM0ZTYzZGIyYTQyMzViYmYiCiAgICB9CiAgfQp9").build();
+    
         PLAYERS_IN_WORLD_BASE = new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())
-                .setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzBjZjZjZGMxMWRiNzRjMGQ3N2JhMzc1NmM2ZmRlMzQ1ZmU1NDQzZWNmN2VhNGE0MWQxNjI1NGU2NTk1ODRjZiJ9fX0").build();
+                //.setHeadSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzBjZjZjZGMxMWRiNzRjMGQ3N2JhMzc1NmM2ZmRlMzQ1ZmU1NDQzZWNmN2VhNGE0MWQxNjI1NGU2NTk1ODRjZiJ9fX0").build();
+                .setHeadSkin("ewogICJ0aW1lc3RhbXAiIDogMTU5NDUxNTc5OTE5OCwKICAicHJvZmlsZUlkIiA6ICJhYTZhNDA5NjU4YTk0MDIwYmU3OGQwN2JkMzVlNTg5MyIsCiAgInByb2ZpbGVOYW1lIiA6ICJiejE0IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzYzZjRkNTU1ZmIzYjkzNTdhZjc1ODJmMjczODAwZjFkYTRhYzY5YjA0MjEwYzNhYTM0ZTYzZGIyYTQyMzViYmYiCiAgICB9CiAgfQp9").build();
         
         PLOT_31_BASE = new ItemBuilder(XMaterial.WHITE_WOOL.parseMaterial(), 0)
                 .setDisplayName("&7Plots &a31")
@@ -164,21 +161,21 @@ public final class Items {
                 .addLoreLine("&7Tamaño: &a1001x1001")
                 .addTag("plot-type", "P1001")
                 .build();
-        
-        RANK_VISITOR_BASE = new ItemBuilder(XMaterial.LIGHT_BLUE_WOOL.parseMaterial(), 3)
+    
+        RANK_VISITOR_BASE = new ItemBuilder(XMaterial.LIGHT_GRAY_WOOL.parseMaterial(), 8)
                 .setDisplayName("&bVisitor")
                 .addLoreLine("&7Click poner este rango al jugador.")
                 .addTag("rank", "VISITOR")
                 .build();
-        
-        RANK_BUILDER_BASE = new ItemBuilder(XMaterial.YELLOW_WOOL.parseMaterial(), 4)
+    
+        RANK_BUILDER_BASE = new ItemBuilder(XMaterial.BLUE_WOOL.parseMaterial(), 11)
                 .setDisplayName("&eBuilder")
                 .addLoreLine("&7Click poner este rango al jugador.")
                 .addTag("rank", "BUILDER")
                 .build();
         
         RANK_DEV_BASE = new ItemBuilder(XMaterial.PURPLE_WOOL.parseMaterial(), 10)
-                .setDisplayName("&dBuilder")
+                .setDisplayName("&dDeveloper")
                 .addLoreLine("&7Click poner este rango al jugador.")
                 .addTag("rank", "DEV")
                 .build();

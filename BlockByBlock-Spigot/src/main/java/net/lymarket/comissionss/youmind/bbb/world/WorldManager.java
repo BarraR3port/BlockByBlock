@@ -360,7 +360,6 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
                 replace.put("world", world.getName().split("-")[0]);
                 world.addVisitor(request);
                 Main.getInstance().getWorlds().addGuestToVisitWorldList(request.getGuest(), world);
-                
                 Utils.sendMessage(p, Utils.hoverOverMessageRunCommand(Main.getLang().getMSG("world.visit-request-to-owner", replace),
                         Collections.singletonList("&7Click para &aACEPTAR"), "/visit accept world " + request.getGuest() + " " + world.getUUID()));
                 return false;

@@ -80,33 +80,44 @@ public class WorldManagerMenu extends UpdatableMenu {
             final UUID world_uuid = UUID.fromString(NBTItem.getTag(item, "world-uuid"));
             final BWorld world = Main.getInstance().getWorlds().getWorld(world_uuid);
             final String version = world.getVersion();
+            //int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
             if (e.getClick().equals(ClickType.LEFT)){
                 switch(version){
                     case "1.12":{
-                        int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
-                        if (playerVersion >= 340){
+                        if (Main.getInstance().getProxyStats().isWorld_1_12_online()){
+                            //if (playerVersion >= 340){
                             Main.getInstance().getSocket().sendJoinWorldRequest(ownerUUID, server_target, world_uuid, e.getSlot());
                             return;
+                            /*} else {
+                                super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                            }*/
                         } else {
-                            super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                            super.checkSomething(p, e.getSlot(), item, "&cServer Offline.", "", this.getMenuUUID());
                         }
+    
                     }
                     case "1.16":{
-                        int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
-                        if (playerVersion >= 754){
+                        if (Main.getInstance().getProxyStats().isWorld_1_16_online()){
+                            //if (playerVersion >= 754){
                             Main.getInstance().getSocket().sendJoinWorldRequest(ownerUUID, server_target, world_uuid, e.getSlot());
                             return;
+                            /*} else {
+                                super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                            }*/
                         } else {
-                            super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                            super.checkSomething(p, e.getSlot(), item, "&cServer Offline.", "", this.getMenuUUID());
                         }
                     }
                     case "1.18":{
-                        int playerVersion = Main.getInstance().getViaVersion().getPlayerVersion(p);
-                        if (playerVersion >= 758){
+                        if (Main.getInstance().getProxyStats().isWorld_1_18_online()){
+                            //if (playerVersion >= 758){
                             Main.getInstance().getSocket().sendJoinWorldRequest(ownerUUID, server_target, world_uuid, e.getSlot());
                             return;
+                            /*} else {
+                                super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                            }*/
                         } else {
-                            super.checkSomething(p, e.getSlot(), item, "&cVersión incompatible con tu cliente.", "", this.getMenuUUID());
+                            super.checkSomething(p, e.getSlot(), item, "&cServer Offline.", "", this.getMenuUUID());
                         }
                     }
                     default:{
@@ -146,6 +157,21 @@ public class WorldManagerMenu extends UpdatableMenu {
         final ArrayList < ItemStack > finalWorlds = new ArrayList <>();
     
         for ( BWorld world : worlds ){
+            boolean serverStatus = false;
+            switch(world.getVersion()){
+                case "1.12":{
+                    serverStatus = Main.getInstance().getProxyStats().isWorld_1_12_online();
+                    break;
+                }
+                case "1.16":{
+                    serverStatus = Main.getInstance().getProxyStats().isWorld_1_16_online();
+                    break;
+                }
+                case "1.18":{
+                    serverStatus = Main.getInstance().getProxyStats().isWorld_1_18_online();
+                    break;
+                }
+            }
             finalWorlds.add(new ItemBuilder(Items.CREATED_WORLD_BASE.clone())
                     .setDisplayName("&bMundo: " + world.getName().split("-")[0])
                     .addLoreLine("&7Click para ir al mundo.")
@@ -154,6 +180,7 @@ public class WorldManagerMenu extends UpdatableMenu {
                     .addLoreLine(" &b> &7Server: &a" + world.getServer())
                     .addLoreLine(" &b> &7Usuarios dentro: &a" + world.getOnlineMembers().size())
                     .addLoreLine(" &b> &7ID: &a" + world.getUUID().toString().split("-")[0])
+                    .addLoreLine(" &b> &7Estado del server: &a" + (serverStatus ? "&aACTIVO" : "&cCERRADO"))
                     .addLoreLine("")
                     .addLoreLine(world.getOwner().equals(ownerUUID) || world.getMembers().contains(ownerUUID) ? "&7Click &eizquierdo &7para entrar al mundo." : null)
                     .addLoreLine("")

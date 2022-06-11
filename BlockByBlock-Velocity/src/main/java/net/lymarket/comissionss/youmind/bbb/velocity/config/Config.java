@@ -13,14 +13,35 @@ import java.nio.file.Path;
 public class Config {
     private MainConfig config;
     
-    public Config(Path path){
-        Path configPath = path.resolve("config.yml");
+    private final Path path;
+    
+    public Config(Path originalPath){
+        this.path = originalPath.resolve("config.yml");
         final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
                 .defaultOptions(opts -> opts
                         .shouldCopyDefaults(true)
                         .header("BlockByBlock | BarraR3port\n------------- | -------------")
                 )
-                .path(configPath)
+                .path(path)
+                .build();
+        
+        try {
+            final CommentedConfigurationNode node = loader.load();
+            config = node.get(MainConfig.class);
+            node.set(MainConfig.class, config);
+            loader.save(node);
+        } catch (ConfigurateException exception) {
+            exception.printStackTrace();
+        }
+    }
+    
+    public void reloadConfig( ){
+        final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
+                .defaultOptions(opts -> opts
+                        .shouldCopyDefaults(true)
+                        .header("BlockByBlock | BarraR3port\n------------- | -------------")
+                )
+                .path(path)
                 .build();
         
         try {

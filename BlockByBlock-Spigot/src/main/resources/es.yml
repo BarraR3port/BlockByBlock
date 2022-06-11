@@ -112,3 +112,5 @@ warp:
     - " &8- &dZ: &5%z_location%"
 visit:
   sent: "&aHas enviado una solicitud de visita a &e%player%&a."
+spawn:
+  set: "&aHas establecido el spawn del mundo en &e%location%&a."

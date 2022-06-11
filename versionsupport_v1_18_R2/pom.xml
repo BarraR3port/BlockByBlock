@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.4.1-BETA</version>
+        <version>0.4.3-BETA</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

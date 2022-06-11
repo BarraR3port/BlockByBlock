@@ -1,5 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.menu.main.world.create.version;
 
+import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.main.warp.WarpMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.create.WorldCreatorMenu;
@@ -28,16 +29,10 @@ public class VersionChooser extends Menu {
     
     @Override
     public String getMenuName( ){
-        switch(versionChooseType){
-            case WARP_CHOSE:{
-                return "Selecciona una versión de warps";
-            }
-            default:
-                WORLD_CREATION:
-                {
-                    return "Elige una versión para el mundo";
-                }
+        if (versionChooseType == VersionChooseType.WARP_CHOSE){
+            return "Selecciona una versión de warps";
         }
+        return "Elige una versión para el mundo";
     }
     
     @Override
@@ -69,17 +64,12 @@ public class VersionChooser extends Menu {
             } else if (version.equals("1.18")){
                 serverName = "PW-118-1";
             }
-            switch(versionChooseType){
-                case WARP_CHOSE:{
-                    new WarpMenu(playerMenuUtility, serverName).open();
-                }
-    
-                default:
-                    WORLD_CREATION:
-                    {
-                        new WorldCreatorMenu(playerMenuUtility, version, targetUserUUID).open();
-                    }
+            Main.getInstance().debug("Selected version: " + version);
+            if (versionChooseType == VersionChooseType.WARP_CHOSE){
+                new WarpMenu(playerMenuUtility, serverName).open();
+                return;
             }
+            new WorldCreatorMenu(playerMenuUtility, version, targetUserUUID).open();
     
         } else if (NBTItem.hasTag(item, "ly-menu-close")){
             if (previousMenu != null){
