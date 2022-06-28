@@ -114,6 +114,8 @@ public final class WorldPlayerEvents extends MainEvents {
             if (p.teleport(warp.getBukkitLocation())){
                 Main.getLang().sendMsg(p, "warps.tp-to-warp", "warp", warp.getType().getName());
             }
+        } else {
+            Main.getInstance().debug("Default World\n");
         }
     }
     

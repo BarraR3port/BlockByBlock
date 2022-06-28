@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>1.1</version>
+        <version>1.2</version>
     </parent>
     <packaging>jar</packaging>
 
@@ -268,7 +268,7 @@
         <dependency>
             <groupId>net.lymarket.comissionss.youmind</groupId>
             <artifactId>common</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
             <scope>compile</scope>
         </dependency>
 

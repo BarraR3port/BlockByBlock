@@ -60,6 +60,11 @@ public class WorldManager extends IBWorldManager < Void > {
     }
     
     @Override
+    public ArrayList < BWorld > getWorldWherePlayerIsMember(UUID uuid){
+        return database.findMany(TABLE_NAME, world -> world.getOwner() != uuid && world.getMembers().contains(uuid), BWorld.class);
+    }
+    
+    @Override
     public boolean manageVisitJoinWorld(WorldVisitRequest request){
         return false;
     }

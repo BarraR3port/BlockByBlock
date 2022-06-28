@@ -10,7 +10,6 @@ import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSuppor
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
@@ -44,7 +43,7 @@ public class PlotManager extends IPlotManager < Plot > {
             final World world = Bukkit.getWorld(plot_type.getWorldName());
             if (p != null && world != null){
                 vs.getBbbApi().debug("Teleporting " + p.getName() + " to " + world.getName().split("-")[0]);
-                Bukkit.getScheduler().runTask((Plugin) vs.getBbbApi(), ( ) -> {
+                Bukkit.getScheduler().runTask(plugin, ( ) -> {
                     if (plot != null){
                         plot.teleportPlayer(api.wrapPlayer(p));
                     } else {
@@ -76,46 +75,39 @@ public class PlotManager extends IPlotManager < Plot > {
         //final User owner = (User) vs.getBbbApi().getPlayers().getPlayer(owner_uuid);
         if (fromServer.equals(currentServer)){
             final Player p = Bukkit.getPlayer(owner_uuid);
+            final Player target = Bukkit.getPlayer(vs.getPlotManager().getPlayerToTp(targetUser.getUUID()));
             if (p != null){
-                Bukkit.getScheduler().runTask((Plugin) vs.getBbbApi(), ( ) -> {
-                    if (plot != null){
-                        //if (plot.getTrusted().contains(owner_uuid) || owner.getRank().isAdmin()){
-                        vs.getBbbApi().debug("Teleporting " + p.getName() + " to " + plot.getWorldName());
-                        if (plot.teleportPlayer(api.wrapPlayer(p))){
-                            for ( final Player players : Bukkit.getOnlinePlayers() ){
-                                p.showPlayer(plugin, players);
-                                players.showPlayer(plugin, p);
-                            }
-                        }
-                        //} else {
-                        //    vs.getBbbApi().debug("Error " + p.getName() + " is not trusted.");
-                        //vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.visit.plot.not-trusted", "player", targetUser.getName());
-                        //}
-                    } else {
+                if (target != null){
+                    Bukkit.getScheduler().runTask(plugin, ( ) -> {
                         vs.getBbbApi().debug("Teleporting " + p.getName() + " to " + targetUser.getLastLocation().getWorld());
-                        Player target = Bukkit.getPlayer(vs.getPlotManager().getPlayerToTp(targetUser.getUUID()));
-                        if (target != null){
-                            if (p.teleport(target)){
-                                vs.getPlotManager().removePlayerToTpToPlayer(targetUser.getUUID());
-                            }
+                        if (p.teleport(target)){
+                            vs.getPlotManager().removePlayerToTpToPlayer(targetUser.getUUID());
                         }
+                    });
+                    return;
+                } else {
+                    if (plot != null){
+                        Bukkit.getScheduler().runTask(plugin, ( ) -> {
+                            vs.getBbbApi().debug("Teleporting " + p.getName() + " to " + plot.getWorldName());
+                            if (plot.teleportPlayer(api.wrapPlayer(p))){
+                                vs.getPlotManager().removePlayerToTpToPlayer(targetUser.getUUID());
+                                for ( final Player players : Bukkit.getOnlinePlayers() ){
+                                    p.showPlayer(plugin, players);
+                                    players.showPlayer(plugin, p);
+                                }
+                            }
+                        });
+                        return;
                     }
-                });
-                return;
-                
+                }
             }
             vs.getBbbApi().debug("Error " + owner_uuid + " is not online.");
             vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.player.not-online", "player", targetUser.getName());
         } else {
             if (plot != null){
-                //if (plot.getTrusted().contains(owner_uuid) || owner.getRank().isAdmin()){
                 addPlayerToTpToPlot(owner_uuid, plot);
-                //} else {
-                //    vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.visit.plot.not-trusted", "player", targetUser.getName());
-                //}
             } else {
                 addPlayerToTpToPlayer(owner_uuid, targetUser.getUUID());
-                //vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.visit.plot.not-exist", "player", targetUser.getName());
             }
             json.addProperty("type", "JOIN_VISIT_PLOT_REQUEST_POST");
             json.addProperty("server_target", currentServer);

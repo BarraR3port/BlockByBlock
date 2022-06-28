@@ -54,6 +54,8 @@ public abstract class IBWorldManager< V > extends MongoDB < UUID, BWorld > {
     
     public abstract ArrayList < BWorld > getWorldsByUser(UUID uuid);
     
+    public abstract ArrayList < BWorld > getWorldWherePlayerIsMember(UUID uuid);
+    
     public abstract ArrayList < BWorld > getWorldsByServer(String serverName);
     
     public abstract ArrayList < BWorld > getWorldsByServer( );

@@ -66,12 +66,17 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
                  UnknownWorldException | IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
-        
+    
     }
     
     @Override
     public ArrayList < BWorld > getWorldsByUser(UUID uuid){
         return database.findMany(TABLE_NAME, world -> world.getOwner().equals(uuid), BWorld.class);
+    }
+    
+    @Override
+    public ArrayList < BWorld > getWorldWherePlayerIsMember(UUID uuid){
+        return database.findMany(TABLE_NAME, world -> world.getOwner() != uuid && world.getMembers().contains(uuid), BWorld.class);
     }
     
     @Override

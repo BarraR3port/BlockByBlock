@@ -36,7 +36,7 @@ import java.util.concurrent.TimeoutException;
 
 @Plugin(id = "blockbyblock",
         name = "BlockByBlock",
-        version = "1.1",
+        version = "1.2",
         authors = {"BarraR3port"},
         url = "https://lymarket.net/",
         dependencies = {@Dependency(id = "luckperms")})

@@ -389,7 +389,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                     if (!json.has("world_version")) continue;
                                     if (!json.has("world_server")) continue;
                                     if (!json.has("world_layer_material")) continue;
-            
+    
                                     String world_name = json.get("world_name").getAsString();
                                     UUID owner = UUID.fromString(json.get("owner_uuid").getAsString());
                                     UUID world_uuid = UUID.fromString(json.get("world_uuid").getAsString());
@@ -629,7 +629,6 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                             for ( Map.Entry < String, JsonElement > entry : replacements.entrySet() ){
                                                 replace.put(entry.getKey(), entry.getValue().getAsString());
                                             }
-                                            Main.getInstance().debug("Replacements: " + replace);
                                             player.sendMessage(Main.getLang().getMSG(key, replace));
                                         } else {
                                             player.sendMessage(Main.getLang().getMSG(key));
@@ -712,6 +711,48 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                                 sendMSGToPlayer(owner_uuid, "error.player.not-available-to-be-visited", "player", targetUser.getName());
                                                 continue;
                                             } else {
+                                                final Player targetPlayer = Bukkit.getPlayer(target_uuid);
+                                                if (targetPlayer != null){
+                                                    try {
+                                                        final BWorld world = getWorlds().getWorld(UUID.fromString(targetPlayer.getWorld().getName()));
+                                                        final String current_server = json.get("current_server").getAsString();
+                                                        final UUID world_uuid = world.getUUID();
+                                                        if (current_server.equals(Settings.SERVER_NAME)){
+                                                            final Player p = Bukkit.getPlayer(owner_uuid);
+                                                            final World localWorld = Bukkit.getWorld(world.getUUID().toString());
+                                                            if (p != null && localWorld != null && (world.getOwner().equals(owner_uuid) || world.getMembers().contains(owner_uuid))){
+                                                                Main.getInstance().debug("Teleporting " + p.getName() + " to " + localWorld.getName());
+                                                                Bukkit.getScheduler().runTask(Main.getInstance(), ( ) -> p.teleport(localWorld.getSpawnLocation()));
+                                                                getWorlds().addPlayerToWorldOnlineMembers(owner_uuid, world_uuid);
+                                                            } else {
+                                                                Main.getInstance().debug("Teleporting " + owner_uuid + " to " + world.getUUID().toString());
+                                                            }
+                                                            sendMSGToPlayer(owner_uuid, "world.join", "world", world.getName().split("-")[0]);
+                                                            continue;
+                                                        }
+            
+                                                        json.remove("type");
+                                                        json.addProperty("type", "JOIN_WORLD_REQUEST_POST");
+                                                        json.addProperty("world_uuid", world_uuid.toString());
+                                                        json.addProperty("server_target", Settings.SERVER_NAME);
+                                                        json.addProperty("item_slot", 0);
+            
+                                                        if (world.getOwner().equals(owner_uuid) || world.getMembers().contains(owner_uuid) || getPlayers().getPlayer(owner_uuid).getRank().isAdmin()){
+                                                            getWorlds().addPlayerToTP(owner_uuid, world);
+                                                            json.addProperty("response", true);
+                                                        } else {
+                                                            sendMSGToPlayer(owner_uuid, "visit.sent", "player", targetUser.getName());
+                                                            final WorldVisitRequest request = new WorldVisitRequest(owner_uuid, target_uuid, null, currentServer, Settings.SERVER_NAME);
+                                                            getWorlds().manageVisitJoinWorld(request);
+                                                            continue;
+                                                        }
+                                                        sendMessage(json);
+                                                        continue;
+            
+                                                    } catch (IllegalArgumentException ignored) {
+                                                    }
+                                                }
+    
                                                 sendMSGToPlayer(owner_uuid, "visit.sent", "player", targetUser.getName());
                                                 final WorldVisitRequest request = new WorldVisitRequest(owner_uuid, target_uuid, null, currentServer, Settings.SERVER_NAME);
                                                 getWorlds().manageVisitJoinWorld(request);
@@ -732,7 +773,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                     }
                                     continue;
                                 }
-        
+    
                                 case "JOIN_HOME_PREV":{
                                     if (!json.has("current_server")) continue;
                                     if (!json.has("server_target")) continue;
