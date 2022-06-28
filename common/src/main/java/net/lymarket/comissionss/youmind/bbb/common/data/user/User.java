@@ -8,6 +8,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.skin.SkinManager;
 import net.lymarket.common.Api;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.*;
@@ -54,7 +55,7 @@ public abstract class User {
         return createDate;
     }
     
-    public UUID getUUID( ){
+    public @NotNull UUID getUUID( ){
         return uuid;
     }
     
@@ -165,7 +166,7 @@ public abstract class User {
     }
     
     public void removeWarp(UUID warp){
-        warps.removeIf(warp1 -> warp1.getUUID() == warp);
+        warps.removeIf(warp1 -> warp1.getUUID().equals(warp));
     }
     
     public ArrayList < Home > getHomes( ){
@@ -181,7 +182,7 @@ public abstract class User {
     }
     
     public void removeHome(UUID home){
-        homes.removeIf(home1 -> home1.getUUID() == home);
+        homes.removeIf(home1 -> home1.getUUID().equals(home));
     }
     
     public Stats getStats( ){

@@ -18,7 +18,7 @@
  * Contact e-mail: andrew.dascalu@gmail.com
  */
 
-package net.lymarket.comissionss.youmind.bbb.socket;
+package net.lymarket.comissionss.youmind.bbb.listener;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.event.PrevCreateWorld;

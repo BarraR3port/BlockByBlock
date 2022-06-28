@@ -3,6 +3,7 @@ package net.lymarket.comissionss.youmind.bbb.velocity.socketmanager;
 import com.google.gson.*;
 import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
 import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -109,12 +110,18 @@ public class ProxySocketServer implements Runnable {
                     }
     
                     if (!json.has("type")) continue;
+                    if (!json.has("socket-msg-uuid")) continue;
                     VMain.debug("Received message from " + name + ": \n" + gson.toJson(json));
+                    final UUID msgUUID = UUID.fromString(json.get("socket-msg-uuid").getAsString());
+                    final JsonObject msg_received = new JsonObject();
+                    msg_received.addProperty("type", "MSG_RECEIVED");
+                    msg_received.addProperty("socket-msg-uuid", msgUUID.toString());
+                    sendMessage(msg_received);
                     try {
                         switch(json.get("type").getAsString()){
                             case "PLAYER_SENT_MSG":{
                                 if (!json.has("msg_type")) continue;
-    
+                
                                 final String msg_type = json.get("msg_type").getAsString();
                                 if (msg_type.equals("PlotMsg")){
                                     final PlotMsg plotMsg = gson.fromJson(json.getAsJsonObject("msg"), PlotMsg.class);
@@ -132,9 +139,9 @@ public class ProxySocketServer implements Runnable {
                                             .hoverEvent(null)
                                             .clickEvent(null);
                                     //? [FINAL MSG]
-                                    Component finalMsg = server.append(name).append(msg.hoverEvent(null).clickEvent(null)).asComponent();
+                                    Component finalMsg = server.append(name).append(msg).asComponent();
                                     for ( Player player : VMain.getInstance().getProxy().getAllPlayers() ){
-                                        player.sendMessage(finalMsg);
+                                        player.sendMessage(finalMsg, MessageType.CHAT);
                                     }
                                 } else if (msg_type.equals("WorldMsg")){
                                     final WorldMsg worldMsg = gson.fromJson(json.getAsJsonObject("msg"), WorldMsg.class);
@@ -157,7 +164,7 @@ public class ProxySocketServer implements Runnable {
                                     for ( Player player : VMain.getInstance().getProxy().getAllPlayers() ){
                                         player.sendMessage(finalMsg);
                                     }
-    
+                    
                                 } else {
                                     final LobbyMsg lobbyMsg = gson.fromJson(json.getAsJsonObject("msg"), LobbyMsg.class);
                                     final VelocityUser user = VMain.getInstance().getPlayers().getPlayer(lobbyMsg.getOwner());
@@ -201,7 +208,7 @@ public class ProxySocketServer implements Runnable {
                                 continue;
     
                             }
-    
+            
                             case "UPDATE":{
                                 if (!json.has("server_name")) continue;
                                 if (json.get("server_name").getAsString() == null) continue;
@@ -212,20 +219,20 @@ public class ProxySocketServer implements Runnable {
                                         }
                                 ).schedule());
                                 continue;
-        
+                
                             }
-    
+            
                             case "WORLD_DELETE_PREV":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("owner_uuid")) continue;
                                 if (!json.has("world_uuid")) continue;
-        
+                
                                 final String server_target = json.get("server_target").getAsString();
                                 final String current_server = json.get("current_server").getAsString();
-        
+                
                                 json.addProperty("same_server", server_target.equalsIgnoreCase(current_server));
-        
+                
                                 if (ServerSocketManager.getSocketByServer(server_target).isPresent()){
                                     final ProxySocketServer socket = ServerSocketManager.getSocketByServer(server_target).get();
                                     VMain.debug("Received WORLD_DELETE_INIT from: " + current_server);
@@ -238,7 +245,7 @@ public class ProxySocketServer implements Runnable {
                                     json.addProperty("type", "ERROR");
                                     json.addProperty("error", "SERVER_NOT_ONLINE");
                                     this.sendMessage(json);
-            
+                    
                                 }
                                 continue;
                             }
@@ -260,7 +267,7 @@ public class ProxySocketServer implements Runnable {
                                 });
                                 continue;
                             }
-    
+            
                             case "WORLD_DELETE_SUCCESS":{
                                 if (!json.has("current_server")) continue;
                                 final String current_server = json.get("current_server").getAsString();
@@ -270,15 +277,15 @@ public class ProxySocketServer implements Runnable {
                                     socket.sendMessage(json);
                                 });
                                 continue;
-        
+                
                             }
-    
+            
                             case "SEND_MSG_TO_PLAYER":{
                                 if (!json.has("target_uuid")) continue;
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("key")) continue;
                                 final UUID target_uuid = UUID.fromString(json.get("target_uuid").getAsString());
-        
+                
                                 json.remove("type");
                                 json.addProperty("type", "SEND_MSG_TO_PLAYER_POST");
                                 VMain.getInstance().getProxy().getPlayer(target_uuid).flatMap(p -> p.getCurrentServer().flatMap(server -> ServerSocketManager.getSocketByServer(server.getServerInfo().getName()))).ifPresent(socket -> socket.sendMessage(json));
@@ -287,9 +294,9 @@ public class ProxySocketServer implements Runnable {
                             socket.sendMessage( json );
                         } );*/
                                 continue;
-        
+                
                             }
-    
+            
                             case "JOIN_WORLD_REQUEST":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("current_server")) continue;
@@ -302,7 +309,7 @@ public class ProxySocketServer implements Runnable {
                                 ServerSocketManager.getSocketByServer(server_target).ifPresent(socket -> socket.sendMessage(json));
                                 continue;
                             }
-    
+            
                             case "JOIN_WORLD_REQUEST_POST":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("current_server")) continue;
@@ -315,28 +322,25 @@ public class ProxySocketServer implements Runnable {
                                 final UUID owner_uuid = UUID.fromString(json.get("owner_uuid").getAsString());
                                 final boolean response = json.get("response").getAsBoolean();
                                 final UUID world_uuid = UUID.fromString(json.get("world_uuid").getAsString());
-        
+                
                                 if (response && VMain.getInstance().getWorldManager().addPlayerToWorldOnlineMembers(owner_uuid, world_uuid)){
                                     VMain.getInstance().getProxy().getPlayer(owner_uuid).ifPresent(player -> VMain.getInstance().getProxy().getServer(server_target).ifPresent(server -> {
                                         try {
                                             ConnectionRequestBuilder.Result result = player.createConnectionRequest(server).connect().get(2, TimeUnit.SECONDS);
                                             if (!result.getStatus().equals(ConnectionRequestBuilder.Status.SUCCESS)){
-                                                player.sendMessage(Utils.format("&cError al conectar."));
+                                                player.sendMessage(Utils.format("&cError al conectar, probalemente tu versión no es compatible con la de este server."));
                                             }
-                                        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                                            throw new RuntimeException(e);
+                                        } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
                                         }
                                     }));
                                 } else {
                                     json.remove("type");
                                     json.addProperty("type", "JOIN_WORLD_REQUEST_POST_DENY");
-                                    ServerSocketManager.getSocketByServer(current_server).ifPresent(socket -> {
-                                        socket.sendMessage(json);
-                                    });
+                                    ServerSocketManager.getSocketByServer(current_server).ifPresent(socket -> socket.sendMessage(json));
                                 }
                                 continue;
                             }
-    
+            
                             case "JOIN_PLOT_REQUEST":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("server_version")) continue;
@@ -352,7 +356,7 @@ public class ProxySocketServer implements Runnable {
                                 ServerSocketManager.getSocketByServer(server_target).ifPresent(socket -> socket.sendMessage(json));
                                 continue;
                             }
-    
+            
                             case "JOIN_PLOT_REQUEST_POST":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("server_target")) continue;
@@ -365,18 +369,19 @@ public class ProxySocketServer implements Runnable {
                                 final String current_server = json.get("current_server").getAsString();
                                 final UUID owner_uuid = UUID.fromString(json.get("owner_uuid").getAsString());
                                 if (!current_server.equals(server_target))
-                                    VMain.getInstance().getProxy().getPlayer(owner_uuid).ifPresent(player -> VMain.getInstance().getProxy().getServer(server_target).ifPresent(server -> player.createConnectionRequest(server).fireAndForget()));
-                        
-                        
-                            /*json.remove( "type" );
-                            json.addProperty( "type" , "JOIN_WORLD_REQUEST_POST_DENY" );
-                            ServerSocketManager.getSocketByServer( current_server ).ifPresent( socket -> {
-                                socket.sendMessage( json );
-                            } );*/
-        
+                                    VMain.getInstance().getProxy().getPlayer(owner_uuid).ifPresent(player -> VMain.getInstance().getProxy().getServer(server_target).ifPresent(server -> {
+                                        try {
+                                            ConnectionRequestBuilder.Result result = player.createConnectionRequest(server).connect().get(2, TimeUnit.SECONDS);
+                                            if (!result.getStatus().equals(ConnectionRequestBuilder.Status.SUCCESS)){
+                                                player.sendMessage(Utils.format("&cError al conectar, probalemente tu versión no es compatible con la de este server."));
+                                            }
+                                        } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
+                                        }
+                                    }));
+                
                                 continue;
                             }
-    
+            
                             case "CONNECT_TO_SERVER":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("current_server")) continue;
@@ -386,22 +391,30 @@ public class ProxySocketServer implements Runnable {
                                 final String currentServer = json.get("current_server").getAsString();
                                 final UUID owner_uuid = UUID.fromString(json.get("owner_uuid").getAsString());
                                 final String msg = json.get("msg").getAsString();
-        
+                
                                 if (VMain.getInstance().getProxy().getPlayer(owner_uuid).isPresent()){
                                     final Player p = VMain.getInstance().getProxy().getPlayer(owner_uuid).get();
                                     if (currentServer.equalsIgnoreCase(serverName)){
                                         p.sendMessage(Utils.format("&cYa estás conectado en el server " + serverName));
                                         return;
                                     }
-                                    VMain.getInstance().getProxy().getServer(serverName).ifPresent(server -> p.createConnectionRequest(server).fireAndForget());
+                                    VMain.getInstance().getProxy().getServer(serverName).ifPresent(server -> {
+                                        try {
+                                            ConnectionRequestBuilder.Result result = p.createConnectionRequest(server).connect().get(2, TimeUnit.SECONDS);
+                                            if (!result.getStatus().equals(ConnectionRequestBuilder.Status.SUCCESS)){
+                                                p.sendMessage(Utils.format("&cError al conectar, probalemente tu versión no es compatible con la de este server."));
+                                            }
+                                        } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
+                                        }
+                                    });
                                     if (!msg.equalsIgnoreCase("EMPTY")){
                                         p.sendMessage(Utils.format(msg.replace("%player%", p.getUsername())));
                                     }
                                 }
-        
+                
                                 continue;
                             }
-    
+            
                             case "KICK_FROM_WORLD":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("current_server")) continue;
@@ -410,32 +423,31 @@ public class ProxySocketServer implements Runnable {
                                 if (!json.has("owner_uuid")) continue;
                                 if (!json.has("target_uuid")) continue;
                                 final String server_target = json.get("server_target").getAsString();
-                                //final String currentServer = json.get( "current_server" ).getAsString( );
-                        /*final UUID owner_uuid = UUID.fromString( json.get( "owner_uuid" ).getAsString( ) );
-                        final UUID target_uuid = UUID.fromString( json.get( "target_uuid" ).getAsString( ) );
-                        if ( !server_target.equalsIgnoreCase( currentServer ) ) {
-                            if ( owner_uuid.equals( target_uuid ) ) {
-                            
-                            }
-                            
-                        }*/
                                 json.remove("type");
                                 json.addProperty("type", "KICK_FROM_WORLD_PREV");
-        
+                
                                 ServerSocketManager.getSocketByServer(server_target).ifPresent(socket -> socket.sendMessage(json));
-        
+                
                                 continue;
                             }
-    
+            
                             case "WORLD_KICK_SUCCESS":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("target_uuid")) continue;
-        
+                
                                 final UUID target_uuid = UUID.fromString(json.get("target_uuid").getAsString());
-                                VMain.getInstance().getProxy().getPlayer(target_uuid).ifPresent((p) -> VMain.getInstance().getProxy().getServer("lobby").ifPresent(server -> p.createConnectionRequest(server).fireAndForget()));
+                                VMain.getInstance().getProxy().getPlayer(target_uuid).ifPresent((p) -> VMain.getInstance().getProxy().getServer("lobby").ifPresent(server -> {
+                                    try {
+                                        ConnectionRequestBuilder.Result result = p.createConnectionRequest(server).connect().get(2, TimeUnit.SECONDS);
+                                        if (!result.getStatus().equals(ConnectionRequestBuilder.Status.SUCCESS)){
+                                            p.sendMessage(Utils.format("&cError al conectar, probalemente tu versión no es compatible con la de este server."));
+                                        }
+                                    } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
+                                    }
+                                }));
                                 continue;
                             }
-    
+            
                             case "SEND_VISIT_REQUEST":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("owner_uuid")) continue;
@@ -496,7 +508,15 @@ public class ProxySocketServer implements Runnable {
                                 if (!json.has("server_target")) continue;
                                 final String server_target = json.get("server_target").getAsString();
                                 final UUID target_uuid = UUID.fromString(json.get("target_uuid").getAsString());
-                                VMain.getInstance().getProxy().getPlayer(target_uuid).ifPresent((p) -> VMain.getInstance().getProxy().getServer(server_target).ifPresent(server -> p.createConnectionRequest(server).fireAndForget()));
+                                VMain.getInstance().getProxy().getPlayer(target_uuid).ifPresent((p) -> VMain.getInstance().getProxy().getServer(server_target).ifPresent(server -> {
+                                    try {
+                                        ConnectionRequestBuilder.Result result = p.createConnectionRequest(server).connect().get(2, TimeUnit.SECONDS);
+                                        if (!result.getStatus().equals(ConnectionRequestBuilder.Status.SUCCESS)){
+                                            p.sendMessage(Utils.format("&cError al conectar, probalemente tu versión no es compatible con la de este server."));
+                                        }
+                                    } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
+                                    }
+                                }));
                                 continue;
                             }
                             case "VISIT_WORLD_REQUEST_POST":{
@@ -508,14 +528,23 @@ public class ProxySocketServer implements Runnable {
                                     final String guest_server = json.get("guest_server").getAsString();
                                     final UUID guest = UUID.fromString(json.get("guest").getAsString());
                                     if (!target_server.equals(guest_server)){
-                                        VMain.getInstance().getProxy().getPlayer(guest).ifPresent((p) -> VMain.getInstance().getProxy().getServer(target_server).ifPresent(server -> p.createConnectionRequest(server).fireAndForget()));
+                                        VMain.getInstance().getProxy().getPlayer(guest).ifPresent((p) -> VMain.getInstance().getProxy().getServer(target_server).ifPresent(server -> {
+                                            try {
+                                                ConnectionRequestBuilder.Result result = p.createConnectionRequest(server).connect().get(2, TimeUnit.SECONDS);
+                                                if (!result.getStatus().equals(ConnectionRequestBuilder.Status.SUCCESS)){
+                                                    p.sendMessage(Utils.format("&cError al conectar, probalemente tu versión no es compatible con la de este server."));
+                                                }
+                                            } catch (InterruptedException | ExecutionException |
+                                                     TimeoutException ignored) {
+                                            }
+                                        }));
                                     }
                                 } else {
                                     //todo this
                                 }
                                 continue;
                             }
-    
+            
                             case "JOIN_HOME":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("server_target")) continue;
@@ -535,7 +564,15 @@ public class ProxySocketServer implements Runnable {
                                 boolean tp = json.get("tp").getAsBoolean();
                                 if (tp){
                                     VMain.debug("Sending " + owner_uuid + " to " + server_target);
-                                    VMain.getInstance().getProxy().getPlayer(owner_uuid).ifPresent((p) -> VMain.getInstance().getProxy().getServer(server_target).ifPresent(server -> p.createConnectionRequest(server).fireAndForget()));
+                                    VMain.getInstance().getProxy().getPlayer(owner_uuid).ifPresent((p) -> VMain.getInstance().getProxy().getServer(server_target).ifPresent(server -> {
+                                        try {
+                                            ConnectionRequestBuilder.Result result = p.createConnectionRequest(server).connect().get(2, TimeUnit.SECONDS);
+                                            if (!result.getStatus().equals(ConnectionRequestBuilder.Status.SUCCESS)){
+                                                p.sendMessage(Utils.format("&cError al conectar, probalemente tu versión no es compatible con la de este server."));
+                                            }
+                                        } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
+                                        }
+                                    }));
                                 }
                                 continue;
                             }
@@ -549,7 +586,7 @@ public class ProxySocketServer implements Runnable {
                                 ServerSocketManager.getSocketByServer(json.get("server_target").getAsString()).ifPresent(socket -> socket.sendMessage(json));
                                 continue;
                             }
-    
+            
                             case "ERROR":{
                                 if (!json.has("error")) continue;
                                 final String error = json.get("error").getAsString();
@@ -579,7 +616,6 @@ public class ProxySocketServer implements Runnable {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        continue;
                     }
                 } else {
                     try {
@@ -594,9 +630,15 @@ public class ProxySocketServer implements Runnable {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                continue;
             }
         }
+        try {
+            socket.close();
+            VMain.getInstance().getLogger().info("Socket closed: " + socket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Thread.currentThread().interrupt();
     }
     
     public PrintWriter getOut( ){

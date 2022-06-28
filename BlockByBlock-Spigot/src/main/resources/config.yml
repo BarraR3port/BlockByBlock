@@ -1,6 +1,6 @@
 global:
   prefix: "&aBlock By Block"
-  server-type: "CORE" #LOBBY, CORE
+  server-type: "LOBBY" #LOBBY, CORE
   proxy-server-name: ""
   debug: true
 actions:

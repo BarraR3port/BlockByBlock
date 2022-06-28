@@ -32,20 +32,12 @@ public class HomeCommand implements ILyCommand {
             final String homeName = context.getArg(0);
             try {
                 final Home home = Main.getInstance().getHomes().getHome(UUID.fromString(homeName));
-                if (home != null){
-                    Main.getInstance().getSocket().sendJoinHome(p.getUniqueId(), home);
-                    return new CommandResponse();
-                } else {
-                    throw new HomeNotFoundError(homeName);
-                }
+                Main.getInstance().getSocket().sendJoinHome(p.getUniqueId(), home);
+                return new CommandResponse();
             } catch (IllegalArgumentException e) {
                 final Home home = Main.getInstance().getHomes().getUserHomeByName(p.getUniqueId(), homeName);
-                if (home != null){
-                    Main.getInstance().getSocket().sendJoinHome(p.getUniqueId(), home);
-                    return new CommandResponse();
-                } else {
-                    throw new HomeNotFoundError(homeName);
-                }
+                Main.getInstance().getSocket().sendJoinHome(p.getUniqueId(), home);
+                return new CommandResponse();
             } catch (HomeNotFoundError e) {
                 Main.getLang().sendErrorMsg(context.getSender(), "home.not-found", "home", homeName);
             }

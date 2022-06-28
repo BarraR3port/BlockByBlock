@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, SpigotHome, SpigotWarp > {
@@ -290,6 +291,9 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
     }
     
     public SpigotSocketClient init( ) throws IOException{
+        if (mainSocket != null){
+            mainSocket.socket.close();
+        }
         Socket socket = new Socket(Settings.SOCKET_IP, Settings.SOCKET_PORT);
         mainSocket = new ProxySocket(socket, Settings.SERVER_NAME);
         return this;
@@ -317,8 +321,8 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
     /**
      * Close active sockets.
      */
-    public void disable(boolean stopServer){
-        mainSocket.disable("Close active sockets", stopServer);
+    public void disable( ){
+        mainSocket.disable("Close active sockets");
     }
     
     private class ProxySocket implements ISocketClient {
@@ -363,14 +367,20 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                             }
                             if (json == null) continue;
                             if (!json.has("type")) continue;
-                            
-                            if (Settings.DEVELOPMENT_MODE){
-                                Main.getInstance().debug("Received Encrypted from " + name + ": \n" + encrypted);
-                                Main.getInstance().debug("Received message from " + name + ": \n" + gson.toJson(json));
-                            } else {
-                                Main.getInstance().debug("Received message from " + name + ": \n" + gson.toJson(json));
+                            final String type = json.get("type").getAsString().toUpperCase();
+                            if (!type.equals("UPDATE_ONLINE_PLAYERS_IN_WORLDS") && !type.equals("MSG_RECEIVED")){
+                                if (Settings.DEVELOPMENT_MODE){
+                                    Main.getInstance().debug("Received Encrypted from " + name + ": \n" + encrypted);
+                                    Main.getInstance().debug("Received message from " + name + ": \n" + gson.toJson(json));
+                                } else {
+                                    Main.getInstance().debug("Received message from " + name + ": \n" + gson.toJson(json));
+                                }
                             }
-                            switch(json.get("type").getAsString().toUpperCase()){
+                            switch(type){
+                                case "MSG_RECEIVED":{
+                                    Main.getInstance().debug("Received message from " + name + ": \n" + gson.toJson(json));
+                                    continue;
+                                }
                                 case "INIT_CREATE_WORLD":{
                                     if (!json.has("server_name")) continue;
                                     if (!json.has("world_name")) continue;
@@ -379,7 +389,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                     if (!json.has("world_version")) continue;
                                     if (!json.has("world_server")) continue;
                                     if (!json.has("world_layer_material")) continue;
-                                    
+            
                                     String world_name = json.get("world_name").getAsString();
                                     UUID owner = UUID.fromString(json.get("owner_uuid").getAsString());
                                     UUID world_uuid = UUID.fromString(json.get("world_uuid").getAsString());
@@ -405,10 +415,10 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                             sendMessage(json);
                                             Main.getInstance().debug("[World Creation] Sending message to Proxy: " + json);
                                         });
-                                        
                                     } else {
                                         Main.getInstance().debug("Received INIT_CREATE_WORLD but its meant for another server.\n " + json);
                                     }
+                                    continue;
                                 }
                                 case "REMOVE_PLAYER_TO_TP_TO_WORLD":{
                                     if (!json.has("uuid")) continue;
@@ -417,6 +427,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         getWorlds().removePlayerToTP(owner);
                                     } catch (Exception ignored) {
                                     }
+                                    continue;
                                 }
                                 case "UPDATE_INV_POST_INIT_CREATE_WORLD_SUCCESS":{
                                     if (!json.has("server_name")) continue;
@@ -432,8 +443,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                     if (p.getInventory().getHolder() instanceof IUpdatableMenu){
                                         ((IUpdatableMenu) p.getOpenInventory().getTopInventory().getHolder()).reOpen();
                                     }
-                                    
-                                    
+                                    continue;
                                 }
                                 case "UPDATE_INV_WORLD_DELETE_SUCCESS":{
                                     if (!json.has("current_server")) continue;
@@ -453,8 +463,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         
                                     } catch (NullPointerException ignored) {
                                     }
-                                    
-                                    
+                                    continue;
                                 }
                                 case "JOIN_WORLD_REQUEST_PREV":{
                                     if (!json.has("server_target")) continue;
@@ -491,6 +500,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         json.addProperty("response", false);
                                     }
                                     sendMessage(json);
+                                    continue;
                                 }
                                 case "JOIN_WORLD_REQUEST_POST_DENY":{
                                     if (!json.has("owner_uuid")) continue;
@@ -506,6 +516,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         }
                                     } catch (Exception ignored) {
                                     }
+                                    continue;
                                 }
                                 case "JOIN_PLOT_REQUEST_PREV":{
                                     if (!json.has("current_server")) continue;
@@ -517,7 +528,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                     if (!json.has("plot_type")) continue;
                                     
                                     vs.getPlotManager().manageJoinPlot(json);
-                                    
+                                    continue;
                                 }
                                 case "JOIN_PLOT_REQUEST_POST_DENY":{
                                     if (!json.has("owner_uuid")) continue;
@@ -533,6 +544,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         }
                                     } catch (Exception ignored) {
                                     }
+                                    continue;
                                 }
                                 case "WORLD_DELETE_INIT":{
                                     if (!json.has("current_server")) continue;
@@ -556,8 +568,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         sendMessage(json);
                                         continue;
                                     }
-                                    
-                                    
+                                    continue;
                                 }
                                 case "KICK_FROM_WORLD_PREV":{
                                     if (!json.has("server_target")) continue;
@@ -580,6 +591,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                     json.remove("type");
                                     json.addProperty("type", "WORLD_KICK_SUCCESS");
                                     sendMessage(json);
+                                    continue;
                                 }
                                 case "WORLD_KICK_SUCCESS":{
                                     if (!json.has("world_uuid")) continue;
@@ -597,6 +609,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         sendMSGToPlayer(owner_uuid, "world.kick-success", replace);
                                     } catch (NullPointerException ignored) {
                                     }
+                                    continue;
                                 }
                                 case "SEND_MSG_TO_PLAYER_POST":{
                                     if (!json.has("target_uuid")) continue;
@@ -625,8 +638,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                     } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     }
-                                    
-                                    
+                                    continue;
                                 }
                                 case "UPDATE_ONLINE_PLAYERS_IN_WORLDS":{
                                     if (!json.has("stats")) continue;
@@ -661,6 +673,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                                 }
                                             }
                                     );
+                                    continue;
                                 }
                                 case "VISIT_REQUEST_PREV":{
                                     if (!json.has("current_server")) continue;
@@ -706,8 +719,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                             continue;
                                         }
                                     }
-                                    
-                                    
+                                    continue;
                                 }
                                 case "VISIT_REQUEST_DENY":{
                                     if (!json.has("current_server")) continue;
@@ -718,10 +730,10 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         final String reason = json.get("reason").getAsString();
                                         Bukkit.getScheduler().runTask(Main.getInstance(), ( ) -> Main.getLang().sendErrorMsg(p, reason));
                                     }
+                                    continue;
                                 }
-    
-                                case "JOIN_HOME_PREV":{
         
+                                case "JOIN_HOME_PREV":{
                                     if (!json.has("current_server")) continue;
                                     if (!json.has("server_target")) continue;
                                     if (!json.has("home_uuid")) continue;
@@ -814,6 +826,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                             }
                                         }
                                     }
+                                    continue;
                                 }
                                 case "SUCCESS_MSG":{
                                     if (!json.has("success_type")) continue;
@@ -823,7 +836,7 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                         final String target_name = json.get("target_name").getAsString();
                                         Main.getLang().sendMsg(Bukkit.getPlayer(owner_uuid), "visit.sent", "player", target_name);
                                     }
-                                    /*switch(success_type){
+                                    switch(success_type){
                                         case "VISIT_REQUEST":{
                                             if (!json.has("owner_uuid")) continue;
                                             if (!json.has("server_target")) continue;
@@ -844,16 +857,15 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
                                                 replace.put("server", server_target);
                                                 replace.put("world", world_uuid);
                                                 sendMSGToPlayer(owner_uuid, "error.world.delete-failed", replace);
-                
+    
                                             } catch (NullPointerException ignored) {
                                             }
                                         }
                                     }
-*/
                                 }
                             }
                         } else {
-                            reconnect("in.hasNext()");
+                            reconnect("Server Closed Connection");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -884,21 +896,30 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
             } else {
                 Main.getInstance().debug("Sending message to " + name + ": \n" + gson.toJson(message));
             }
-            
+            final UUID msgUUID = UUID.randomUUID();
+            message.addProperty("socket-msg-uuid", msgUUID.toString());
             out.println(encrypt(gson.toJson(message)));
-            
+    
             return true;
         }
         
         public void reconnect(String msg){
-            try {
-                init();
-            } catch (Exception e) {
-                disable(msg, false);
-            }
+            AtomicInteger reconnect_attempts = new AtomicInteger();
+            Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), ( ) -> {
+                reconnect_attempts.getAndIncrement();
+                if (reconnect_attempts.get() > 10){
+                    Bukkit.shutdown();
+                }
+                try {
+                    init();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }, 1400, 20);
+    
         }
     
-        public void disable(String reason, boolean stopServer){
+        public void disable(String reason){
             compute = false;
             Main.getInstance().debug("Disabling socket: " + socket.toString());
             Main.getInstance().debug("Disabling socket Reason: " + reason);
@@ -909,9 +930,6 @@ public class SpigotSocketClient extends ISocket < SlimeWorld, SpigotUser, Spigot
             }
             in = null;
             out = null;
-            if (stopServer){
-                Bukkit.shutdown();
-            }
         }
     }
 }

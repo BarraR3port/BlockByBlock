@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -15,7 +16,6 @@ import net.lymarket.comissionss.youmind.bbb.velocity.commands.Lobby;
 import net.lymarket.comissionss.youmind.bbb.velocity.commands.VAdmin;
 import net.lymarket.comissionss.youmind.bbb.velocity.config.Config;
 import net.lymarket.comissionss.youmind.bbb.velocity.listener.PlayerEvents;
-import net.lymarket.comissionss.youmind.bbb.velocity.listener.onPluginMessage;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.PlayersRepository;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerManager;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
@@ -34,7 +34,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-@Plugin(id = "blockbyblock", name = "BlockByBlock", version = "0.4.3-BETA", authors = {"BarraR3port"}, url = "https://lymarket.net/")
+@Plugin(id = "blockbyblock",
+        name = "BlockByBlock",
+        version = "1.1",
+        authors = {"BarraR3port"},
+        url = "https://lymarket.net/",
+        dependencies = {@Dependency(id = "luckperms")})
 public final class VMain extends LyApiVelocity {
     
     private static VMain instance;
@@ -88,7 +93,6 @@ public final class VMain extends LyApiVelocity {
         instance = this;
         config = new Config(path);
         proxy.getChannelRegistrar().register(new LegacyChannelIdentifier("lymarket:bbb"));
-        proxy.getEventManager().register(this, new onPluginMessage());
         proxy.getEventManager().register(this, new PlayerEvents());
         //serverManager.init( );
     

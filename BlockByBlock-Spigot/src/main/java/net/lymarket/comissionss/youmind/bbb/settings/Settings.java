@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Settings {
     //Disable this in final releases
-    public static boolean DEVELOPMENT_MODE = true;
+    public static boolean DEVELOPMENT_MODE = false;
     public static String SOCKET_IP = "localhost";
     public static int SOCKET_PORT = 5555;
     public static boolean BREAK_BLOCKS = false;

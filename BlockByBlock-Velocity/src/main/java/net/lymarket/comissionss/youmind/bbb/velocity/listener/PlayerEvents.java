@@ -56,9 +56,6 @@ public class PlayerEvents {
     
     @Subscribe
     public void onPostLoginEvent(PostLoginEvent e){
-        VMain.debug("onPostLoginEvent");
-        VMain.debug("Player Name: " + e.getPlayer().getUsername());
-        VMain.debug("Player UUID: " + e.getPlayer().getUniqueId().toString());
         VMain.getInstance().getPlayers().getOrCreatePlayer(e.getPlayer().getUsername(), e.getPlayer().getUniqueId(), String.valueOf(e.getPlayer().getRemoteAddress().getAddress()).replace("/", ""));
         
         timeOnline.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
@@ -73,8 +70,6 @@ public class PlayerEvents {
         TextComponent secondJoinMsg = LegacyComponentSerializer.legacyAmpersand().deserialize("&aConstruye y disfruta!")
                 .hoverEvent(null)
                 .clickEvent(null);
-        
-        
         e.getPlayer().sendMessage(firstJoinMsg);
         e.getPlayer().sendMessage(secondJoinMsg);
     }
@@ -149,9 +144,9 @@ public class PlayerEvents {
             if (prev.getModinfo().isPresent()){
                 
                 if (prev.getVersion().getProtocol() > 757 || prev.getVersion().getProtocol() < 46){
-                    prev.asBuilder().version(new ServerPing.Version(ProtocolVersion.MINECRAFT_1_18.getProtocol(), "BlockByBlock 1.8.x - 1.18.x "));
+                    prev.asBuilder().version(new ServerPing.Version(ProtocolVersion.MINECRAFT_1_18.getProtocol(), "BlockByBlock 1.12.2 - 1.19.x "));
                 } else {
-                    prev.asBuilder().version(new ServerPing.Version(prev.getVersion().getProtocol(), "BlockByBlock 1.8.x - 1.18.x "));
+                    prev.asBuilder().version(new ServerPing.Version(prev.getVersion().getProtocol(), "BlockByBlock 1.12.2 - 1.19.x "));
                 }
             }
             event.setPing(prev.asBuilder().build());

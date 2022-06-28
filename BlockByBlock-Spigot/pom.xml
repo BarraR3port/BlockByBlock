@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.4.3-BETA</version>
+        <version>1.1</version>
     </parent>
 
     <artifactId>BlockByBlock-Spigot</artifactId>
@@ -64,7 +64,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>
+            <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
                 <executions>
@@ -77,7 +77,7 @@
                         <configuration>
                             <tasks>
                                 <property name="runtime_classpath" refid="maven.runtime.classpath"/>
-                                &lt;!&ndash;suppress UnresolvedMavenProperty &ndash;&gt;
+                                <!--suppress UnresolvedMavenProperty -->
                                 <taskdef name="yguard" classname="com.yworks.yguard.YGuardTask"
                                          classpath="${runtime_classpath}"/>
                                 <yguard>
@@ -96,10 +96,16 @@
                                                     <include name="org.apache.logging.log4j.**"/>
                                                     <include name="net.lymarket.lyapi.**"/>
                                                     <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.data.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.skin.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
                                                     <include name="net.lymarket.common.**"/>
                                                     <include name="com.yworks.**"/>
                                                     <include name="org.spigotmc.**"/>
@@ -115,6 +121,16 @@
                                                     <include name="kotlin.**"/>
                                                     <include name="lombok.**"/>
                                                     <include name="net.lymarket.comissionss.youmind.bbb.Main"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.users.SpigotUser"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.home.SpigotHome"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.papi.Placeholders"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp"/>
                                                     <include name="xyz.xenondevs.particle.**"/>
                                                     <include name="com.cryptomorin.xseries.**"/>
                                                 </patternset>
@@ -122,14 +138,28 @@
                                             <class classes="private" methods="private" fields="private">
                                                 <patternset>
                                                     <include name="net.lymarket.lyapi.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.users.SpigotUser"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.home.SpigotHome"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.papi.Placeholders"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.socket.**"/>
                                                     <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.data.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.skin.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
                                                     <include name="net.lymarket.common.**"/>
                                                     <include name="xyz.xenondevs.particle.**"/>
                                                     <include name="com.cryptomorin.xseries.**"/>
@@ -151,14 +181,27 @@
                                             <class classes="public" methods="public" fields="public">
                                                 <patternset>
                                                     <include name="net.lymarket.lyapi.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.users.SpigotUser"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.home.SpigotHome"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.papi.Placeholders"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp"/>
                                                     <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.data.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.skin.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
                                                     <include name="net.lymarket.common.**"/>
                                                     <include name="xyz.xenondevs.particle.*"/>
                                                     <include name="com.cryptomorin.xseries.*"/>
@@ -177,24 +220,40 @@
                                                 </patternset>
                                             </class>
 
+                                            <!--<method class="net.lymarket.comissionss.youmind.bbb.common.data.**" name="**.**"/>-->
+
                                             <package>
                                                 <patternset>
                                                     <include name="org.apache.logging.log4j."/>
                                                     <include name="net.lymarket.comissionss.youmind.bbb.Main"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.users.SpigotUser"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.home.SpigotHome"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.papi.Placeholders"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.warp.SpigotWarp"/>
                                                     <include name="org.bukkit.*"/>
                                                     <include name="net.lymarket.lyapi.**"/>
                                                     <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.warp.WarpType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
-                                                    <include name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.data.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.skin.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_12_R1.v1_12_R1"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_16_R3.v1_16_R3"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.support.version.v1_18_R2.v1_18_R2"/>
                                                     <include name="net.lymarket.common.**"/>
                                                     <include name="xyz.xenondevs.particle.**"/>
                                                     <include name="com.cryptomorin.xseries.**"/>
                                                     <include name="org.spigotmc.**"/>
+                                                    <include name="com.google.gson.JsonParser.parseReader"/>
                                                     <include name="com.google.**"/>
                                                     <include name="com.mongodb.**"/>
                                                     <include name="org.bukkit.**"/>
@@ -210,7 +269,8 @@
                                             </package>
                                         </keep>
                                         <property name="naming-scheme" value="small"/>
-                                        <property name="obfuscation-prefix" value="net.lymarket.comissionss.youmind.bbb.obfuscated"/>
+                                        <property name="obfuscation-prefix"
+                                                  value="net.lymarket.comissionss.youmind.bbb.obfuscated"/>
                                         <property name="language-conformity" value="legal"/>
 
                                     </rename>
@@ -219,7 +279,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
         </plugins>
 
         <resources>
@@ -420,13 +480,13 @@
             <version>4.3.1</version>
             <scope>provided</scope>
         </dependency>
-        <!--
-                <dependency>
-                    <groupId>com.yworks</groupId>
-                    <artifactId>yguard</artifactId>
-                    <version>3.1.0</version>
-                    <scope>compile</scope>
-                </dependency>-->
+
+        <dependency>
+            <groupId>com.yworks</groupId>
+            <artifactId>yguard</artifactId>
+            <version>3.1.0</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 </project>

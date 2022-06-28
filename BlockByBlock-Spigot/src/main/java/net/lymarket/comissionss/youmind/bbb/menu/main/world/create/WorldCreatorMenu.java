@@ -17,6 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class WorldCreatorMenu extends UpdatableMenu {
@@ -35,23 +36,23 @@ public class WorldCreatorMenu extends UpdatableMenu {
         super(playerMenuUtility);
         this.serverVersion = serverVersion;
         this.targetUserUUID = targetUserUUID;
+        if (!serverVersion.equals("1.18")){
+            items.add(new ItemBuilder(XMaterial.GRASS_BLOCK.parseMaterial())
+                    .setDisplayName("&7Selecciona el material base de tu mundo")
+                    .addLoreLine("")
+                    .addLoreLine("&7Material seleccionado: &a")
+                    .addLoreLine(" &7> &a" + XMaterial.GRASS_BLOCK)
+                    .addLoreLine("")
+                    .build());
         
-        items.add(new ItemBuilder(XMaterial.GRASS_BLOCK.parseMaterial())
-                .setDisplayName("&7Selecciona el material base de tu mundo")
-                .addLoreLine("")
-                .addLoreLine("&7Material seleccionado: &a")
-                .addLoreLine(" &7> &a" + XMaterial.GRASS_BLOCK)
-                .addLoreLine("")
-                .build());
-        
-        items.add(new ItemBuilder(XMaterial.BEDROCK.parseMaterial())
-                .setDisplayName("&7Selecciona el material base de tu mundo")
-                .addLoreLine("")
-                .addLoreLine("&7Material seleccionado: &a")
-                .addLoreLine(" &7> &a" + XMaterial.BEDROCK)
-                .addLoreLine("")
-                .build());
-        
+            items.add(new ItemBuilder(XMaterial.BEDROCK.parseMaterial())
+                    .setDisplayName("&7Selecciona el material base de tu mundo")
+                    .addLoreLine("")
+                    .addLoreLine("&7Material seleccionado: &a")
+                    .addLoreLine(" &7> &a" + XMaterial.BEDROCK)
+                    .addLoreLine("")
+                    .build());
+        }
         items.add(new ItemBuilder(XMaterial.GLASS_PANE.parseMaterial())
                 .setDisplayName("&7Selecciona el material base de tu mundo")
                 .addLoreLine("")
@@ -91,23 +92,27 @@ public class WorldCreatorMenu extends UpdatableMenu {
     public void handleMenu(InventoryClickEvent e){
         final ItemStack item = e.getCurrentItem();
         final Player p = (Player) e.getWhoClicked();
-        
-        if (e.getSlot() == 7){
-            if (currentIndex + 1 >= items.size()){
-                currentIndex = 0;
-            } else {
-                currentIndex = currentIndex + 1;
+    
+        if (!serverVersion.equals("1.18")){
+            if (e.getSlot() == 7){
+                if (currentIndex + 1 >= items.size()){
+                    currentIndex = 0;
+                } else {
+                    currentIndex = currentIndex + 1;
+                }
+                reOpen();
+                return;
+            } else if (e.getSlot() == 25){
+                if (currentIndex - 1 <= 0){
+                    currentIndex = items.size() - 1;
+                } else {
+                    currentIndex = currentIndex - 1;
+                }
+                reOpen();
+                return;
             }
-            reOpen();
-            return;
-        } else if (e.getSlot() == 25){
-            if (currentIndex - 1 <= 0){
-                currentIndex = items.size() - 1;
-            } else {
-                currentIndex = currentIndex - 1;
-            }
-            reOpen();
-            return;
+        } else {
+            checkSomething(getOwner(), e.getSlot(), item, "&cEn la version 1.18", Arrays.asList("&csólo se pueden elegir mundos vacíos"), getMenuUUID());
         }
         if (NBTItem.hasTag(item, "world")){
             new WorldCreatorMenu(this.playerMenuUtility, serverVersion, targetUserUUID).open();

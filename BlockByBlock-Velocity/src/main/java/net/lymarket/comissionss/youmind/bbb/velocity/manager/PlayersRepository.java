@@ -1,9 +1,11 @@
 package net.lymarket.comissionss.youmind.bbb.velocity.manager;
 
 import com.mongodb.client.model.Filters;
+import net.luckperms.api.LuckPermsProvider;
 import net.lymarket.comissionss.youmind.bbb.common.data.home.Home;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot;
 import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
+import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.warp.Warp;
 import net.lymarket.comissionss.youmind.bbb.common.db.IPlayerRepository;
 import net.lymarket.comissionss.youmind.bbb.common.error.UserNotFoundException;
@@ -73,7 +75,10 @@ public class PlayersRepository extends IPlayerRepository < VelocityUser > {
         user.setOption("allow-pm", true);
         user.setOption("allow-friend-requests", true);
         user.setOption("changed-plots", false);
-        
+        final net.luckperms.api.model.user.User luckPermsUser = LuckPermsProvider.get().getUserManager().getUser(uuid);
+        if (luckPermsUser != null){
+            user.setRank(Rank.fromString(luckPermsUser.getPrimaryGroup()));
+        }
         database.insertOne(TABLE_NAME, user);
         list.put(uuid, user);
     }

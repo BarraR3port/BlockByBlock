@@ -65,7 +65,7 @@ public class PlotManager extends IPlotManager < Plot > {
             addWorldToTp(owner_uuid, Bukkit.getWorld(plot_type.getWorldName()));
         }
         if (plot != null){
-            super.addPlot(owner_uuid, plot);
+            super.addPlayerToTpToPlot(owner_uuid, plot);
         }
         json.remove("type");
         json.addProperty("type", "JOIN_PLOT_REQUEST_POST");
@@ -78,12 +78,13 @@ public class PlotManager extends IPlotManager < Plot > {
     public void manageVisitJoinPlot(UUID owner_uuid, User targetUser, String fromServer, String currentServer){
         final Plot plot = api.wrapPlayer(targetUser.getUUID()).getCurrentPlot();
         final JsonObject json = new JsonObject();
-        final User owner = (User) vs.getBbbApi().getPlayers().getPlayer(owner_uuid);
+        //final User owner = (User) vs.getBbbApi().getPlayers().getPlayer(owner_uuid);
         if (fromServer.equals(currentServer)){
             final Player p = Bukkit.getPlayer(owner_uuid);
             if (p != null){
                 Bukkit.getScheduler().runTask((Plugin) vs.getBbbApi(), ( ) -> {
-                    if (plot != null && (plot.getTrusted().contains(owner_uuid) || owner.getRank().isAdmin())){
+                    if (plot != null){
+                        //if (plot.getTrusted().contains(owner_uuid) || owner.getRank().isAdmin()){
                         vs.getBbbApi().debug("Teleporting " + p.getName() + " to " + plot.getWorldName());
                         plot.teleportPlayer(api.wrapPlayer(p.getUniqueId()), (result) -> {
                             if (result){
@@ -93,10 +94,21 @@ public class PlotManager extends IPlotManager < Plot > {
                                 }
                             }
                         });
-                        
+        
+                        //} else {
+                        //    vs.getBbbApi().debug("Error " + p.getName() + " is not trusted.");
+                        //    vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.visit.plot.not-trusted", "player", targetUser.getName());
+                        //}
                     } else {
-                        vs.getBbbApi().debug("Error " + p.getName() + " is not trusted.");
-                        vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.visit.plot.not-trusted", "player", targetUser.getName());
+                        vs.getBbbApi().debug("Teleporting " + p.getName() + " to " + targetUser.getLastLocation().getWorld());
+                        Player target = Bukkit.getPlayer(vs.getPlotManager().getPlayerToTp(targetUser.getUUID()));
+                        if (target != null){
+                            if (p.teleport(target)){
+                                vs.getPlotManager().removePlayerToTpToPlayer(targetUser.getUUID());
+                            }
+                        }
+                        // vs.getBbbApi().debug("Error " + p.getName() + " is not trusted.");
+                        // vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.visit.plot.not-exist", "player", targetUser.getName());
                     }
                 });
                 return;
@@ -105,15 +117,22 @@ public class PlotManager extends IPlotManager < Plot > {
             vs.getBbbApi().debug("Error " + owner_uuid + " is not online.");
             vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.player.not-online", "player", targetUser.getName());
         } else {
-            if (plot != null && (plot.getTrusted().contains(owner_uuid) || owner.getRank().isAdmin())){
-                addPlot(owner_uuid, plot);
-                json.addProperty("type", "JOIN_VISIT_PLOT_REQUEST_POST");
-                json.addProperty("server_target", currentServer);
-                json.addProperty("target_uuid", owner_uuid.toString());
-                vs.getBbbApi().getSocket().getSocket().sendMessage(json);
+            if (plot != null){
+                //if (plot.getTrusted().contains(owner_uuid) || owner.getRank().isAdmin()){
+                addPlayerToTpToPlot(owner_uuid, plot);
+                //vs.getBbbApi().getSocket().getSocket().sendMessage(json);
+                //} else {
+                //vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.visit.plot.not-trusted", "player", targetUser.getName());
+                //}
             } else {
-                vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.visit.plot.not-trusted", "player", targetUser.getName());
+                addPlayerToTpToPlayer(owner_uuid, targetUser.getUUID());
+                // vs.getBbbApi().getSocket().sendMSGToPlayer(owner_uuid, "error.visit.plot.not-exist", "player", targetUser.getName());
             }
+    
+            json.addProperty("type", "JOIN_VISIT_PLOT_REQUEST_POST");
+            json.addProperty("server_target", currentServer);
+            json.addProperty("target_uuid", owner_uuid.toString());
+            vs.getBbbApi().getSocket().getSocket().sendMessage(json);
         }
         
     }

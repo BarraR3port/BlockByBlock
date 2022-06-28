@@ -21,7 +21,7 @@ public enum PlotType {
                 return plotType;
             }
         }
-        return null;
+        return PlotType.P31;
     }
     
     public String getFormattedName( ){

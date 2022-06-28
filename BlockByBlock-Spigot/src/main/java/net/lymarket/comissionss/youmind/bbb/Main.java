@@ -26,13 +26,13 @@ import net.lymarket.comissionss.youmind.bbb.home.HomeManager;
 import net.lymarket.comissionss.youmind.bbb.home.SpigotHome;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.lang.ESLang;
+import net.lymarket.comissionss.youmind.bbb.listener.ProxyMSGManager;
 import net.lymarket.comissionss.youmind.bbb.listener.lobby.LobbyPlayerEvents;
 import net.lymarket.comissionss.youmind.bbb.listener.plot.PlotsPlayerEvent;
 import net.lymarket.comissionss.youmind.bbb.listener.plugin.PluginMessage;
 import net.lymarket.comissionss.youmind.bbb.listener.world.WorldPlayerEvents;
 import net.lymarket.comissionss.youmind.bbb.papi.Placeholders;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
-import net.lymarket.comissionss.youmind.bbb.socket.ProxyMSGManager;
 import net.lymarket.comissionss.youmind.bbb.socket.SpigotSocketClient;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
 import net.lymarket.comissionss.youmind.bbb.users.PlayersRepository;
@@ -229,7 +229,7 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
     @Override
     public void onDisable( ){
         nms.saveWorlds();
-        socket.disable(false);
+        socket.disable();
         getServer().getScheduler().cancelTasks(this);
     }
     
@@ -328,9 +328,9 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
     }
     
     public void reconnectToProxy( ){
-        socket.disable(false);
+        socket.disable();
         try {
-            socket = new SpigotSocketClient(players, worlds, homes, warps, nms).init();
+            socket.init();
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }

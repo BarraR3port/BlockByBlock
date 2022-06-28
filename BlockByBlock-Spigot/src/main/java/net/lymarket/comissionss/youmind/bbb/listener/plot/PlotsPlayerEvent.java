@@ -6,12 +6,10 @@ import net.lymarket.comissionss.youmind.bbb.common.data.plot.PlotType;
 import net.lymarket.comissionss.youmind.bbb.listener.MainEvents;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.support.common.events.PlotCreateFailed;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 
 public final class PlotsPlayerEvent extends MainEvents {
     
@@ -21,10 +19,24 @@ public final class PlotsPlayerEvent extends MainEvents {
     
     public void subPlayerJoinEvent(PlayerJoinEvent e){
         e.getPlayer().setGameMode(GameMode.CREATIVE);
+        try {
+            if (e.getPlayer().getWorld().getName().equals("world")){
+                e.getPlayer().teleport(Bukkit.getWorld("bbb-plots-31").getSpawnLocation());
+            }
+        } catch (NullPointerException ignored) {
+        
+        }
     }
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent e){
+        try {
+            if (e.getPlayer().getWorld().getName().equals("world")){
+                e.getPlayer().teleport(Bukkit.getWorld("bbb-plots-31").getSpawnLocation());
+            }
+        } catch (NullPointerException ignored) {
+        
+        }
     }
     
     @EventHandler
@@ -35,9 +47,32 @@ public final class PlotsPlayerEvent extends MainEvents {
     @Override
     public void subPlayerChatEvent(AsyncPlayerChatEvent e){
         final String worldName = e.getPlayer().getWorld().getName();
+        try {
+            if (worldName.equals("world")){
+                if (e.getPlayer().teleport(Bukkit.getWorld("ppp-bbb-31").getSpawnLocation())){
+                    final net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot plot = new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot(PlotType.getPlotTypeByWorld("ppp-bbb-31"), "", Settings.VERSION);
+                    final PlotMsg msg = new PlotMsg(e.getPlayer().getUniqueId(), e.getMessage(), Settings.VERSION, plot);
+                    Main.getInstance().getSocket().sendMsgFromPlayer(msg);
+                }
+                return;
+            }
+        } catch (NullPointerException ignored) {
+        
+        }
         final net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot plot = new net.lymarket.comissionss.youmind.bbb.common.data.plot.Plot(PlotType.getPlotTypeByWorld(worldName), "", Settings.VERSION);
         final PlotMsg msg = new PlotMsg(e.getPlayer().getUniqueId(), e.getMessage(), Settings.VERSION, plot);
         Main.getInstance().getSocket().sendMsgFromPlayer(msg);
+    }
+    
+    @EventHandler
+    public void onPlayerMoveEvent(PlayerMoveEvent e){
+        try {
+            if (e.getPlayer().getWorld().getName().equals("world")){
+                e.getPlayer().teleport(Bukkit.getWorld("bbb-plots-31").getSpawnLocation());
+            }
+        } catch (NullPointerException ignored) {
+        
+        }
     }
     
 }

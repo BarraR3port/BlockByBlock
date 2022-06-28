@@ -26,7 +26,6 @@ public class ServerSocketTask {
         serverSocket = new ServerSocket(port);
         instance = this;
         compute = true;
-        
         otherTasks.add(VMain.getInstance().getProxy().getScheduler().buildTask(VMain.getInstance(), ( ) -> {
             while (compute) {
                 try {

@@ -180,9 +180,11 @@ public class WarpCmd implements ILyCommand {
             list.add("gotoworld");
         }
         if (context.getArgs().length == 2){
-            if (context.getArg(0).equals("create") || context.getArg(0).equals("delete") || context.getArg(0).equals("goto")){
-                for ( WarpType warpType : WarpType.values() ){
-                    list.add(warpType.getName());
+            if (context.getSender().hasPermission("blockbyblock.warp.create")){
+                if (context.getArg(0).equals("create") || context.getArg(0).equals("delete") || context.getArg(0).equals("goto")){
+                    for ( WarpType warpType : WarpType.values() ){
+                        list.add(warpType.getName());
+                    }
                 }
             }
         }

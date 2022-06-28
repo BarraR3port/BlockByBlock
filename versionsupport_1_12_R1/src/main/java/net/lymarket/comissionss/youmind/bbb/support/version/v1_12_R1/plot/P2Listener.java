@@ -10,6 +10,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.User;
 import net.lymarket.comissionss.youmind.bbb.support.common.version.VersionSupport;
 import net.lymarket.lyapi.spigot.LyApi;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -40,18 +41,32 @@ public class P2Listener implements Listener {
     @EventHandler
     public void onPlayerJoinEvent(PlayerJoinEvent e){
         final UUID uuid = e.getPlayer().getUniqueId();
-        final boolean tpToPlot = vs.getPlotManager().hasPlot(uuid);
+        final boolean tpToPlot = vs.getPlotManager().hasPlot(uuid) || vs.getPlotManager().hasPlayerToTp(uuid);
         final boolean tpToWorld = vs.getPlotManager().hasWorldToTp(uuid);
         if (tpToPlot){
             final Plot plot = (Plot) vs.getPlotManager().getPlot(uuid);
-            if (plot.teleportPlayer(new PlotAPI().wrapPlayer(uuid))){
-                vs.getPlotManager().removePlot(uuid);
+            if (plot != null){
+                if (plot.teleportPlayer(new PlotAPI().wrapPlayer(uuid))){
+                    vs.getPlotManager().removePlot(uuid);
+                }
+            } else {
+                Player target = Bukkit.getPlayer(vs.getPlotManager().getPlayerToTp(uuid));
+                if (target != null){
+                    if (e.getPlayer().teleport(target)){
+                        vs.getPlotManager().removePlayerToTpToPlayer(uuid);
+                    }
+                }
             }
         } else if (tpToWorld){
             final World world = vs.getPlotManager().getWorldToTp(uuid);
             vs.getBbbApi().getSocket().sendMSGToPlayer(uuid, "plot.join", "plot", world.getName().split("-")[0]);
             e.getPlayer().teleport(world.getSpawnLocation());
-            
+        }
+        try {
+            if (e.getPlayer().getWorld().getName().equals("world")){
+                e.getPlayer().teleport(Bukkit.getWorld("bbb-plots-31").getSpawnLocation());
+            }
+        } catch (NullPointerException ignored) {
         }
     }
     

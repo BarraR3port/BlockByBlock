@@ -51,6 +51,7 @@ error:
     expired: "&cVisita expirada."
     plot:
       not-trusted: "&cNo tienes permiso para acceder la plot de &e%player%&c."
+      not-exist: "&cEl jugador &e%player%&c no está en una plot."
   warp:
     no-warps: "&cNo hay warps."
     no-permission-to-delete: "&cNo tienes permiso para eliminar este warp."

@@ -29,7 +29,7 @@ public class VersionChooser extends Menu {
     
     @Override
     public String getMenuName( ){
-        if (versionChooseType == VersionChooseType.WARP_CHOSE){
+        if (versionChooseType.equals(VersionChooseType.WARP_CHOSE)){
             return "Selecciona una versión de warps";
         }
         return "Elige una versión para el mundo";
@@ -65,7 +65,7 @@ public class VersionChooser extends Menu {
                 serverName = "PW-118-1";
             }
             Main.getInstance().debug("Selected version: " + version);
-            if (versionChooseType == VersionChooseType.WARP_CHOSE){
+            if (versionChooseType.equals(VersionChooseType.WARP_CHOSE)){
                 new WarpMenu(playerMenuUtility, serverName).open();
                 return;
             }

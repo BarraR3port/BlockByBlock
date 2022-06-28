@@ -1,5 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.commands;
 
+import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.common.commands.*;
 import net.lymarket.common.commands.response.CommandResponse;
 import org.bukkit.entity.Player;
@@ -13,7 +14,7 @@ public class Undo implements ILyCommand {
     public CommandResponse command(SCommandContext context){
         if (context.getSender() instanceof Player){
             final Player p = (Player) context.getSender();
-            p.performCommand("//undo");
+            p.performCommand(Settings.VERSION.equals("1.12") ? "/" : "" + "/undo");
         }
         
         return new CommandResponse();

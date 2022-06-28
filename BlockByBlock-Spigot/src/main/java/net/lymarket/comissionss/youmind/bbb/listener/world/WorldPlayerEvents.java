@@ -74,8 +74,8 @@ public final class WorldPlayerEvents extends MainEvents {
             Main.getInstance().manageVisitorPermissions(uuid, visitWorld.getUUID(), false).thenAccept(a -> {
                 Main.getInstance().getWorlds().removeGuestFromVisitWorldList(uuid);
                 Bukkit.getScheduler().runTask(Main.getInstance(), ( ) -> {
-                    if (target.teleport(finalLoc, PlayerTeleportEvent.TeleportCause.PLUGIN)){
-                        Main.getLang().sendMsg(target, "world.visit-join-to-visitor", "player", target != null ? target.getName().split("-")[0] : "&atu amigo");
+                    if (p.teleport(finalLoc, PlayerTeleportEvent.TeleportCause.PLUGIN)){
+                        Main.getLang().sendMsg(p, "world.visit-join-to-visitor", "player", target != null ? target.getName().split("-")[0] : "&atu amigo");
                     }
                 });
             });
@@ -128,7 +128,7 @@ public final class WorldPlayerEvents extends MainEvents {
         try {
             worldUUID = UUID.fromString(e.getPlayer().getWorld().getName());
         } catch (IllegalArgumentException ex) {
-            if (Settings.DEBUG) return;
+    
             Main.getInstance().debug("[BlockBreakEvent] Player " + playerUUID + " is in the Default World.");
             Main.getInstance().getSocket().sendJoinServer(playerUUID, "lobby");
             Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
@@ -145,8 +145,8 @@ public final class WorldPlayerEvents extends MainEvents {
         }
         
         if (!world.getMembers().contains(playerUUID) && !world.getOwner().equals(playerUUID) && !player.hasPermission("blockbyblock.admin.block.place.other")){
-            
-            if (Settings.DEBUG) return;
+    
+    
             e.setCancelled(true);
             CachedPermissionData cachedPermissionData = Objects.requireNonNull(Main.getLuckPerms().getUserManager().getUser(playerUUID)).getCachedData().getPermissionData(QueryOptions.contextual(MutableContextSet.of("world", world.getUUID().toString())));
             if (!cachedPermissionData.checkPermission("blockbyblock.visit").asBoolean()){
@@ -172,7 +172,7 @@ public final class WorldPlayerEvents extends MainEvents {
         try {
             worldUUID = UUID.fromString(e.getPlayer().getWorld().getName());
         } catch (IllegalArgumentException ex) {
-            if (Settings.DEBUG) return;
+    
             Main.getInstance().debug("[BlockPlaceEvent] Player " + playerUUID + " is in the Default World.");
             Main.getInstance().getSocket().sendJoinServer(playerUUID, "lobby");
             Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
@@ -182,7 +182,7 @@ public final class WorldPlayerEvents extends MainEvents {
         final BWorld world = Main.getInstance().getWorlds().getWorld(worldUUID);
         final Player player = e.getPlayer();
         if (world == null){
-            if (Settings.DEBUG) return;
+    
             Main.getInstance().debug("[BlockPlaceEvent] Player " + playerUUID + " is in the Default World.");
             Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME, playerUUID);
             Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
@@ -191,7 +191,7 @@ public final class WorldPlayerEvents extends MainEvents {
         }
         
         if (!world.getMembers().contains(playerUUID) && !world.getOwner().equals(playerUUID) && !player.hasPermission("blockbyblock.admin.block.place.other")){
-            if (Settings.DEBUG) return;
+    
             e.setCancelled(true);
             CachedPermissionData cachedPermissionData = Objects.requireNonNull(Main.getLuckPerms().getUserManager().getUser(playerUUID)).getCachedData().getPermissionData(QueryOptions.contextual(MutableContextSet.of("world", world.getUUID().toString())));
             if (!cachedPermissionData.checkPermission("blockbyblock.visit").asBoolean()){
@@ -223,7 +223,7 @@ public final class WorldPlayerEvents extends MainEvents {
         } catch (IllegalArgumentException ex) {
             if (e.getFrom().getWorld().equals(e.getTo().getWorld())){
                 Main.getInstance().debug("[PlayerTeleportEvent] Player " + playerUUID + " is in the Default World.");
-                if (Settings.DEBUG) return;
+    
                 Main.getInstance().getSocket().sendJoinServer(playerUUID, "lobby");
                 Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
                 e.setCancelled(true);
@@ -240,7 +240,7 @@ public final class WorldPlayerEvents extends MainEvents {
             if (prevWorld == null || postWorld == null){
                 e.setCancelled(true);
                 Main.getInstance().debug("[PlayerTeleportEvent] Player " + playerUUID + " is in the Default World.");
-                if (Settings.DEBUG) return;
+    
                 Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME, playerUUID);
                 Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
                 return;
@@ -271,7 +271,7 @@ public final class WorldPlayerEvents extends MainEvents {
                 Main.getInstance().managePermissions(playerUUID, worldUUID, false);
             } else {
                 if (!cachedPermissionData.checkPermission("blockbyblock.visit").asBoolean()){
-                    if (Settings.DEBUG) return;
+    
                     e.setCancelled(true);
                     postWorld.removeOnlineMember(playerUUID);
                     Main.getInstance().getWorlds().saveWorld(postWorld);
@@ -299,8 +299,8 @@ public final class WorldPlayerEvents extends MainEvents {
         try {
             worldUUID = UUID.fromString(e.getPlayer().getWorld().getName());
         } catch (IllegalArgumentException ex) {
-            
-            if (Settings.DEBUG) return;
+    
+    
             Main.getInstance().debug("[PlayerChangedWorldEvent] Player " + playerUUID + " is in the Default World.");
             Main.getInstance().getSocket().sendJoinServer(playerUUID, "lobby");
             Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
@@ -310,7 +310,7 @@ public final class WorldPlayerEvents extends MainEvents {
         final BWorld postWorld = Main.getInstance().getWorlds().getWorld(UUID.fromString(e.getPlayer().getWorld().getName()));
         
         if (postWorld == null){
-            if (Settings.DEBUG) return;
+    
             Main.getInstance().debug("[PlayerChangedWorldEvent] Player " + playerUUID + " is in the Default World.");
             Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME, playerUUID);
             Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
@@ -322,7 +322,7 @@ public final class WorldPlayerEvents extends MainEvents {
         } else {
             CachedPermissionData cachedPermissionData = Objects.requireNonNull(Main.getLuckPerms().getUserManager().getUser(playerUUID)).getCachedData().getPermissionData(QueryOptions.contextual(MutableContextSet.of("world", postWorld.getUUID().toString())));
             if (!cachedPermissionData.checkPermission("blockbyblock.visit").asBoolean()){
-                if (Settings.DEBUG) return;
+    
                 postWorld.removeOnlineMember(playerUUID);
                 Main.getInstance().getWorlds().saveWorld(postWorld);
                 Main.getInstance().debug("[PlayerChangedWorldEvent] Player " + playerUUID + " is in world " + postWorld.getName() + " and is not owner and not allowed to be in this world");
@@ -344,7 +344,7 @@ public final class WorldPlayerEvents extends MainEvents {
         try {
             worldUUID = UUID.fromString(e.getPlayer().getWorld().getName());
         } catch (IllegalArgumentException ex) {
-            if (Settings.DEBUG) return;
+    
             Main.getInstance().debug("[PlayerCommandPreprocessEvent] Player " + playerUUID + " is in the Default World.");
             Main.getInstance().getSocket().sendJoinServer(playerUUID, "lobby");
             Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
@@ -355,7 +355,7 @@ public final class WorldPlayerEvents extends MainEvents {
         
         if (world == null){
             // kick the player with the bukkit api
-            if (Settings.DEBUG) return;
+    
             Main.getInstance().debug("[PlayerCommandPreprocessEvent] Player " + playerUUID + " is in the Default World.");
             Main.getInstance().getSocket().sendJoinServer(playerUUID, "lobby", "&cMundo no encontrado");
             e.setCancelled(true);
@@ -370,7 +370,7 @@ public final class WorldPlayerEvents extends MainEvents {
         if (!world.getMembers().contains(playerUUID) && !world.getOwner().equals(playerUUID)){
             CachedPermissionData cachedPermissionData = Objects.requireNonNull(Main.getLuckPerms().getUserManager().getUser(playerUUID)).getCachedData().getPermissionData(QueryOptions.contextual(MutableContextSet.of("world", world.getUUID().toString())));
             if (!cachedPermissionData.checkPermission("blockbyblock.visit").asBoolean()){
-                if (Settings.DEBUG) return;
+    
                 e.setCancelled(true);
                 world.removeOnlineMember(playerUUID);
                 Main.getInstance().getWorlds().saveWorld(world);
@@ -403,7 +403,7 @@ public final class WorldPlayerEvents extends MainEvents {
         final BWorld world = Main.getInstance().getWorlds().getWorld(worldUUID);
         
         if (world == null){
-            if (Settings.DEBUG) return;
+    
             // kick the player with the bukkit api
             Main.getInstance().getSocket().sendJoinServer(playerUUID, "lobby", "&cMundo no encontrado");
             e.setCancelled(true);

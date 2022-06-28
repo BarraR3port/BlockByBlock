@@ -1,7 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.menu.main.world.playersInWorld.add;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.lyapi.spigot.menu.IPlayerMenuUtility;
 import net.lymarket.lyapi.spigot.menu.Menu;
@@ -59,7 +58,7 @@ public class AddPlayersToWorldMenuSelector extends MenuSelector {
     
     public boolean handleAccept( ){
         final BWorld world = Main.getInstance().getWorlds().getWorld(this.world_uuid);
-        if (world.getOwner().equals(getOwner().getUniqueId()) || getOwner().hasPermission("blockbyblock.admin.world.members.add") || Main.getInstance().getPlayers().getPlayer(target_uuid).getRank() == Rank.ADMIN){
+        if (world.getOwner().equals(getOwner().getUniqueId()) || getOwner().hasPermission("blockbyblock.admin.world.members.add") || Main.getInstance().getPlayers().getPlayer(target_uuid).getRank().isAdmin()){
             world.addMember(target_uuid);
             Main.getInstance().managePermissions(target_uuid, world.getUUID(), false);
             return Main.getInstance().getWorlds().saveWorld(world);

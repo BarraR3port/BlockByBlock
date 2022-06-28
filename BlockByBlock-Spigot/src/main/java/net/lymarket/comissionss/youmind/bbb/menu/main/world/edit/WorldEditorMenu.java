@@ -2,7 +2,6 @@ package net.lymarket.comissionss.youmind.bbb.menu.main.world.edit;
 
 import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.rank.Rank;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.WorldManagerMenu;
@@ -131,7 +130,7 @@ public class WorldEditorMenu extends UpdatableMenu {
             p.spigot().sendMessage(Utils.formatTC("&7Edita el nombre de tu mundo dándole "), Utils.hoverOverMessageSuggestCommand("&aCLICK AQUÍ.", Collections.singletonList("&e/worlds set name " + world.getUUID() + " < El nombre >"), "/worlds set name " + world.getUUID() + " "));
             p.sendMessage(Utils.format("&8&m----------------------------------------------&e"));
         } else if (NBTItem.hasTag(item, "delete-world")){
-            if (world.getOwner().equals(ownerUUID) || Main.getInstance().getPlayers().getPlayer(ownerUUID).getRank() == Rank.ADMIN){
+            if (world.getOwner().equals(ownerUUID) || Main.getInstance().getPlayers().getPlayer(ownerUUID).getRank().isAdmin()){
                 new DeleteWorldSelector(playerMenuUtility, world.getUUID(), this, p.getUniqueId()).open();
             } else {
                 checkSomething(getOwner(), e.getSlot(), item, "&cNo puedes borrar este mundo", "", getMenuUUID());
@@ -139,7 +138,7 @@ public class WorldEditorMenu extends UpdatableMenu {
             
         } else if (NBTItem.hasTag(item, "add-members-to-world")){
             //TODO CREATE THE MENU
-            if (world.getOwner().equals(ownerUUID) || Main.getInstance().getPlayers().getPlayer(ownerUUID).getRank() == Rank.ADMIN){
+            if (world.getOwner().equals(ownerUUID) || Main.getInstance().getPlayers().getPlayer(ownerUUID).getRank().isAdmin()){
                 p.spigot().sendMessage(Utils.formatTC("&7Agrega miembros al mundo dándole "), Utils.hoverOverMessageSuggestCommand("&aCLICK AQUÍ.", Collections.singletonList("&e/worlds trust " + world.getUUID() + " < El nombre >"), "/worlds trust " + world.getUUID() + " "));
                 p.closeInventory();
             } else {

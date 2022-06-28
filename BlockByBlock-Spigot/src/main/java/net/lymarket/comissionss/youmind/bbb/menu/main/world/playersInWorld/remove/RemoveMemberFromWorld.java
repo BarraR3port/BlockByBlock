@@ -60,7 +60,6 @@ public class RemoveMemberFromWorld extends MenuSelector {
         BWorld world = Main.getInstance().getWorlds().getWorld(this.world_uuid);
         world.removeMember(this.target_uuid);
         Main.getInstance().getWorlds().saveWorld(world);
-        Main.getInstance().managePermissions(target_uuid, world.getUUID(), true);
         return true;
     }
     

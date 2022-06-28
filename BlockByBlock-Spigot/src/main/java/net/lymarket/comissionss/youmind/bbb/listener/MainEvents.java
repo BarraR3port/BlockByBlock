@@ -91,7 +91,7 @@ public abstract class MainEvents implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDamage(EntityDamageEvent e){
-        if (e.getEntityType() == EntityType.PLAYER){
+        if (e.getEntityType().equals(EntityType.PLAYER)){
             e.setCancelled(true);
         }
     }

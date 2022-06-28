@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.lymarket.comissionss.youmind</groupId>
         <artifactId>BlockByBlock</artifactId>
-        <version>0.4.3-BETA</version>
+        <version>1.1</version>
     </parent>
     <packaging>jar</packaging>
 
@@ -59,6 +59,179 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <id>obfuscate</id>
+                        <configuration>
+                            <tasks>
+                                <property name="runtime_classpath" refid="maven.runtime.classpath"/>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <taskdef name="yguard" classname="com.yworks.yguard.YGuardTask"
+                                         classpath="${runtime_classpath}"/>
+                                <yguard>
+                                    <inoutpair in="${project.build.directory}/${project.build.finalName}.jar"
+                                               out="${project.build.directory}/${project.build.finalName}-OBF.jar"/>
+                                    <rename mainclass="net.lymarket.comissionss.youmind.bbb.velocity.VMain"
+                                            logfile="${project.build.directory}/yguard.log.xml"
+                                            scramble="true">
+                                        <keep>
+                                            <class classes="protected" methods="protected" fields="protected">
+                                                <patternset>
+                                                    <include name="net.minecraft.server.MinecraftServer"/>
+                                                    <include name="net.minecraft.realms.**"/>
+                                                    <include name="net.minecraft.client.ClientBrandRetriever"/>
+                                                    <include name="net.minecraft.client.main.Main"/>
+                                                    <include name="org.apache.logging.log4j.**"/>
+                                                    <include name="net.lymarket.lyapi.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.data.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.skin.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.VMain"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.config.Config"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.user.VelocityUser"/>
+                                                    <include name="net.lymarket.common.**"/>
+                                                    <include name="com.yworks.**"/>
+                                                    <include name="org.spongepowered.**"/>
+                                                    <include name="com.google.**"/>
+                                                    <include name="com.mongodb.**"/>
+                                                    <include name="org.bukkit.**"/>
+                                                    <include name="okio.**"/>
+                                                    <include name="okhttp3.**"/>
+                                                    <include name="org.apache.**"/>
+                                                    <include name="org.bson.**"/>
+                                                    <include name="org.objectweb.asm.**"/>
+                                                    <include name="org.slf4j.**"/>
+                                                    <include name="kotlin.**"/>
+                                                    <include name="lombok.**"/>
+                                                    <include name="xyz.xenondevs.particle.**"/>
+                                                    <include name="com.cryptomorin.xseries.**"/>
+                                                </patternset>
+                                            </class>
+                                            <class classes="private" methods="private" fields="private">
+                                                <patternset>
+                                                    <include name="net.lymarket.lyapi.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.data.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.skin.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.VMain"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.config.Config"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.user.VelocityUser"/>
+                                                    <include name="net.lymarket.common.**"/>
+                                                    <include name="xyz.xenondevs.particle.**"/>
+                                                    <include name="com.cryptomorin.xseries.**"/>
+                                                    <include name="org.spongepowered.**"/>
+                                                    <include name="com.google.**"/>
+                                                    <include name="com.mongodb.**"/>
+                                                    <include name="org.bukkit.**"/>
+                                                    <include name="okio.**"/>
+                                                    <include name="okhttp3.**"/>
+                                                    <include name="org.apache.**"/>
+                                                    <include name="org.bson.**"/>
+                                                    <include name="org.objectweb.asm.**"/>
+                                                    <include name="org.slf4j.**"/>
+                                                    <include name="kotlin.**"/>
+                                                    <include name="lombok.**"/>
+                                                </patternset>
+                                            </class>
+
+                                            <class classes="public" methods="public" fields="public">
+                                                <patternset>
+                                                    <include name="net.lymarket.lyapi.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.data.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.skin.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.VMain"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.config.Config"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.user.VelocityUser"/>
+                                                    <include name="net.lymarket.common.**"/>
+                                                    <include name="xyz.xenondevs.particle.*"/>
+                                                    <include name="com.cryptomorin.xseries.*"/>
+                                                    <include name="org.spongepowered.**"/>
+                                                    <include name="com.google.**"/>
+                                                    <include name="com.mongodb.**"/>
+                                                    <include name="org.bukkit.**"/>
+                                                    <include name="okio.**"/>
+                                                    <include name="okhttp3.**"/>
+                                                    <include name="org.apache.**"/>
+                                                    <include name="org.bson.**"/>
+                                                    <include name="org.objectweb.asm.**"/>
+                                                    <include name="org.slf4j.**"/>
+                                                    <include name="kotlin.**"/>
+                                                    <include name="lombok.**"/>
+                                                </patternset>
+                                            </class>
+
+                                            <!--<method class="net.lymarket.comissionss.youmind.bbb.common.data.**" name="**.**"/>-->
+
+                                            <package>
+                                                <patternset>
+                                                    <include name="org.apache.logging.log4j."/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.VMain"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.config.Config"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.velocity.user.VelocityUser"/>
+                                                    <include name="org.bukkit.*"/>
+                                                    <include name="net.lymarket.lyapi.**"/>
+                                                    <include name="net.lymarket.comissionss.youmind.bbb.common.db.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.data.**"/>
+                                                    <include
+                                                            name="net.lymarket.comissionss.youmind.bbb.common.skin.**"/>
+                                                    <include name="net.lymarket.common.**"/>
+                                                    <include name="xyz.xenondevs.particle.**"/>
+                                                    <include name="com.cryptomorin.xseries.**"/>
+                                                    <include name="org.spongepowered.**"/>
+                                                    <include name="com.google.gson.JsonParser.parseReader"/>
+                                                    <include name="com.google.**"/>
+                                                    <include name="com.mongodb.**"/>
+                                                    <include name="org.bukkit.**"/>
+                                                    <include name="okio.**"/>
+                                                    <include name="okhttp3.**"/>
+                                                    <include name="org.apache.**"/>
+                                                    <include name="org.bson.**"/>
+                                                    <include name="org.objectweb.asm.**"/>
+                                                    <include name="org.slf4j.**"/>
+                                                    <include name="kotlin.**"/>
+                                                    <include name="lombok.**"/>
+                                                </patternset>
+                                            </package>
+                                        </keep>
+                                        <property name="naming-scheme" value="small"/>
+                                        <property name="obfuscation-prefix"
+                                                  value="net.lymarket.comissionss.youmind.bbb.obfuscated"/>
+                                        <property name="language-conformity" value="legal"/>
+
+                                    </rename>
+                                </yguard>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -95,7 +268,7 @@
         <dependency>
             <groupId>net.lymarket.comissionss.youmind</groupId>
             <artifactId>common</artifactId>
-            <version>0.4.3-BETA</version>
+            <version>1.1</version>
             <scope>compile</scope>
         </dependency>
 
@@ -104,6 +277,20 @@
             <artifactId>lyapi-velocity</artifactId>
             <version>1.2.5</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yworks</groupId>
+            <artifactId>yguard</artifactId>
+            <version>3.1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.4</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
