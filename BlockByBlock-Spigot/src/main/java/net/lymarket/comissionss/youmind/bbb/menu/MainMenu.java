@@ -2,7 +2,6 @@ package net.lymarket.comissionss.youmind.bbb.menu;
 
 import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
-import net.lymarket.comissionss.youmind.bbb.common.data.server.ProxyStats;
 import net.lymarket.comissionss.youmind.bbb.common.data.user.Stats;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.main.plot.PlotMenu;
@@ -54,7 +53,7 @@ public class MainMenu extends Menu {
             */
             switch(version){
                 case "1.12":{
-                    if (Main.getInstance().getProxyStats().isPlot_1_12_online()){
+                    if (Main.getInstance().proxyStats.plot_1_12_online){
                         //if (playerVersion >= 340){
                         new PlotMenu(playerMenuUtility, version, targetUserUUID).open();
                         return;
@@ -66,7 +65,7 @@ public class MainMenu extends Menu {
                     }
                 }
                 case "1.16":{
-                    if (Main.getInstance().getProxyStats().isPlot_1_16_online()){
+                    if (Main.getInstance().proxyStats.plot_1_16_online){
                         //if (playerVersion >= 754){
                         new PlotMenu(playerMenuUtility, version, targetUserUUID).open();
                         return;
@@ -78,7 +77,7 @@ public class MainMenu extends Menu {
                     }
                 }
                 case "1.18":{
-                    if (Main.getInstance().getProxyStats().isPlot_1_18_online()){
+                    if (Main.getInstance().proxyStats.plot_1_12_online){
                         //if (playerVersion >= 758){
                         new PlotMenu(playerMenuUtility, version, targetUserUUID).open();
                         return;
@@ -118,36 +117,33 @@ public class MainMenu extends Menu {
             Main.getInstance().getPlayers().savePlayer(user);
         }
         final Stats userStats = user.getStats();
-        final ProxyStats proxyStats = Main.getInstance().getProxyStats();
         inventory.setItem(20, new ItemBuilder(Items.BUILDER_1_12.clone())
                 .addLoreLine("")
-                .addLoreLine("&7Estado: " + (Main.getInstance().getProxyStats().isPlot_1_12_online() ? "&aACTIVO" : "&cCERRADO"))
+                .addLoreLine("&7Estado: " + (Main.getInstance().proxyStats.plot_1_12_online ? "&aACTIVO" : "&cCERRADO"))
                 .addLoreLine("")
-                .addLoreLine("&7Jugadores en linea: &a" + proxyStats.getPlot_1_12_player_size())
+                .addLoreLine("&7Jugadores en linea: &a" + Main.getInstance().proxyStats.plot_1_12_player_size)
                 .build());
     
         inventory.setItem(22, new ItemBuilder(Items.BUILDER_1_16.clone())
                 .addLoreLine("")
-                .addLoreLine("&7Estado: " + (Main.getInstance().getProxyStats().isPlot_1_16_online() ? "&aACTIVO" : "&cCERRADO"))
+                .addLoreLine("&7Estado: " + (Main.getInstance().proxyStats.plot_1_16_online ? "&aACTIVO" : "&cCERRADO"))
                 .addLoreLine("")
-                .addLoreLine("&7Jugadores en linea: &a" + proxyStats.getPlot_1_16_player_size())
+                .addLoreLine("&7Jugadores en linea: &a" + Main.getInstance().proxyStats.plot_1_16_player_size)
                 .build());
     
         inventory.setItem(24, new ItemBuilder(Items.BUILDER_1_18.clone())
                 .addLoreLine("")
-                .addLoreLine("&7Estado: " + (Main.getInstance().getProxyStats().isPlot_1_18_online() ? "&aACTIVO" : "&cCERRADO"))
+                .addLoreLine("&7Estado: " + (Main.getInstance().proxyStats.plot_1_18_online ? "&aACTIVO" : "&cCERRADO"))
                 .addLoreLine("")
-                .addLoreLine("&7Jugadores en linea: &a" + proxyStats.getPlot_1_18_player_size())
+                .addLoreLine("&7Jugadores en linea: &a" + Main.getInstance().proxyStats.plot_1_18_player_size)
                 .build());
     
         inventory.setItem(40, new ItemBuilder(Items.WORLDS.clone())
                 .addLoreLine("&7Mundos: &a" + Main.getInstance().getWorlds().getWorldsByUser(targetUserUUID).size())
                 .addLoreLine("")
-                .addLoreLine("&7Estado: " + (Main.getInstance().getProxyStats().isWorld_1_12_online() ||
-                        Main.getInstance().getProxyStats().isWorld_1_16_online() ||
-                        Main.getInstance().getProxyStats().isWorld_1_18_online() ? "&aACTIVO" : "&cCERRADO"))
+                .addLoreLine("&7Estado: " + (Main.getInstance().proxyStats.world_1_12_online || Main.getInstance().proxyStats.world_1_16_online || Main.getInstance().proxyStats.world_1_18_online ? "&aACTIVO" : "&cCERRADO"))
                 .addLoreLine("")
-                .addLoreLine("&7Jugadores en linea: &a" + (proxyStats.getWorld_1_12_player_size() + proxyStats.getWorld_1_16_player_size() + proxyStats.getWorld_1_18_player_size()))
+                .addLoreLine("&7Jugadores en linea: &a" + (Main.getInstance().proxyStats.world_1_12_player_size + Main.getInstance().proxyStats.world_1_16_player_size + Main.getInstance().proxyStats.world_1_18_player_size))
                 .build());
     
         inventory.setItem(53, new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial())

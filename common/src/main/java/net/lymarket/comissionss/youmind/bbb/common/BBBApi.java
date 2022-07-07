@@ -1,5 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.common;
 
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerName;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.db.IBWorldManager;
 import net.lymarket.comissionss.youmind.bbb.common.db.IHomeManager;
@@ -30,7 +31,7 @@ public interface BBBApi< S, U, H, W > {
     
     String getNMSVersion( );
     
-    String getProxyServerName( );
+    ServerName getProxyServerName( );
     
     void debug(String message);
     

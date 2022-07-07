@@ -10,6 +10,7 @@ lobby-book-details:
       paragraphs:
         - "Puedes utilizar la brújula para abrir el menú de servidores o usar el comando /ym"
         - "Puedes unirte a nuestra comunidad y recibir clases en directo uniéndote a nuestro discord: &bhttps://discord.gg/3YudVaFCqW"
+
 error:
   cant-execute-commands-from-console: "&cNo puedes ejecutar comandos desde la consola"
   wrong-command: "&cComando incorrecto. Intenta usando: &e%command%&c."

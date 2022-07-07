@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.settings;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerName;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.lyapi.spigot.config.Config;
 import org.bukkit.Location;
@@ -21,10 +22,10 @@ public class Settings {
     public static boolean PLAYER_PICKUP_ITEMS = false;
     public static boolean CONSUME_ITEMS = false;
     public static Location SPAWN_LOCATION;
-    public static String SERVER_NAME;
+    public static ServerName SERVER_NAME;
     public static boolean DEBUG;
-    public static ArrayList < String > PERMS_WHEN_CREATING_WORLD = new ArrayList <>();
-    public static ArrayList < String > PERMS_WHEN_JOINING_WORLD = new ArrayList <>();
+    public static ArrayList<String> PERMS_WHEN_CREATING_WORLD = new ArrayList<>();
+    public static ArrayList<String> PERMS_WHEN_JOINING_WORLD = new ArrayList<>();
     public static ServerType SERVER_TYPE;
     public static String VERSION;
     
@@ -46,10 +47,10 @@ public class Settings {
             SPAWN_LOCATION = (Location) config.get("spawn.location", Location.class);
         } catch (NullPointerException | ClassCastException ignored) {
         }
-        SERVER_NAME = config.getString("global.proxy-server-name");
+        SERVER_NAME = ServerName.fromString(config.getString("global.proxy-server-name"));
         DEBUG = config.getBoolean("global.debug");
-        PERMS_WHEN_CREATING_WORLD = new ArrayList <>(config.getStringList("perms.when-creating-world"));
-        PERMS_WHEN_JOINING_WORLD = new ArrayList <>(config.getStringList("perms.when-joining-world"));
+        PERMS_WHEN_CREATING_WORLD = new ArrayList<>(config.getStringList("perms.when-creating-world"));
+        PERMS_WHEN_JOINING_WORLD = new ArrayList<>(config.getStringList("perms.when-joining-world"));
         SERVER_TYPE = ServerType.valueOf(config.getString("global.server-type"));
         switch(Main.getInstance().getNMSVersion()){
             case "v1_12_R1":{

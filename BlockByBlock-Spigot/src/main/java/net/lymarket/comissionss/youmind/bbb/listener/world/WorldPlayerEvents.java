@@ -140,7 +140,7 @@ public final class WorldPlayerEvents extends MainEvents {
         final BWorld world = Main.getInstance().getWorlds().getWorld(worldUUID);
         final Player player = e.getPlayer();
         if (world == null){
-            Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME, playerUUID);
+            Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME.getName(), playerUUID);
             Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
             e.setCancelled(true);
             return;
@@ -186,7 +186,7 @@ public final class WorldPlayerEvents extends MainEvents {
         if (world == null){
     
             Main.getInstance().debug("[BlockPlaceEvent] Player " + playerUUID + " is in the Default World.");
-            Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME, playerUUID);
+            Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME.getName(), playerUUID);
             Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
             e.setCancelled(true);
             return;
@@ -243,7 +243,7 @@ public final class WorldPlayerEvents extends MainEvents {
                 e.setCancelled(true);
                 Main.getInstance().debug("[PlayerTeleportEvent] Player " + playerUUID + " is in the Default World.");
     
-                Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME, playerUUID);
+                Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME.getName(), playerUUID);
                 Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
                 return;
             }
@@ -285,7 +285,7 @@ public final class WorldPlayerEvents extends MainEvents {
         }
         
         final Location loc = e.getTo();
-        user.setLastLocation(new Loc(Settings.SERVER_NAME, worldUUID.toString(), loc.getX(), loc.getY(), loc.getZ(), worldUUID));
+        user.setLastLocation(new Loc(Settings.SERVER_NAME.getName(), worldUUID.toString(), loc.getX(), loc.getY(), loc.getZ(), worldUUID));
         Main.getInstance().getPlayers().savePlayer(user);
         
     }
@@ -314,7 +314,7 @@ public final class WorldPlayerEvents extends MainEvents {
         if (postWorld == null){
     
             Main.getInstance().debug("[PlayerChangedWorldEvent] Player " + playerUUID + " is in the Default World.");
-            Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME, playerUUID);
+            Main.getInstance().getSocket().sendKickFromWorld(playerUUID, e.getPlayer().getWorld().getName(), Settings.SERVER_NAME.getName(), playerUUID);
             Main.getInstance().getSocket().sendMSGToPlayer(playerUUID, "error.world.not-allowed-to-join-world");
             return;
         }
@@ -387,7 +387,7 @@ public final class WorldPlayerEvents extends MainEvents {
     public void subPlayerChatEvent(AsyncPlayerChatEvent e){
         final boolean isWarpWorld = e.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase("warp");
         if (isWarpWorld){
-            final BWorld warpWorld = new BWorld(UUID.randomUUID(), "Warps", Settings.SERVER_NAME, Settings.VERSION, "GRASS_BLOCK");
+            final BWorld warpWorld = new BWorld(UUID.randomUUID(), "Warps", Settings.SERVER_NAME.getName(), Settings.VERSION, "GRASS_BLOCK");
             final WorldMsg msg = new WorldMsg(e.getPlayer().getUniqueId(), e.getMessage(), Settings.VERSION, warpWorld);
             Main.getInstance().getSocket().sendMsgFromPlayer(msg);
             return;

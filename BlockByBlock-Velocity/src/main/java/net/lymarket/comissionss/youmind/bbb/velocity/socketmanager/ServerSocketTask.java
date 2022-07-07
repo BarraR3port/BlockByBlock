@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scheduler.ScheduledTask;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerName;
 import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class ServerSocketTask {
     
     public static boolean compute = true;
-    public static List < ScheduledTask > otherTasks = new ArrayList <>();
+    public static List<ScheduledTask> otherTasks = new ArrayList<>();
     private static ServerSocketTask instance = null;
     private final ServerSocket serverSocket;
     
@@ -64,7 +65,7 @@ public class ServerSocketTask {
     
     public static void stopTasks( ){
         compute = false;
-        VMain.getInstance().getProxy().getAllServers().forEach(server -> ServerSocketManager.getSocketByServer(server.getServerInfo().getName()).ifPresent(ProxySocketServer::closeConnections));
+        VMain.getInstance().getProxy().getAllServers().forEach(server -> ServerSocketManager.getSocketByServer(ServerName.fromString(server.getServerInfo().getName())).ifPresent(ProxySocketServer::closeConnections));
         for ( ScheduledTask t : otherTasks ){
             t.cancel();
         }

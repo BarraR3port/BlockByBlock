@@ -17,6 +17,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerName;
 import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
 import net.lymarket.comissionss.youmind.bbb.velocity.user.VelocityUser;
@@ -72,6 +73,9 @@ public class PlayerEvents {
                 .clickEvent(null);
         e.getPlayer().sendMessage(firstJoinMsg);
         e.getPlayer().sendMessage(secondJoinMsg);
+        /*VMain.getInstance().getServerSocketManager().getSocketByServer().forEach( ((serverName, proxySocketServer) -> {
+            proxySocketServer.sendMessage();
+        }));*/
     }
     
     @Subscribe
@@ -109,7 +113,7 @@ public class PlayerEvents {
         VMain.debug("KickedFromServerEvent  " + e.getPlayer().getUsername() + "  " + e.getPlayer().getUniqueId());
         for ( RegisteredServer server : VMain.getInstance().getProxy().getAllServers() ){
             try {
-                ServerSocketManager.getSocketByServer(server.getServerInfo().getName()).ifPresent(socket -> {
+                ServerSocketManager.getSocketByServer(ServerName.fromString(server.getServerInfo().getName())).ifPresent(socket -> {
                     final JsonObject json = new JsonObject();
                     json.addProperty("type", "REMOVE_PLAYER_TO_TP_TO_WORLD");
                     json.addProperty("uuid", e.getPlayer().getUniqueId().toString());

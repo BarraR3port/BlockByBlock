@@ -203,7 +203,7 @@ public class P2Listener implements Listener {
         final User user = (User) vs.getBbbApi().getPlayers().getPlayer(playerUUID);
         final Location loc = e.getTo();
         final Plot plot = new PlotAPI().getPlot(loc);
-        final Loc location = new Loc(vs.getBbbApi().getProxyServerName(), world.getName(), loc.getX(), loc.getY(), loc.getZ(), plot == null ? null : plot.getId().toString());
+        final Loc location = new Loc(vs.getBbbApi().getProxyServerName().getName(), world.getName(), loc.getX(), loc.getY(), loc.getZ(), plot == null ? null : plot.getId().toString());
         user.setLastLocation(location);
         vs.getBbbApi().getPlayers().savePlayer(user);
     }

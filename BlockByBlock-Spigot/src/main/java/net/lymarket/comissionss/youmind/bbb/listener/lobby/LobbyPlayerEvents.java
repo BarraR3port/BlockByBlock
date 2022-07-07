@@ -46,7 +46,7 @@ public final class LobbyPlayerEvents extends MainEvents {
             final UUID playerUUID = e.getPlayer().getUniqueId();
             final SpigotUser user = Main.getInstance().getPlayers().getPlayer(playerUUID);
             final Location loc = e.getTo();
-            user.setLastLocation(new Loc(Settings.SERVER_NAME, world.getName(), loc.getX(), loc.getY(), loc.getZ()));
+            user.setLastLocation(new Loc(Settings.SERVER_NAME.getName(), world.getName(), loc.getX(), loc.getY(), loc.getZ()));
             Main.getInstance().getPlayers().savePlayer(user);
         } catch (NullPointerException ignored) {
         }

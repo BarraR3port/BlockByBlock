@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import net.lymarket.comissionss.youmind.bbb.Main;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import net.lymarket.comissionss.youmind.bbb.users.SpigotUser;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -64,12 +65,14 @@ public abstract class MainEvents implements Listener {
         p.setGameMode(GameMode.CREATIVE);
         p.setInvulnerable(true);
         e.setJoinMessage("");
+        Main.getInstance().getSocket().sendUpdate();
         subPlayerJoinEvent(e);
     }
     
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoin(PlayerQuitEvent e){
+    public void onPlayerQuitEvent(PlayerQuitEvent e){
         e.setQuitMessage("");
+        Bukkit.getScheduler().runTaskLater(Main.getInstance(), ( ) -> Main.getInstance().getSocket().sendUpdate(), 40L);
     }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

@@ -38,7 +38,7 @@ public enum Rank {
     
     
     public static Rank fromString(String rank){
-        return Arrays.stream(Rank.values()).filter(r -> r.getLpName().equalsIgnoreCase(rank)).findFirst().orElse(null);
+        return Arrays.stream(Rank.values()).filter(r -> r.getLpName().equalsIgnoreCase(rank)).findFirst().orElse(VISITOR);
     }
     
     public String getLpName( ){

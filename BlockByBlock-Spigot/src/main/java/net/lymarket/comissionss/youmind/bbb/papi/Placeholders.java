@@ -100,7 +100,7 @@ public class Placeholders extends PlaceholderExpansion {
     
         switch(identifier){
             case "server":{
-                return Settings.SERVER_NAME;
+                return Settings.SERVER_NAME.getName();
             }
             case "health":{
                 return String.valueOf(player.getHealth());
@@ -115,61 +115,67 @@ public class Placeholders extends PlaceholderExpansion {
                 return Settings.VERSION;
             }
             case "lobby_size":{
-                return String.valueOf(Main.getInstance().getProxyStats().getLobby_player_size());
+                return String.valueOf(Main.getInstance().proxyStats.lobby_player_size);
+            }
+            case "lobby_online":{
+                return String.valueOf(Main.getInstance().proxyStats.lobby_online);
+            }
+            case "lobby_online_formatted":{
+                return Main.getInstance().proxyStats.lobby_online ? "&aABIERTO" : "&cCERRADO";
             }
             case "plots_112_size":{
-                return String.valueOf(Main.getInstance().getProxyStats().getPlot_1_12_player_size());
+                return String.valueOf(Main.getInstance().proxyStats.plot_1_12_player_size);
             }
             case "plots_112_online":{
-                return String.valueOf(Main.getInstance().getProxyStats().isPlot_1_12_online());
+                return String.valueOf(Main.getInstance().proxyStats.plot_1_12_online);
             }
             case "plots_112_online_formatted":{
-                return Main.getInstance().getProxyStats().isPlot_1_12_online() ? "&aABIERTO" : "&cCERRADO";
+                return Main.getInstance().proxyStats.plot_1_12_online ? "&aABIERTO" : "&cCERRADO";
             }
             case "plots_116_size":{
-                return String.valueOf(Main.getInstance().getProxyStats().getPlot_1_16_player_size());
+                return String.valueOf(Main.getInstance().proxyStats.plot_1_16_player_size);
             }
             case "plots_116_online":{
-                return String.valueOf(Main.getInstance().getProxyStats().isPlot_1_16_online());
+                return String.valueOf(Main.getInstance().proxyStats.plot_1_16_online);
             }
             case "plots_116_online_formatted":{
-                return Main.getInstance().getProxyStats().isPlot_1_16_online() ? "&aABIERTO" : "&cCERRADO";
+                return Main.getInstance().proxyStats.plot_1_16_online ? "&aABIERTO" : "&cCERRADO";
             }
             case "plots_118_size":{
-                return String.valueOf(Main.getInstance().getProxyStats().getPlot_1_18_player_size());
+                return String.valueOf(Main.getInstance().proxyStats.plot_1_18_player_size);
             }
             case "plots_118_online":{
-                return String.valueOf(Main.getInstance().getProxyStats().isPlot_1_18_online());
+                return String.valueOf(Main.getInstance().proxyStats.plot_1_18_online);
             }
             case "plots_118_online_formatted":{
-                return Main.getInstance().getProxyStats().isPlot_1_18_online() ? "&aABIERTO" : "&cCERRADO";
+                return Main.getInstance().proxyStats.plot_1_18_online ? "&aABIERTO" : "&cCERRADO";
             }
             case "world_112_size":{
-                return String.valueOf(Main.getInstance().getProxyStats().getWorld_1_12_player_size());
+                return String.valueOf(Main.getInstance().proxyStats.world_1_12_player_size);
             }
             case "world_112_online":{
-                return String.valueOf(Main.getInstance().getProxyStats().isWorld_1_12_online());
+                return String.valueOf(Main.getInstance().proxyStats.world_1_12_online);
             }
             case "world_112_online_formatted":{
-                return Main.getInstance().getProxyStats().isWorld_1_12_online() ? "&aABIERTO" : "&cCERRADO";
+                return Main.getInstance().proxyStats.world_1_12_online ? "&aABIERTO" : "&cCERRADO";
             }
             case "world_116_size":{
-                return String.valueOf(Main.getInstance().getProxyStats().getWorld_1_16_player_size());
+                return String.valueOf(Main.getInstance().proxyStats.world_1_16_player_size);
             }
             case "world_116_online":{
-                return String.valueOf(Main.getInstance().getProxyStats().isWorld_1_16_online());
+                return String.valueOf(Main.getInstance().proxyStats.world_1_16_online);
             }
             case "world_116_online_formatted":{
-                return Main.getInstance().getProxyStats().isWorld_1_16_online() ? "&aABIERTO" : "&cCERRADO";
+                return Main.getInstance().proxyStats.world_1_16_online ? "&aABIERTO" : "&cCERRADO";
             }
             case "world_118_size":{
-                return String.valueOf(Main.getInstance().getProxyStats().getWorld_1_18_player_size());
+                return String.valueOf(Main.getInstance().proxyStats.world_1_18_player_size);
             }
             case "world_118_online":{
-                return String.valueOf(Main.getInstance().getProxyStats().isWorld_1_18_online());
+                return String.valueOf(Main.getInstance().proxyStats.world_1_18_online);
             }
             case "world_118_online_formatted":{
-                return Main.getInstance().getProxyStats().isWorld_1_18_online() ? "&aABIERTO" : "&cCERRADO";
+                return Main.getInstance().proxyStats.world_1_18_online ? "&aABIERTO" : "&cCERRADO";
             }
         
         }
@@ -263,10 +269,8 @@ public class Placeholders extends PlaceholderExpansion {
                 return "Warp";
             }
         } else if (Settings.SERVER_TYPE.equals(ServerType.PLOT)){
-            switch(identifier){
-                case "plot_world_name":{
-                    return PlotType.getPlotTypeByWorld(player.getWorld().getName()).getFormattedName();
-                }
+            if ("plot_world_name".equals(identifier)){
+                return PlotType.getPlotTypeByWorld(player.getWorld().getName()).getFormattedName();
             }
         }
     

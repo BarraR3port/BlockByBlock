@@ -19,6 +19,7 @@ import net.lymarket.comissionss.youmind.bbb.commands.warp.WarpCmd;
 import net.lymarket.comissionss.youmind.bbb.commands.warp.Warps;
 import net.lymarket.comissionss.youmind.bbb.common.BBBApi;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ProxyStats;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerName;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerType;
 import net.lymarket.comissionss.youmind.bbb.common.data.world.BWorld;
 import net.lymarket.comissionss.youmind.bbb.config.ConfigManager;
@@ -70,7 +71,7 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
     public HomeManager homes;
     private Config config;
     private Config items;
-    private ProxyStats proxyStats = new ProxyStats();
+    public ProxyStats proxyStats = new ProxyStats();
     private String nms_version;
     private PlayersRepository players;
     private VersionSupport nms;
@@ -212,16 +213,14 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
                 break;
             }
         }
-        
-        getServer().getScheduler().runTaskTimer(this, ( ) -> {
-            
+    
+        getServer().getScheduler().runTaskTimerAsynchronously(this, ( ) -> {
             for ( Player p : Bukkit.getOnlinePlayers() ){
                 if (p.getOpenInventory().getTopInventory().getHolder() instanceof IUpdatableMenu){
                     ((IUpdatableMenu) p.getOpenInventory().getTopInventory().getHolder()).reOpen();
                 }
             }
-            
-        }, 20L, 20L);
+        }, 0L, 20L);
         //new PacketManager( this );
         
     }
@@ -229,6 +228,7 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
     @Override
     public void onDisable( ){
         nms.saveWorlds();
+        socket.sendDisconnectInfoToProxy();
         socket.disable();
         getServer().getScheduler().cancelTasks(this);
     }
@@ -276,7 +276,7 @@ public final class Main extends JavaPlugin implements BBBApi < SlimeWorld, Spigo
     }
     
     @Override
-    public String getProxyServerName( ){
+    public ServerName getProxyServerName( ){
         return Settings.SERVER_NAME;
     }
     

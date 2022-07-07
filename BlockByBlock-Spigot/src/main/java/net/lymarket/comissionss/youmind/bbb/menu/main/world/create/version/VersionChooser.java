@@ -1,6 +1,7 @@
 package net.lymarket.comissionss.youmind.bbb.menu.main.world.create.version;
 
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerName;
 import net.lymarket.comissionss.youmind.bbb.items.Items;
 import net.lymarket.comissionss.youmind.bbb.menu.main.warp.WarpMenu;
 import net.lymarket.comissionss.youmind.bbb.menu.main.world.create.WorldCreatorMenu;
@@ -20,10 +21,10 @@ public class VersionChooser extends Menu {
     
     private final VersionChooseType versionChooseType;
     
-    public VersionChooser(IPlayerMenuUtility playerMenuUtility, UUID targetUserUUID, Menu prevMenu, VersionChooseType versionChooseType){
+    public VersionChooser(IPlayerMenuUtility playerMenuUtility, UUID targetUserUUID, Menu previousMenu, VersionChooseType versionChooseType){
         super(playerMenuUtility);
         this.targetUserUUID = targetUserUUID;
-        this.previousMenu = prevMenu;
+        this.previousMenu = previousMenu;
         this.versionChooseType = versionChooseType;
     }
     
@@ -58,15 +59,16 @@ public class VersionChooser extends Menu {
         
         if (NBTItem.hasTag(item, "server-version")){
             final String version = NBTItem.getTag(item, "server-version");
-            String serverName = "PW-112-1";
+            ServerName serverName = ServerName.PUBLIC_WORLD_1_12_1;
+    
             if (version.equals("1.16")){
-                serverName = "PW-116-1";
+                serverName = ServerName.PUBLIC_WORLD_1_16_1;
             } else if (version.equals("1.18")){
-                serverName = "PW-118-1";
+                serverName = ServerName.PUBLIC_WORLD_1_18_1;
             }
             Main.getInstance().debug("Selected version: " + version);
             if (versionChooseType.equals(VersionChooseType.WARP_CHOSE)){
-                new WarpMenu(playerMenuUtility, serverName).open();
+                new WarpMenu(playerMenuUtility, serverName, previousMenu).open();
                 return;
             }
             new WorldCreatorMenu(playerMenuUtility, version, targetUserUUID).open();

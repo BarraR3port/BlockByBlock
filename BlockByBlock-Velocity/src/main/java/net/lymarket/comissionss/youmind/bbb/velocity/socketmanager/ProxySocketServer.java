@@ -12,6 +12,7 @@ import net.lymarket.comissionss.youmind.bbb.common.data.msg.LobbyMsg;
 import net.lymarket.comissionss.youmind.bbb.common.data.msg.PlotMsg;
 import net.lymarket.comissionss.youmind.bbb.common.data.msg.WorldMsg;
 import net.lymarket.comissionss.youmind.bbb.common.data.server.ProxyStats;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerName;
 import net.lymarket.comissionss.youmind.bbb.velocity.VMain;
 import net.lymarket.comissionss.youmind.bbb.velocity.manager.ServerSocketManager;
 import net.lymarket.comissionss.youmind.bbb.velocity.user.VelocityUser;
@@ -33,7 +34,7 @@ public class ProxySocketServer implements Runnable {
     private final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     private Scanner in;
     private PrintWriter out;
-    private String name;
+    private ServerName name;
     
     public ProxySocketServer(Socket socket){
         this.socket = socket;
@@ -48,7 +49,8 @@ public class ProxySocketServer implements Runnable {
     public void closeConnections( ){
         try {
             socket.close();
-        } catch (IOException ignored) {
+        } catch (IOException error) {
+            error.printStackTrace();
         }
     }
     
@@ -121,7 +123,7 @@ public class ProxySocketServer implements Runnable {
                         switch(json.get("type").getAsString()){
                             case "PLAYER_SENT_MSG":{
                                 if (!json.has("msg_type")) continue;
-                
+    
                                 final String msg_type = json.get("msg_type").getAsString();
                                 if (msg_type.equals("PlotMsg")){
                                     final PlotMsg plotMsg = gson.fromJson(json.getAsJsonObject("msg"), PlotMsg.class);
@@ -164,7 +166,7 @@ public class ProxySocketServer implements Runnable {
                                     for ( Player player : VMain.getInstance().getProxy().getAllPlayers() ){
                                         player.sendMessage(finalMsg);
                                     }
-                    
+    
                                 } else {
                                     final LobbyMsg lobbyMsg = gson.fromJson(json.getAsJsonObject("msg"), LobbyMsg.class);
                                     final VelocityUser user = VMain.getInstance().getPlayers().getPlayer(lobbyMsg.getOwner());
@@ -188,6 +190,92 @@ public class ProxySocketServer implements Runnable {
                                     }
                                 }
                             }
+                            case "UPDATE":{
+                                if (!json.has("server_name")) continue;
+                                if (json.get("server_name").getAsString() == null) continue;
+                                final ServerName server_name = ServerName.fromString(json.get("server_name").getAsString());
+                                System.out.println("[Velocity] Server " + server_name.getName() + " is updating.");
+                                final int online_players = json.get("online_players").getAsInt();
+                                ServerSocketTask.otherTasks.add(VMain.getInstance().getProxy().getScheduler().buildTask(VMain.getInstance(), ( ) -> {
+                                            name = server_name;
+                                            ServerSocketManager.getInstance().registerServerSocket(server_name, this);
+                                        }
+                                ).schedule());
+                                switch(server_name){
+                                    case LOBBY -> {
+                                        VMain.getInstance().proxyServersStats.lobby_online = true;
+                                        VMain.getInstance().proxyServersStats.lobby_player_size = online_players;
+                                    }
+                                    case PUBLIC_WORLD_1_12_1 -> {
+                                        VMain.getInstance().proxyServersStats.world_1_12_online = true;
+                                        VMain.getInstance().proxyServersStats.world_1_12_player_size = online_players;
+                                    }
+                                    case PUBLIC_PLOT_1_12_1 -> {
+                                        VMain.getInstance().proxyServersStats.plot_1_12_online = true;
+                                        VMain.getInstance().proxyServersStats.plot_1_12_player_size = online_players;
+                                    }
+                                    case PUBLIC_WORLD_1_16_1 -> {
+                                        VMain.getInstance().proxyServersStats.world_1_16_online = true;
+                                        VMain.getInstance().proxyServersStats.world_1_16_player_size = online_players;
+                                    }
+                                    case PUBLIC_PLOT_1_16_1 -> {
+                                        VMain.getInstance().proxyServersStats.plot_1_16_online = true;
+                                        VMain.getInstance().proxyServersStats.plot_1_16_player_size = online_players;
+                                    }
+                                    case PUBLIC_WORLD_1_18_1 -> {
+                                        VMain.getInstance().proxyServersStats.world_1_18_online = true;
+                                        VMain.getInstance().proxyServersStats.world_1_18_player_size = online_players;
+                                    }
+                                    case PUBLIC_PLOT_1_18_1 -> {
+                                        VMain.getInstance().proxyServersStats.plot_1_18_online = true;
+                                        VMain.getInstance().proxyServersStats.plot_1_18_player_size = online_players;
+                                    }
+                                }
+                                continue;
+        
+                            }
+                            case "DISCONNECT":{
+                                if (!json.has("server_name")) continue;
+                                if (json.get("server_name").getAsString() == null) continue;
+                                final ServerName server_name = ServerName.fromString(json.get("server_name").getAsString());
+                                switch(server_name){
+                                    case LOBBY -> {
+                                        VMain.getInstance().proxyServersStats.lobby_online = false;
+                                        VMain.getInstance().proxyServersStats.lobby_player_size = 0;
+                                        return;
+                                    }
+                                    case PUBLIC_WORLD_1_12_1 -> {
+                                        VMain.getInstance().proxyServersStats.world_1_12_online = false;
+                                        VMain.getInstance().proxyServersStats.world_1_12_player_size = 0;
+                                        return;
+                                    }
+                                    case PUBLIC_PLOT_1_12_1 -> {
+                                        VMain.getInstance().proxyServersStats.plot_1_12_online = false;
+                                        VMain.getInstance().proxyServersStats.plot_1_12_player_size = 0;
+                                        return;
+                                    }
+                                    case PUBLIC_WORLD_1_16_1 -> {
+                                        VMain.getInstance().proxyServersStats.world_1_16_online = false;
+                                        VMain.getInstance().proxyServersStats.world_1_16_player_size = 0;
+                                        return;
+                                    }
+                                    case PUBLIC_PLOT_1_16_1 -> {
+                                        VMain.getInstance().proxyServersStats.plot_1_16_online = false;
+                                        VMain.getInstance().proxyServersStats.plot_1_16_player_size = 0;
+                                        return;
+                                    }
+                                    case PUBLIC_WORLD_1_18_1 -> {
+                                        VMain.getInstance().proxyServersStats.world_1_18_online = false;
+                                        VMain.getInstance().proxyServersStats.world_1_18_player_size = 0;
+                                        return;
+                                    }
+                                    case PUBLIC_PLOT_1_18_1 -> {
+                                        VMain.getInstance().proxyServersStats.plot_1_18_online = false;
+                                        VMain.getInstance().proxyServersStats.plot_1_18_player_size = 0;
+                                    }
+                                }
+                                continue;
+                            }
                             case "CREATE_WORLD":{
                                 if (!json.has("server_name")) continue;
                                 if (!json.has("world_name")) continue;
@@ -196,43 +284,29 @@ public class ProxySocketServer implements Runnable {
                                 if (!json.has("world_version")) continue;
                                 if (!json.has("world_server")) continue;
                                 if (!json.has("world_layer_material")) continue;
-                                final String serverName = json.get("world_server").getAsString();
-    
+                                final ServerName serverName = ServerName.fromString(json.get("world_server").getAsString());
+        
                                 ServerSocketManager.getSocketByServer(serverName).ifPresent(socket -> {
                                     VMain.debug("Received CREATE_WORLD from: " + serverName);
                                     json.remove("type");
                                     json.addProperty("type", "INIT_CREATE_WORLD");
                                     socket.sendMessage(json);
-        
+            
                                 });
                                 continue;
+        
+                            }
     
-                            }
-            
-                            case "UPDATE":{
-                                if (!json.has("server_name")) continue;
-                                if (json.get("server_name").getAsString() == null) continue;
-                                final String server_name = json.get("server_name").getAsString();
-                                ServerSocketTask.otherTasks.add(VMain.getInstance().getProxy().getScheduler().buildTask(VMain.getInstance(), ( ) -> {
-                                            name = server_name;
-                                            ServerSocketManager.getInstance().registerServerSocket(server_name, this);
-                                        }
-                                ).schedule());
-                                continue;
-                
-                            }
-            
                             case "WORLD_DELETE_PREV":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("owner_uuid")) continue;
                                 if (!json.has("world_uuid")) continue;
-                
-                                final String server_target = json.get("server_target").getAsString();
-                                final String current_server = json.get("current_server").getAsString();
-                
-                                json.addProperty("same_server", server_target.equalsIgnoreCase(current_server));
-                
+                                final ServerName server_target = ServerName.fromString(json.get("server_target").getAsString());
+                                final ServerName current_server = ServerName.fromString(json.get("current_server").getAsString());
+        
+                                json.addProperty("same_server", server_target.equals(current_server));
+        
                                 if (ServerSocketManager.getSocketByServer(server_target).isPresent()){
                                     final ProxySocketServer socket = ServerSocketManager.getSocketByServer(server_target).get();
                                     VMain.debug("Received WORLD_DELETE_INIT from: " + current_server);
@@ -245,7 +319,7 @@ public class ProxySocketServer implements Runnable {
                                     json.addProperty("type", "ERROR");
                                     json.addProperty("error", "SERVER_NOT_ONLINE");
                                     this.sendMessage(json);
-                    
+            
                                 }
                                 continue;
                             }
@@ -258,7 +332,7 @@ public class ProxySocketServer implements Runnable {
                                 if (!json.has("world_server")) continue;
                                 if (!json.has("world_layer_material")) continue;
                                 if (!json.has("teleport")) continue;
-                                final String server_name = json.get("server_name").getAsString();
+                                final ServerName server_name = ServerName.fromString(json.get("server_name").getAsString());
     
                                 ServerSocketManager.getSocketByServer(server_name).ifPresent(socket -> {
                                     json.remove("type");
@@ -267,49 +341,49 @@ public class ProxySocketServer implements Runnable {
                                 });
                                 continue;
                             }
-            
+    
                             case "WORLD_DELETE_SUCCESS":{
                                 if (!json.has("current_server")) continue;
-                                final String current_server = json.get("current_server").getAsString();
+                                final ServerName current_server = ServerName.fromString(json.get("current_server").getAsString());
                                 ServerSocketManager.getSocketByServer(current_server).ifPresent(socket -> {
                                     json.remove("type");
                                     json.addProperty("type", "UPDATE_INV_WORLD_DELETE_SUCCESS");
                                     socket.sendMessage(json);
                                 });
                                 continue;
-                
+        
                             }
-            
+    
                             case "SEND_MSG_TO_PLAYER":{
                                 if (!json.has("target_uuid")) continue;
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("key")) continue;
                                 final UUID target_uuid = UUID.fromString(json.get("target_uuid").getAsString());
-                
+        
                                 json.remove("type");
                                 json.addProperty("type", "SEND_MSG_TO_PLAYER_POST");
-                                VMain.getInstance().getProxy().getPlayer(target_uuid).flatMap(p -> p.getCurrentServer().flatMap(server -> ServerSocketManager.getSocketByServer(server.getServerInfo().getName()))).ifPresent(socket -> socket.sendMessage(json));
+                                VMain.getInstance().getProxy().getPlayer(target_uuid).flatMap(p -> p.getCurrentServer().flatMap(server -> ServerSocketManager.getSocketByServer(ServerName.fromString(server.getServerInfo().getName())))).ifPresent(socket -> socket.sendMessage(json));
                         
                         /*ServerSocketManager.getSocketByServer( current_server ).ifPresent( socket -> {
                             socket.sendMessage( json );
                         } );*/
                                 continue;
-                
+        
                             }
-            
+    
                             case "JOIN_WORLD_REQUEST":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("owner_uuid")) continue;
                                 if (!json.has("world_uuid")) continue;
                                 if (!json.has("item_slot")) continue;
-                                final String server_target = json.get("server_target").getAsString();
+                                final ServerName server_target = ServerName.fromString(json.get("server_target").getAsString());
                                 json.remove("type");
                                 json.addProperty("type", "JOIN_WORLD_REQUEST_PREV");
                                 ServerSocketManager.getSocketByServer(server_target).ifPresent(socket -> socket.sendMessage(json));
                                 continue;
                             }
-            
+    
                             case "JOIN_WORLD_REQUEST_POST":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("current_server")) continue;
@@ -317,14 +391,14 @@ public class ProxySocketServer implements Runnable {
                                 if (!json.has("world_uuid")) continue;
                                 if (!json.has("response")) continue;
                                 if (!json.has("item_slot")) continue;
-                                final String server_target = json.get("server_target").getAsString();
-                                final String current_server = json.get("current_server").getAsString();
+                                final ServerName server_target = ServerName.fromString(json.get("server_target").getAsString());
+                                final ServerName current_server = ServerName.fromString(json.get("current_server").getAsString());
                                 final UUID owner_uuid = UUID.fromString(json.get("owner_uuid").getAsString());
                                 final boolean response = json.get("response").getAsBoolean();
                                 final UUID world_uuid = UUID.fromString(json.get("world_uuid").getAsString());
-                
+        
                                 if (response && VMain.getInstance().getWorldManager().addPlayerToWorldOnlineMembers(owner_uuid, world_uuid)){
-                                    VMain.getInstance().getProxy().getPlayer(owner_uuid).ifPresent(player -> VMain.getInstance().getProxy().getServer(server_target).ifPresent(server -> {
+                                    VMain.getInstance().getProxy().getPlayer(owner_uuid).ifPresent(player -> VMain.getInstance().getProxy().getServer(server_target.getName()).ifPresent(server -> {
                                         try {
                                             ConnectionRequestBuilder.Result result = player.createConnectionRequest(server).connect().get(2, TimeUnit.SECONDS);
                                             if (!result.getStatus().equals(ConnectionRequestBuilder.Status.SUCCESS)){
@@ -340,7 +414,7 @@ public class ProxySocketServer implements Runnable {
                                 }
                                 continue;
                             }
-            
+    
                             case "JOIN_PLOT_REQUEST":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("server_version")) continue;
@@ -351,12 +425,12 @@ public class ProxySocketServer implements Runnable {
                                 final String server_version = json.get("server_version").getAsString();
                                 json.remove("type");
                                 json.addProperty("type", "JOIN_PLOT_REQUEST_PREV");
-                                String server_target = "PP-" + server_version.replace(".", "") + "-1";
-                                json.addProperty("server_target", server_target);
+                                ServerName server_target = ServerName.fromString("PP-" + server_version.replace(".", "") + "-1");
+                                json.addProperty("server_target", server_target.getName());
                                 ServerSocketManager.getSocketByServer(server_target).ifPresent(socket -> socket.sendMessage(json));
                                 continue;
                             }
-            
+    
                             case "JOIN_PLOT_REQUEST_POST":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("server_target")) continue;
@@ -378,10 +452,10 @@ public class ProxySocketServer implements Runnable {
                                         } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
                                         }
                                     }));
-                
+        
                                 continue;
                             }
-            
+    
                             case "CONNECT_TO_SERVER":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("current_server")) continue;
@@ -391,7 +465,7 @@ public class ProxySocketServer implements Runnable {
                                 final String currentServer = json.get("current_server").getAsString();
                                 final UUID owner_uuid = UUID.fromString(json.get("owner_uuid").getAsString());
                                 final String msg = json.get("msg").getAsString();
-                
+        
                                 if (VMain.getInstance().getProxy().getPlayer(owner_uuid).isPresent()){
                                     final Player p = VMain.getInstance().getProxy().getPlayer(owner_uuid).get();
                                     if (currentServer.equalsIgnoreCase(serverName)){
@@ -411,10 +485,10 @@ public class ProxySocketServer implements Runnable {
                                         p.sendMessage(Utils.format(msg.replace("%player%", p.getUsername())));
                                     }
                                 }
-                
+        
                                 continue;
                             }
-            
+    
                             case "KICK_FROM_WORLD":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("current_server")) continue;
@@ -422,19 +496,19 @@ public class ProxySocketServer implements Runnable {
                                 if (!json.has("world_uuid")) continue;
                                 if (!json.has("owner_uuid")) continue;
                                 if (!json.has("target_uuid")) continue;
-                                final String server_target = json.get("server_target").getAsString();
+                                final ServerName server_target = ServerName.fromString(json.get("server_target").getAsString());
                                 json.remove("type");
                                 json.addProperty("type", "KICK_FROM_WORLD_PREV");
-                
+        
                                 ServerSocketManager.getSocketByServer(server_target).ifPresent(socket -> socket.sendMessage(json));
-                
+        
                                 continue;
                             }
-            
+    
                             case "WORLD_KICK_SUCCESS":{
                                 if (!json.has("server_target")) continue;
                                 if (!json.has("target_uuid")) continue;
-                
+        
                                 final UUID target_uuid = UUID.fromString(json.get("target_uuid").getAsString());
                                 VMain.getInstance().getProxy().getPlayer(target_uuid).ifPresent((p) -> VMain.getInstance().getProxy().getServer("lobby").ifPresent(server -> {
                                     try {
@@ -447,30 +521,30 @@ public class ProxySocketServer implements Runnable {
                                 }));
                                 continue;
                             }
-            
+    
                             case "SEND_VISIT_REQUEST":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("owner_uuid")) continue;
                                 if (!json.has("target_uuid")) continue;
                                 final UUID target_uuid = UUID.fromString(json.get("target_uuid").getAsString());
-                                final String current_server = json.get("current_server").getAsString();
+                                final ServerName current_server = ServerName.fromString(json.get("current_server").getAsString());
                                 if (VMain.getInstance().getProxy().getPlayer(target_uuid).isPresent()){
                                     final Player p = VMain.getInstance().getProxy().getPlayer(target_uuid).get();
                                     p.getCurrentServer().ifPresent(server -> {
-                                        final String serverName = server.getServerInfo().getName();
+                                        final ServerName serverName = ServerName.fromString(server.getServerInfo().getName());
                                         json.remove("type");
-                                        if (serverName.equals("lobby")){
+                                        if (serverName.equals(ServerName.LOBBY)){
                                             json.addProperty("type", "VISIT_REQUEST_DENY");
                                             json.addProperty("reason", "visit.cant-visit-lobby");
                                             ServerSocketManager.getSocketByServer(current_server).ifPresent(socket -> socket.sendMessage(json));
                                             return;
                                         }
                                         json.addProperty("type", "VISIT_REQUEST_PREV");
-                                        if (serverName.startsWith("PP-")){
+                                        if (serverName.isPlotServer()){
                                             json.addProperty("visit-type", "plot");
                                             ServerSocketManager.getSocketByServer(serverName).ifPresent(socket -> socket.sendMessage(json));
                                             return;
-                                        } else if (serverName.startsWith("PW-")){
+                                        } else if (serverName.isWorldServer()){
                                             json.addProperty("visit-type", "world");
                                             ServerSocketManager.getSocketByServer(serverName).ifPresent(socket -> socket.sendMessage(json));
                                             return;
@@ -544,7 +618,7 @@ public class ProxySocketServer implements Runnable {
                                 }
                                 continue;
                             }
-            
+    
                             case "JOIN_HOME":{
                                 if (!json.has("current_server")) continue;
                                 if (!json.has("server_target")) continue;
@@ -552,7 +626,7 @@ public class ProxySocketServer implements Runnable {
                                 if (!json.has("owner_uuid")) continue;
                                 json.remove("type");
                                 json.addProperty("type", "JOIN_HOME_PREV");
-                                ServerSocketManager.getSocketByServer(json.get("server_target").getAsString()).ifPresent(socket -> socket.sendMessage(json));
+                                ServerSocketManager.getSocketByServer(ServerName.fromString(json.get("server_target").getAsString())).ifPresent(socket -> socket.sendMessage(json));
                                 continue;
                             }
                             case "JOIN_HOME_POST", "JOIN_WARP_POST":{
@@ -583,10 +657,10 @@ public class ProxySocketServer implements Runnable {
                                 if (!json.has("owner_uuid")) continue;
                                 json.remove("type");
                                 json.addProperty("type", "JOIN_WARP_PREV");
-                                ServerSocketManager.getSocketByServer(json.get("server_target").getAsString()).ifPresent(socket -> socket.sendMessage(json));
+                                ServerSocketManager.getSocketByServer(ServerName.fromString(json.get("server_target").getAsString())).ifPresent(socket -> socket.sendMessage(json));
                                 continue;
                             }
-            
+    
                             case "ERROR":{
                                 if (!json.has("error")) continue;
                                 final String error = json.get("error").getAsString();
@@ -597,7 +671,7 @@ public class ProxySocketServer implements Runnable {
                                         if (!json.has("current_server")) continue;
                                         if (!json.has("server_target")) continue;
                                         if (!json.has("world_uuid")) continue;
-                                        final String current_server = json.get("current_server").getAsString();
+                                        final ServerName current_server = ServerName.fromString(json.get("current_server").getAsString());
     
                                         ServerSocketManager.getSocketByServer(current_server).ifPresent(socket -> socket.sendMessage(json));
     
@@ -607,7 +681,7 @@ public class ProxySocketServer implements Runnable {
                                         if (!json.has("current_server")) continue;
                                         if (!json.has("server_target")) continue;
                                         if (!json.has("world_uuid")) continue;
-                                        final String current_server = json.get("current_server").getAsString();
+                                        final ServerName current_server = ServerName.fromString(json.get("current_server").getAsString());
     
                                         ServerSocketManager.getSocketByServer(current_server).ifPresent(socket -> socket.sendMessage(json));
                                     }
@@ -621,12 +695,45 @@ public class ProxySocketServer implements Runnable {
                     try {
                         socket.close();
                         VMain.getInstance().getLogger().info("Socket closed: " + socket);
+                        if (name != null){
+                            switch(name){
+                                case LOBBY -> {
+                                    VMain.getInstance().proxyServersStats.lobby_online = false;
+                                    VMain.getInstance().proxyServersStats.lobby_player_size = 0;
+                                }
+                                case PUBLIC_WORLD_1_12_1 -> {
+                                    VMain.getInstance().proxyServersStats.world_1_12_online = false;
+                                    VMain.getInstance().proxyServersStats.world_1_12_player_size = 0;
+                                }
+                                case PUBLIC_PLOT_1_12_1 -> {
+                                    VMain.getInstance().proxyServersStats.plot_1_12_online = false;
+                                    VMain.getInstance().proxyServersStats.plot_1_12_player_size = 0;
+                                }
+                                case PUBLIC_WORLD_1_16_1 -> {
+                                    VMain.getInstance().proxyServersStats.world_1_16_online = false;
+                                    VMain.getInstance().proxyServersStats.world_1_16_player_size = 0;
+                                }
+                                case PUBLIC_PLOT_1_16_1 -> {
+                                    VMain.getInstance().proxyServersStats.plot_1_16_online = false;
+                                    VMain.getInstance().proxyServersStats.plot_1_16_player_size = 0;
+                                }
+                                case PUBLIC_WORLD_1_18_1 -> {
+                                    VMain.getInstance().proxyServersStats.world_1_18_online = false;
+                                    VMain.getInstance().proxyServersStats.world_1_18_player_size = 0;
+                                }
+                                case PUBLIC_PLOT_1_18_1 -> {
+                                    VMain.getInstance().proxyServersStats.plot_1_18_online = false;
+                                    VMain.getInstance().proxyServersStats.plot_1_18_player_size = 0;
+                                }
+                            }
+        
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
     
                     Thread.currentThread().interrupt();
-                    break;
+                    return;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -635,6 +742,38 @@ public class ProxySocketServer implements Runnable {
         try {
             socket.close();
             VMain.getInstance().getLogger().info("Socket closed: " + socket);
+            if (name != null){
+                switch(name){
+                    case LOBBY -> {
+                        VMain.getInstance().proxyServersStats.lobby_online = false;
+                        VMain.getInstance().proxyServersStats.lobby_player_size = 0;
+                    }
+                    case PUBLIC_WORLD_1_12_1 -> {
+                        VMain.getInstance().proxyServersStats.world_1_12_online = false;
+                        VMain.getInstance().proxyServersStats.world_1_12_player_size = 0;
+                    }
+                    case PUBLIC_PLOT_1_12_1 -> {
+                        VMain.getInstance().proxyServersStats.plot_1_12_online = false;
+                        VMain.getInstance().proxyServersStats.plot_1_12_player_size = 0;
+                    }
+                    case PUBLIC_WORLD_1_16_1 -> {
+                        VMain.getInstance().proxyServersStats.world_1_16_online = false;
+                        VMain.getInstance().proxyServersStats.world_1_16_player_size = 0;
+                    }
+                    case PUBLIC_PLOT_1_16_1 -> {
+                        VMain.getInstance().proxyServersStats.plot_1_16_online = false;
+                        VMain.getInstance().proxyServersStats.plot_1_16_player_size = 0;
+                    }
+                    case PUBLIC_WORLD_1_18_1 -> {
+                        VMain.getInstance().proxyServersStats.world_1_18_online = false;
+                        VMain.getInstance().proxyServersStats.world_1_18_player_size = 0;
+                    }
+                    case PUBLIC_PLOT_1_18_1 -> {
+                        VMain.getInstance().proxyServersStats.plot_1_18_online = false;
+                        VMain.getInstance().proxyServersStats.plot_1_18_player_size = 0;
+                    }
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

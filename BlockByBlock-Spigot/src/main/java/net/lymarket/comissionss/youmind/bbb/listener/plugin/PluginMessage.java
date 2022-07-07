@@ -3,6 +3,7 @@ package net.lymarket.comissionss.youmind.bbb.listener.plugin;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import net.lymarket.comissionss.youmind.bbb.Main;
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerName;
 import net.lymarket.comissionss.youmind.bbb.settings.Settings;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -29,11 +30,11 @@ public class PluginMessage implements PluginMessageListener {
                 }
                 case "GetServer":{
                     String servername = in.readUTF();
-                    if (Settings.SERVER_NAME == null || Settings.SERVER_NAME.equals("")){
+                    if (Settings.SERVER_NAME == null){
                         Main.getInstance().getConfig().set("global.proxy-server-name", servername);
                         Main.getInstance().getConfig().saveData();
                     }
-                    Settings.SERVER_NAME = servername;
+                    Settings.SERVER_NAME = ServerName.fromString(servername);
                     return;
     
                 }

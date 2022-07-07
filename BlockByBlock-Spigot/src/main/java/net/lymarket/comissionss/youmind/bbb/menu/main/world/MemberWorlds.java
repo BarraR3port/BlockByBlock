@@ -49,7 +49,7 @@ public class MemberWorlds extends UpdatableMenu {
         final Player p = (Player) e.getWhoClicked();
         if (NBTItem.hasTag(item, "type")){
             if (Settings.SERVER_TYPE.equals(ServerType.WORLDS)){
-                new WarpMenu(playerMenuUtility, Settings.SERVER_NAME).open();
+                new WarpMenu(playerMenuUtility, Settings.SERVER_NAME, this).open();
                 return;
             }
             new VersionChooser(playerMenuUtility, targetUserUUID, this, VersionChooser.VersionChooseType.WARP_CHOSE).open();
@@ -63,7 +63,7 @@ public class MemberWorlds extends UpdatableMenu {
             if (e.getClick().equals(ClickType.LEFT)){
                 switch(version){
                     case "1.12":{
-                        if (Main.getInstance().getProxyStats().isWorld_1_12_online()){
+                        if (Main.getInstance().proxyStats.world_1_12_online){
                             //if (playerVersion >= 340){
                             Main.getInstance().getSocket().sendJoinWorldRequest(ownerUUID, server_target, world_uuid, e.getSlot());
                             return;
@@ -76,7 +76,7 @@ public class MemberWorlds extends UpdatableMenu {
                         
                     }
                     case "1.16":{
-                        if (Main.getInstance().getProxyStats().isWorld_1_16_online()){
+                        if (Main.getInstance().proxyStats.world_1_16_online){
                             //if (playerVersion >= 754){
                             Main.getInstance().getSocket().sendJoinWorldRequest(ownerUUID, server_target, world_uuid, e.getSlot());
                             return;
@@ -88,7 +88,7 @@ public class MemberWorlds extends UpdatableMenu {
                         }
                     }
                     case "1.18":{
-                        if (Main.getInstance().getProxyStats().isWorld_1_18_online()){
+                        if (Main.getInstance().proxyStats.world_1_18_online){
                             //if (playerVersion >= 758){
                             Main.getInstance().getSocket().sendJoinWorldRequest(ownerUUID, server_target, world_uuid, e.getSlot());
                             return;
@@ -132,15 +132,15 @@ public class MemberWorlds extends UpdatableMenu {
             boolean serverStatus = false;
             switch(world.getVersion()){
                 case "1.12":{
-                    serverStatus = Main.getInstance().getProxyStats().isWorld_1_12_online();
+                    serverStatus = Main.getInstance().proxyStats.world_1_12_online;
                     break;
                 }
                 case "1.16":{
-                    serverStatus = Main.getInstance().getProxyStats().isWorld_1_16_online();
+                    serverStatus = Main.getInstance().proxyStats.world_1_16_online;
                     break;
                 }
                 case "1.18":{
-                    serverStatus = Main.getInstance().getProxyStats().isWorld_1_18_online();
+                    serverStatus = Main.getInstance().proxyStats.world_1_18_online;
                     break;
                 }
             }

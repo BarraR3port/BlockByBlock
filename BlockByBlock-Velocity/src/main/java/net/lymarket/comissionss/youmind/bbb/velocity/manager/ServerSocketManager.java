@@ -1,5 +1,6 @@
 package net.lymarket.comissionss.youmind.bbb.velocity.manager;
 
+import net.lymarket.comissionss.youmind.bbb.common.data.server.ServerName;
 import net.lymarket.comissionss.youmind.bbb.velocity.socketmanager.ProxySocketServer;
 
 import java.util.HashMap;
@@ -9,7 +10,7 @@ public class ServerSocketManager {
     
     private static ServerSocketManager instance;
     
-    private final HashMap < String, ProxySocketServer > socketByServer = new HashMap <>();
+    private final HashMap<ServerName, ProxySocketServer> socketByServer = new HashMap<>();
     
     
     public ServerSocketManager( ){
@@ -21,11 +22,11 @@ public class ServerSocketManager {
         return instance;
     }
     
-    public static Optional < ProxySocketServer > getSocketByServer(String server){
+    public static Optional<ProxySocketServer> getSocketByServer(ServerName server){
         return Optional.ofNullable(getInstance().socketByServer.get(server));
     }
     
-    public void registerServerSocket(String server, ProxySocketServer task){
+    public void registerServerSocket(ServerName server, ProxySocketServer task){
         if (socketByServer.containsKey(server)){
             socketByServer.replace(server, task);
             return;
@@ -33,7 +34,7 @@ public class ServerSocketManager {
         socketByServer.put(server, task);
     }
     
-    public HashMap < String, ProxySocketServer > getSocketByServer( ){
+    public HashMap<ServerName, ProxySocketServer> getSocketByServer( ){
         return socketByServer;
     }
     

@@ -90,7 +90,7 @@ public class WarpCmd implements ILyCommand {
                         try {
                             if (p.hasPermission("blockbyblock.warp.delete.other") || user.getRank().isAdmin()){
                                 final WarpType type = WarpType.valueOf(context.getArg(1));
-                                SpigotWarp warp = Main.getInstance().getWarps().getUserWarpByName(type, Settings.SERVER_NAME);
+                                SpigotWarp warp = Main.getInstance().getWarps().getUserWarpByName(type, Settings.SERVER_NAME.getName());
                                 Main.getInstance().getWarps().deleteWarp(warp);
                                 Main.getLang().sendMsg(p, "warp.deleted", "warp", warp.getType().getName());
                                 return new CommandResponse();

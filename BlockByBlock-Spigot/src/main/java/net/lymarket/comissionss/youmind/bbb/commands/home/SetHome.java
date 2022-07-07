@@ -33,7 +33,7 @@ public class SetHome implements ILyCommand {
             return new CommandResponse();
         }
         if (context.getArgs().length == 1){
-            final Loc location = new Loc(Settings.SERVER_NAME, p.getWorld().getName(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), UUID.fromString(p.getWorld().getName()));
+            final Loc location = new Loc(Settings.SERVER_NAME.getName(), p.getWorld().getName(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), UUID.fromString(p.getWorld().getName()));
             final SpigotHome home = new SpigotHome(p.getUniqueId(), context.getArg(0), location, Settings.VERSION);
             Main.getInstance().getHomes().createHome(home);
             Main.getLang().sendMsg(context.getSender(), "home.created-successfully", "home", home.getName());

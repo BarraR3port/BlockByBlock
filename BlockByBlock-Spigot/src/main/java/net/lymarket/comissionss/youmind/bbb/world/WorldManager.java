@@ -76,7 +76,8 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
     
     @Override
     public ArrayList < BWorld > getWorldWherePlayerIsMember(UUID uuid){
-        return database.findMany(TABLE_NAME, world -> world.getOwner() != uuid && world.getMembers().contains(uuid), BWorld.class);
+        return database.findMany(TABLE_NAME, world -> !world.getOwner().equals(uuid) && world.getMembers().contains(uuid), BWorld.class);
+        //return list.stream().filter( world -> !world.getOwner().equals(uuid) ).collect(Collectors.toCollection(ArrayList::new));
     }
     
     @Override
@@ -86,7 +87,7 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
     
     @Override
     public ArrayList < BWorld > getWorldsByServer( ){
-        return database.findMany(TABLE_NAME, world -> world.getServer().equalsIgnoreCase(Settings.SERVER_NAME), BWorld.class);
+        return database.findMany(TABLE_NAME, world -> world.getServer().equalsIgnoreCase(Settings.SERVER_NAME.getName()), BWorld.class);
     }
     
     @Override
@@ -125,9 +126,9 @@ public class WorldManager extends IBWorldManager < SlimeWorld > {
         SlimeWorld slimeWorld = null;
         try {
             slimeWorld = Main.getSlimePlugin().createEmptyWorld(loader, world.getUUID().toString(), false, propertyMap);
-            
+    
             final Material mat = XMaterial.valueOf(material.equals("GRASS") && !Settings.VERSION.equals("v1_12_R1") ? "GRASS_BLOCK" : material).parseMaterial();
-            boolean empty = mat == XMaterial.AIR.parseMaterial();
+            boolean empty = mat.equals(XMaterial.AIR.parseMaterial());
             if (empty){
                 Main.getSlimePlugin().generateEmptyWorld(slimeWorld, true);
             } else {

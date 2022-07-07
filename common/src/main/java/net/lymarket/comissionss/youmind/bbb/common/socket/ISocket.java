@@ -55,4 +55,5 @@ public abstract class ISocket< V, U, H, W > implements SocketMSG {
     public abstract void sendMsgFromPlayer(Msg msg);
     
     
+    public abstract void sendDisconnectInfoToProxy( );
 }

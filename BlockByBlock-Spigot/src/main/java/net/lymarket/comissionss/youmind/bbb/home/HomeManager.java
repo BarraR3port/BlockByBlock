@@ -34,7 +34,7 @@ public final class HomeManager extends IHomeManager < SpigotHome > {
     
     @Override
     public ArrayList < SpigotHome > getHomesByServer( ){
-        return database.findMany(TABLE_NAME, home -> home.getLocation().getServer().equalsIgnoreCase(Settings.SERVER_NAME), SpigotHome.class);
+        return database.findMany(TABLE_NAME, home -> home.getLocation().getServer().equalsIgnoreCase(Settings.SERVER_NAME.getName()), SpigotHome.class);
     }
     
     @Override
